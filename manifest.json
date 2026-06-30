@@ -16,6 +16,11 @@
   "matematica": {
     "nome": "Matemática",
     "icone": "calculator",
-    "exercicios": []
+    "exercicios": [
+      {
+        "arquivo": "materias/matematica/quiz_matematica_2026_tri2_prova_parcial_v1.html",
+        "assunto": "Perímetros de figuras planas, frações de quantidades e interpretação de situações-problema"
+      }
+    ]
   }
 }

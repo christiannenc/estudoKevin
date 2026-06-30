@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Missão Matemática: Operação Overclock V7</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-bg: #16a34a;
+            --incorrect-bg: #dc2626;
+            --border-color: #334155;
+            --tooltip-bg: #0f172a;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        h1 { color: var(--accent-color); text-align: center; font-size: 26px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; user-select: none; }
+        h1:hover { opacity: 0.9; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        .intro-box { background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .intro-title { font-size: 18px; color: var(--accent-color); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h3 { font-size: 16px; margin: 0 0 5px 0; color: #ffffff; }
+        .topic-group p { font-size: 14px; color: var(--text-muted); margin: 0; }
+        .phase-title { background-color: var(--border-color); padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid var(--accent-color); }
+        .phase-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+        .question-block { background-color: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.5; }
+        .text-box-analysis { background-color: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-clickable { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-color); padding: 14px 16px; border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; cursor: pointer !important; user-select: none; }
+        .feedback-badge { display: none; font-size: 16px; }
+        .explanation-box { display: none; margin-top: 8px; padding: 12px 16px; background-color: var(--tooltip-bg); border-left: 3px solid var(--accent-color); border-radius: 4px; font-size: 13px; line-height: 1.4; }
+        .option-clickable.correct { background-color: var(--correct-bg) !important; border-color: var(--correct-bg) !important; color: #ffffff !important; }
+        .option-clickable.correct .badge-correct { display: inline-block !important; }
+        .option-clickable.incorrect { background-color: var(--incorrect-bg) !important; border-color: var(--incorrect-bg) !important; color: #ffffff !important; }
+        .option-clickable.incorrect .badge-incorrect { display: inline-block !important; }
+        .option-clickable.hint-green { border: 2px dashed #16a34a !important; background-color: rgba(22, 163, 74, 0.1) !important; }
+        .option-clickable.hint-green .badge-hint { display: inline-block !important; }
+        .score-banner { margin-top: 30px; padding: 20px; background-color: rgba(56, 189, 248, 0.1); border: 2px dashed var(--accent-color); border-radius: 12px; text-align: center; }
+        .score-text { font-size: 20px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; }
+        .action-btn { background-color: var(--accent-color); color: var(--bg-color); border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer !important; display: inline-block; text-align: center; user-select: none; }
+        .center-btn-wrapper { display: flex; justify-content: center; width: 100%; }
+        .disabled-option { pointer-events: none !important; }
+    </style>
+
+    <script>
+        var quizScore = 0;
+        var answeredQuestions = {};
+        var wrongAnswers = [];
+        var totalQuestions = 20;
+        var STORAGE_KEY = 'estudoKevin:scores:materias/matematica/quiz_matematica_2026_tri2_prova_parcial_v1.html';
+
+        function iniciarMissao() {
+            document.getElementById('screen-intro').classList.remove('active');
+            document.getElementById('screen-quiz').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function irParaHome() {
+            document.getElementById('screen-quiz').classList.remove('active');
+            document.getElementById('screen-intro').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function checarResposta(qNum, letraSelecionada, letraCorreta) {
+            if (answeredQuestions[qNum]) return;
+            answeredQuestions[qNum] = letraSelecionada;
+
+            var letras = ['A', 'B', 'C', 'D'];
+            for (var i = 0; i < letras.length; i++) {
+                var atual = letras[i];
+                var elOpt = document.getElementById('opt-q' + qNum + '-' + atual);
+                var elExp = document.getElementById('exp-q' + qNum + '-' + atual);
+                if (elOpt) elOpt.classList.add('disabled-option');
+                if (letraSelecionada === letraCorreta) {
+                    if (atual === letraCorreta && elOpt) elOpt.classList.add('correct');
+                } else {
+                    if (atual === letraSelecionada && elOpt) elOpt.classList.add('incorrect');
+                    else if (atual === letraCorreta && elOpt) elOpt.classList.add('hint-green');
+                }
+                if (elExp) elExp.style.display = 'block';
+            }
+
+            if (letraSelecionada === letraCorreta) {
+                quizScore++;
+            } else {
+                var block = document.getElementById('block-q' + qNum);
+                var elChosen = document.getElementById('opt-q' + qNum + '-' + letraSelecionada);
+                var elCorrect = document.getElementById('opt-q' + qNum + '-' + letraCorreta);
+                wrongAnswers.push({
+                    q: String(qNum),
+                    text: block ? block.querySelector('.question-text').textContent.trim() : '',
+                    chosen: elChosen ? elChosen.querySelector('span').textContent.trim() : letraSelecionada,
+                    correct: elCorrect ? elCorrect.querySelector('span').textContent.trim() : letraCorreta
+                });
+            }
+
+            document.getElementById('score-display').textContent = 'Pontuação: ' + quizScore + ' / ' + totalQuestions;
+
+            if (Object.keys(answeredQuestions).length === totalQuestions) {
+                try {
+                    var history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    history.push({ score: quizScore, total: totalQuestions, date: new Date().toISOString(), wrong: wrongAnswers });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                } catch(e) {}
+            }
+        }
+
+        function terminarMissao() {
+            window.location.href = '/';
+        }
+    </script>
+</head>
+<body>
+<div class="quiz-container">
+    <h1 onclick="irParaHome()">🎮 MISSÃO MATEMÁTICA v6</h1>
+    <div class="subtitle">Grande Maratona da 2ª Etapa • Modo Campanha Ativo</div>
+    
+    <div id="screen-intro" class="screen active">
+        <div class="intro-box">
+            <h2 class="intro-title">📋 Conteúdos Mapeados na Missão:</h2>
+            <div class="topic-group">
+                <h3>📐 Geometria Plana</h3>
+                <p><b>Tópico:</b> Fixação e cálculo de Perímetros em figuras quadradas, retangulares e triangulares.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🔢 Frações e Quantidades</h3>
+                <p><b>Tópico:</b> Situações-problema envolvendo fração de uma quantidade discreta.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🧠 Cenários de Análise Extensa</h3>
+                <p><b>Tópico:</b> Interpretação crítica, leitura interpretativa de dados e situações cotidianas integradas.</p>
+            </div>
+        </div>
+        <div class="center-btn-wrapper">
+            <div class="action-btn" id="btn-start-quiz" onclick="iniciarMissao()">Iniciar Missão</div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+        <div class="phase-title">⚡ FASE 1: FIXAÇÃO DIRETA (PERÍMETROS E FRAÇÕES)</div>
+        <div class="phase-desc">Selecione a alternativa correta para computar seus pontos.</div>
+
+        <div class="question-block" id="block-q1">
+            <div class="question-text">1. Um quadrado possui lado medindo 8 cm. Qual é o seu perímetro?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q1-A" onclick="checarResposta(1, 'A', 'C')"><span>(A) 16 cm</span></div>
+                    <div class="explanation-box" id="exp-q1-A">Incorreto. Somar apenas dois lados não gera o perímetro total do quadrado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-B" onclick="checarResposta(1, 'B', 'C')"><span>(B) 24 cm</span></div>
+                    <div class="explanation-box" id="exp-q1-B">Incorreto. O quadrado possui 4 lados iguais, não 3.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-C" onclick="checarResposta(1, 'C', 'C')"><span>(C) 32 cm</span></div>
+                    <div class="explanation-box" id="exp-q1-C">Correto! Perímetro do quadrado: 4 vezes o lado. 8 x 4 = 32 cm.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-D" onclick="checarResposta(1, 'D', 'C')"><span>(D) 64 cm</span></div>
+                    <div class="explanation-box" id="exp-q1-D">Incorreto. 64 cm² seria a área (8x8), mas o enunciado pede o contorno (perímetro).</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q2">
+            <div class="question-text">2. Quanto vale 1/3 de 30 moedas de ouro em um jogo de RPG?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q2-A" onclick="checarResposta(2, 'A', 'B')"><span>(A) 5 moedas</span></div>
+                    <div class="explanation-box" id="exp-q2-A">Incorreto. 5 moedas equivalem a 1/6 do total.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-B" onclick="checarResposta(2, 'B', 'B')"><span>(B) 10 moedas</span></div>
+                    <div class="explanation-box" id="exp-q2-B">Correto! Dividimos o total pelo denominador 3: 30 ÷ 3 = 10 moedas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-C" onclick="checarResposta(2, 'C', 'B')"><span>(C) 15 moedas</span></div>
+                    <div class="explanation-box" id="exp-q2-C">Incorreto. 15 moedas representa a metade (1/2).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-D" onclick="checarResposta(2, 'D', 'B')"><span>(D) 20 moedas</span></div>
+                    <div class="explanation-box" id="exp-q2-D">Incorreto. 20 moedas equivalem a 2/3 do total.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q3">
+            <div class="question-text">3. Uma mesa retangular tem 2 metros de comprimento e 1 metro de largura. Qual o perímetro?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q3-A" onclick="checarResposta(3, 'A', 'D')"><span>(A) 2 metros</span></div>
+                    <div class="explanation-box" id="exp-q3-A">Incorreto. 2 metros quadrados seria a área da mesa (2 x 1).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-B" onclick="checarResposta(3, 'B', 'D')"><span>(B) 3 metros</span></div>
+                    <div class="explanation-box" id="exp-q3-B">Incorreto. Você somou apenas um comprimento e uma largura. Falta a outra metade.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-C" onclick="checarResposta(3, 'C', 'D')"><span>(C) 4 metros</span></div>
+                    <div class="explanation-box" id="exp-q3-C">Incorreto. Revisite a soma de todos os quatro lados paralelos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-D" onclick="checarResposta(3, 'D', 'D')"><span>(D) 6 metros</span></div>
+                    <div class="explanation-box" id="exp-q3-D">Correto! Somamos os quatro lados do contorno: 2 + 2 + 1 + 1 = 6 metros.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q4">
+            <div class="question-text">4. Calculando 2/4 de 40 blocos de montar, quantos blocos temos?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q4-A" onclick="checarResposta(4, 'A', 'B')"><span>(A) 10 blocos</span></div>
+                    <div class="explanation-box" id="exp-q4-A">Incorreto. 10 blocos seria apenas 1/4 do total.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-B" onclick="checarResposta(4, 'B', 'B')"><span>(B) 20 blocos</span></div>
+                    <div class="explanation-box" id="exp-q4-B">Correto! 40 ÷ 4 = 10. Multiplicando pelo numerador: 10 x 2 = 20 blocos (equivalente à metade).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-C" onclick="checarResposta(4, 'C', 'B')"><span>(C) 30 blocos</span></div>
+                    <div class="explanation-box" id="exp-q4-C">Incorreto. 30 blocos corresponde a 3/4.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-D" onclick="checarResposta(4, 'D', 'B')"><span>(D) 40 blocos</span></div>
+                    <div class="explanation-box" id="exp-q4-D">Incorreto. 40 representa o total inteiro (4/4).</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q5">
+            <div class="question-text">5. Um triângulo com três lados iguais (equilátero) mede 9 cm de lado. Qual o contorno total?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q5-A" onclick="checarResposta(5, 'A', 'B')"><span>(A) 18 cm</span></div>
+                    <div class="explanation-box" id="exp-q5-A">Incorreto. O triângulo possui 3 lados, não 2.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-B" onclick="checarResposta(5, 'B', 'B')"><span>(B) 27 cm</span></div>
+                    <div class="explanation-box" id="exp-q5-B">Correto! Sendo os três lados iguais: 9 + 9 + 9 (ou 9 x 3) = 27 cm.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-C" onclick="checarResposta(5, 'C', 'B')"><span>(C) 36 cm</span></div>
+                    <div class="explanation-box" id="exp-q5-C">Incorreto. 36 cm seria o contorno de um quadrado de lado 9.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-D" onclick="checarResposta(5, 'D', 'B')"><span>(D) 45 cm</span></div>
+                    <div class="explanation-box" id="exp-q5-D">Incorreto. Valor excessivo para a soma de 3 lados de 9 cm.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q6">
+            <div class="question-text">6. Se uma pista de corrida quadrada tem perímetro de 40 metros, qual o tamanho de cada lado?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q6-A" onclick="checarResposta(6, 'A', 'B')"><span>(A) 5 metros</span></div>
+                    <div class="explanation-box" id="exp-q6-A">Incorreto. Se o lado fosse 5, o perímetro total seria 20 metros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-B" onclick="checarResposta(6, 'B', 'B')"><span>(B) 10 metros</span></div>
+                    <div class="explanation-box" id="exp-q6-B">Correto! Como o quadrado tem 4 lados idênticos, fazemos a divisão reversa: 40 ÷ 4 = 10 metros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-C" onclick="checarResposta(6, 'C', 'B')"><span>(C) 15 metros</span></div>
+                    <div class="explanation-box" id="exp-q6-C">Incorreto. Lado 15 resultaria em um perímetro de 60 metros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-D" onclick="checarResposta(6, 'D', 'B')"><span>(D) 20 metros</span></div>
+                    <div class="explanation-box" id="exp-q6-D">Incorreto. 20 metros é a metade do perímetro.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q7">
+            <div class="question-text">7. Guilherme economizou R$ 60 e usou 1/5 para comprar um lanche. Quanto custou o lanche?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q7-A" onclick="checarResposta(7, 'A', 'B')"><span>(A) R$ 10</span></div>
+                    <div class="explanation-box" id="exp-q7-A">Incorreto. R$ 10 seria 1/6 de R$ 60.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-B" onclick="checarResposta(7, 'B', 'B')"><span>(B) R$ 12</span></div>
+                    <div class="explanation-box" id="exp-q7-B">Correto! Dividimos o valor total pelo denominador da fração: 60 ÷ 5 = R$ 12.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-C" onclick="checarResposta(7, 'C', 'B')"><span>(C) R$ 15</span></div>
+                    <div class="explanation-box" id="exp-q7-C">Incorreto. R$ 15 corresponde a 1/4 do total.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-D" onclick="checarResposta(7, 'D', 'B')"><span>(D) R$ 20</span></div>
+                    <div class="explanation-box" id="exp-q7-D">Incorreto. R$ 20 equivale a um terço (1/3).</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q8">
+            <div class="question-text">8. Uma quadra esportiva mede 15 metros de largura e 25 metros de comprimento. Qual o perímetro?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q8-A" onclick="checarResposta(8, 'A', 'C')"><span>(A) 40 metros</span></div>
+                    <div class="explanation-box" id="exp-q8-A">Incorreto. Você somou apenas duas dimensões (15 + 25). Falta a outra metade da quadra.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-B" onclick="checarResposta(8, 'B', 'C')"><span>(B) 50 metros</span></div>
+                    <div class="explanation-box" id="exp-q8-B">Incorreto. Isso seria apenas o dobro do comprimento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-C" onclick="checarResposta(8, 'C', 'C')"><span>(C) 80 metros</span></div>
+                    <div class="explanation-box" id="exp-q8-C">Correto! Somamos os 4 lados do retângulo: 25 + 25 + 15 + 15 = 80 metros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-D" onclick="checarResposta(8, 'D', 'C')"><span>(D) 375 metros</span></div>
+                    <div class="explanation-box" id="exp-q8-D">Incorreto. 375 m² seria o cálculo da área (15 x 25), não do perímetro.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q9">
+            <div class="question-text">9. Quanto representa 3/5 de um estoque de 25 skins de personagens?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q9-A" onclick="checarResposta(9, 'A', 'C')"><span>(A) 5 skins</span></div>
+                    <div class="explanation-box" id="exp-q9-A">Incorreto. 5 skins equivale a apenas 1/5 do lote.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-B" onclick="checarResposta(9, 'B', 'C')"><span>(B) 10 skins</span></div>
+                    <div class="explanation-box" id="exp-q9-B">Incorreto. 10 skins equivale a 2/5.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-C" onclick="checarResposta(9, 'C', 'C')"><span>(C) 15 skins</span></div>
+                    <div class="explanation-box" id="exp-q9-C">Correto! Dividimos o total por 5 (25 ÷ 5 = 5) e multiplicamos pelo numerador 3 (5 x 3 = 15).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-D" onclick="checarResposta(9, 'D', 'C')"><span>(D) 20 skins</span></div>
+                    <div class="explanation-box" id="exp-q9-D">Incorreto. 20 skins equivale a 4/5.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q10">
+            <div class="question-text">10. Um azulejo tem formato quadrado de lado 20 cm. Qual é o perímetro dele?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q10-A" onclick="checarResposta(10, 'A', 'C')"><span>(A) 40 cm</span></div>
+                    <div class="explanation-box" id="exp-q10-A">Incorreto. O quadrado possui 4 lados contínuos, e não apenas 2.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-B" onclick="checarResposta(10, 'B', 'C')"><span>(B) 60 cm</span></div>
+                    <div class="explanation-box" id="exp-q10-B">Incorreto. 60 cm seria para um triângulo equilátero de lado 20.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-C" onclick="checarResposta(10, 'C', 'C')"><span>(C) 80 cm</span></div>
+                    <div class="explanation-box" id="exp-q10-C">Correto! Como possui 4 lados idênticos: 20 x 4 = 80 cm.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-D" onclick="checarResposta(10, 'D', 'C')"><span>(D) 400 cm</span></div>
+                    <div class="explanation-box" id="exp-q10-D">Incorreto. 400 cm² representa a área superficial (20 x 20).</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q11">
+            <div class="question-text">11. Em uma guilda, há 18 guerreiros. Se 1/2 deles são arqueiros, quantos arqueiros há?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q11-A" onclick="checarResposta(11, 'A', 'C')"><span>(A) 6 arqueiros</span></div>
+                    <div class="explanation-box" id="exp-q11-A">Incorreto. 6 arqueiros representaria um terço (1/3).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q11-B" onclick="checarResposta(11, 'B', 'C')"><span>(B) 8 arqueiros</span></div>
+                    <div class="explanation-box" id="exp-q11-B">Incorreto. Valor incorreto para a metade exata.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q11-C" onclick="checarResposta(11, 'C', 'C')"><span>(C) 9 arqueiros</span></div>
+                    <div class="explanation-box" id="exp-q11-C">Correto! Fração de 1/2 indica a metade matemática: 18 ÷ 2 = 9 arqueiros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q11-D" onclick="checarResposta(11, 'D', 'C')"><span>(D) 12 arqueiros</span></div>
+                    <div class="explanation-box" id="exp-q11-D">Incorreto. 12 representa dois terços (2/3).</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q12">
+            <div class="question-text">12. Um retângulo tem perímetro de 30 cm. Se o comprimento é 10 cm, quanto mede a largura?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q12-A" onclick="checarResposta(12, 'A', 'A')"><span>(A) 5 cm</span></div>
+                    <div class="explanation-box" id="exp-q12-A">Correto! Os dois comprimentos juntos medem 20 cm (10+10). Sobram 10 cm para dividir igualmente entre as duas larguras (10 ÷ 2 = 5 cm).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q12-B" onclick="checarResposta(12, 'B', 'A')"><span>(B) 10 cm</span></div>
+                    <div class="explanation-box" id="exp-q12-B">Incorreto. Se a largura fosse 10, a figura seria um quadrado de perímetro 40.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q12-C" onclick="checarResposta(12, 'C', 'A')"><span>(C) 15 cm</span></div>
+                    <div class="explanation-box" id="exp-q12-C">Incorreto. 15 cm é apenas a metade do perímetro dado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q12-D" onclick="checarResposta(12, 'D', 'A')"><span>(D) 20 cm</span></div>
+                    <div class="explanation-box" id="exp-q12-D">Incorreto. Valor alto demais, superaria o perímetro total.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q13">
+            <div class="question-text">13. Calcule 3/10 de 100 diamantes coletados em uma partida.</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q13-A" onclick="checarResposta(13, 'A', 'C')"><span>(A) 10 diamantes</span></div>
+                    <div class="explanation-box" id="exp-q13-A">Incorreto. 10 diamantes seria apenas 1/10 do montante.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q13-B" onclick="checarResposta(13, 'B', 'C')"><span>(B) 20 diamantes</span></div>
+                    <div class="explanation-box" id="exp-q13-B">Incorreto. 20 diamantes seria equivalente a 2/10.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q13-C" onclick="checarResposta(13, 'C', 'C')"><span>(C) 30 diamantes</span></div>
+                    <div class="explanation-box" id="exp-q13-C">Correto! Dividimos 100 por 10 = 10. Multiplicando pelo numerador: 10 x 3 = 30 diamantes.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q13-D" onclick="checarResposta(13, 'D', 'C')"><span>(D) 40 diamantes</span></div>
+                    <div class="explanation-box" id="exp-q13-D">Incorreto. 40 diamantes corresponde a 4/10.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q14">
+            <div class="question-text">14. O perímetro de um triângulo cujos lados medem 5 cm, 7 cm e 8 cm é:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q14-A" onclick="checarResposta(14, 'A', 'B')"><span>(A) 15 cm</span></div>
+                    <div class="explanation-box" id="exp-q14-A">Incorreto. Soma imprecisa dos lados.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q14-B" onclick="checarResposta(14, 'B', 'B')"><span>(B) 20 cm</span></div>
+                    <div class="explanation-box" id="exp-q14-B">Correto! Somamos as três medidas escalenas: 5 + 7 + 8 = 20 cm.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q14-C" onclick="checarResposta(14, 'C', 'B')"><span>(C) 25 cm</span></div>
+                    <div class="explanation-box" id="exp-q14-C">Incorreto. A soma resulta em valor menor que 25.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q14-D" onclick="checarResposta(14, 'D', 'B')"><span>(D) 56 cm</span></div>
+                    <div class="explanation-box" id="exp-q14-D">Incorreto. Multiplicar os lados não gera o perímetro da figura.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q15">
+            <div class="question-text">15. Se uma caixa de bombom tem 12 unidades e você comeu 2/3, quantos bombons comeu?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q15-A" onclick="checarResposta(15, 'A', 'C')"><span>(A) 4 bombons</span></div>
+                    <div class="explanation-box" id="exp-q15-A">Incorreto. 4 unidades representa 1/3 do total da caixa.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q15-B" onclick="checarResposta(15, 'B', 'C')"><span>(B) 6 bombons</span></div>
+                    <div class="explanation-box" id="exp-q15-B">Incorreto. 6 bombons equivalem à metade exata (1/2).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q15-C" onclick="checarResposta(15, 'C', 'C')"><span>(C) 8 bombons</span></div>
+                    <div class="explanation-box" id="exp-q15-C">Correto! Dividimos por 3 (12 ÷ 3 = 4) e multiplicamos pelo numerador 2 (4 x 2 = 8).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q15-D" onclick="checarResposta(15, 'D', 'C')"><span>(D) 9 bombons</span></div>
+                    <div class="explanation-box" id="exp-q15-D">Incorreto. 9 bombons corresponderia a 3/4 do total.</div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="phase-title">👑 BOSS BATTLE: EXTENSA ANÁLISE INTERPRETATIVA</div>
+        <div class="phase-desc">Analise os relatórios e logs contextuais para responder com precisão crítica.</div>
+
+        <div class="text-box-analysis">
+            <strong>LOG DE TEMPORADA (E-SPORTS):</strong> Uma equipe profissional disputa um cronograma rígido de 60 partidas. A auditoria confirmou que eles venceram 2/3 dos confrontos, obtiveram empates em exatos 1/6 das rodadas e saíram derrotados no restante das disputas.
+        </div>
+        <div class="question-block" id="block-q16">
+            <div class="question-text">16. Quantas partidas exatas essa equipe perdeu após a análise integral do cenário?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q16-A" onclick="checarResposta(16, 'A', 'D')"><span>(A) 40 partidas</span></div>
+                    <div class="explanation-box" id="exp-q16-A">Incorreto. 40 partidas representa a quantidade exclusiva de vitórias (2/3 de 60).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q16-B" onclick="checarResposta(16, 'B', 'D')"><span>(B) 20 partidas</span></div>
+                    <div class="explanation-box" id="exp-q16-B">Incorreto. Analise a dedução correta subtraindo vitórias e empates juntos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q16-C" onclick="checarResposta(16, 'C', 'D')"><span>(C) 30 partidas</span></div>
+                    <div class="explanation-box" id="exp-q16-C">Incorreto. Metade do campeonato não reflete as derrotas residuais.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q16-D" onclick="checarResposta(16, 'D', 'D')"><span>(D) 10 partidas</span></div>
+                    <div class="explanation-box" id="exp-q16-D">Correto! Vitórias: 2/3 de 60 = 40. Empates: 1/6 de 60 = 10. Somados temos 50 jogos. Logo, o resto de derrotas é 60 - 50 = 10 partidas.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>PROJETO ARQUITETÔNICO:</strong> Beatriz desenhou um canteiro retangular de flores medindo 6m de comprimento por 4m de largura. Ela vai instalar uma cerca de proteção. Contudo, um dos lados menores (uma das larguras) fica encostado em uma parede maciça de tijolos e não receberá cerca.
+        </div>
+        <div class="question-block" id="block-q17">
+            <div class="question-text">17. Quantos metros lineares de cerca Beatriz precisará comprar para isolar o canteiro?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q17-A" onclick="checarResposta(17, 'A', 'B')"><span>(A) 20 metros</span></div>
+                    <div class="explanation-box" id="exp-q17-A">Incorreto. 20m seria o perímetro total de 4 lados. Um dos lados está na parede e deve ser subtraído.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q17-B" onclick="checarResposta(17, 'B', 'B')"><span>(B) 16 metros</span></div>
+                    <div class="explanation-box" id="exp-q17-B">Correto! Ela cercará apenas 3 lados: dois comprimentos (6 + 6 = 12m) e apenas uma largura (4m). 12 + 4 = 16 metros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q17-C" onclick="checarResposta(17, 'C', 'B')"><span>(C) 14 metros</span></div>
+                    <div class="explanation-box" id="exp-q17-C">Incorreto. Cálculo inadequado para a disposição geométrica descrita.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q17-D" onclick="checarResposta(17, 'D', 'B')"><span>(D) 10 metros</span></div>
+                    <div class="explanation-box" id="exp-q17-D">Incorreto. 10m representa apenas a soma de um comprimento e uma largura.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>DIRETRIZ FINANCEIRA:</strong> Arthur recebe uma mesada estável de R$ 120 e aplica educação financeira. Ele divide o montante em três potes distintos: separa 2/4 para custear gastos diários, reserva 1/3 para a poupança de longo prazo e destina o restante para filantropia/doação.
+        </div>
+        <div class="question-block" id="block-q18">
+            <div class="question-text">18. Qual é o valor monetário exato e absoluto destinado por Arthur para a doação?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q18-A" onclick="checarResposta(18, 'A', 'C')"><span>(A) R$ 60</span></div>
+                    <div class="explanation-box" id="exp-q18-A">Incorreto. R$ 60 representa o pote de gastos diários (2/4 de 120).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q18-B" onclick="checarResposta(18, 'B', 'C')"><span>(B) R$ 40</span></div>
+                    <div class="explanation-box" id="exp-q18-B">Incorreto. R$ 40 representa a cota de investimentos de longo prazo (1/3 de 120).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q18-C" onclick="checarResposta(18, 'C', 'C')"><span>(C) R$ 20</span></div>
+                    <div class="explanation-box" id="exp-q18-C">Correto! Gastos: R$ 60. Poupança: R$ 40. Somados totalizam R$ 100. O saldo remanescente para doação é 120 - 100 = R$ 20.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q18-D" onclick="checarResposta(18, 'D', 'C')"><span>(D) R$ 10</span></div>
+                    <div class="explanation-box" id="exp-q18-D">Incorreto. Valor insuficiente de sobra após as divisões fracionárias.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>LOGÍSTICA DE TREINO:</strong> Um fazendeiro projetou uma pista de corrida integrada em formato de um pentágono regular (figura simétrica com 5 lados de dimensões idênticas). Cada um dos lados da pista mede 15 metros. Durante o treino, um atleta completou 3 voltas absolutas no circuito.
+        </div>
+        <div class="question-block" id="block-q19">
+            <div class="question-text">19. Qual foi a distância total percorrida pelo corredor ao término de sua activity?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q19-A" onclick="checarResposta(19, 'A', 'C')"><span>(A) 75 metros</span></div>
+                    <div class="explanation-box" id="exp-q19-A">Incorreto. 75 metros representa a distância percorrida em apenas uma única volta inicial.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q19-B" onclick="checarResposta(19, 'B', 'C')"><span>(B) 150 metros</span></div>
+                    <div class="explanation-box" id="exp-q19-B">Incorreto. Isso seria equivalente a duas voltas consecutivas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q19-C" onclick="checarResposta(19, 'C', 'C')"><span>(C) 225 metros</span></div>
+                    <div class="explanation-box" id="exp-q19-C">Correto! O perímetro de uma volta no pentágono é 15 x 5 = 75 metros. Como foram dadas 3 voltas completas: 75 x 3 = 225 metros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q19-D" onclick="checarResposta(19, 'D', 'C')"><span>(D) 300 metros</span></div>
+                    <div class="explanation-box" id="exp-q19-D">Incorreto. Extensão superestimada para o número de voltas efetuadas.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>MÉTRICA DE PESQUISA (STREAMING):</strong> Uma instituição coletou dados com um grupo amostral de 80 estudantes. Tabulando os dados, constatou-se que 3/5 do total preferem animações de heróis, 1/4 manifestou preferência por animes orientais e os alunos restantes preferem documentários reais.
+        </div>
+        <div class="question-block" id="block-q20">
+            <div class="question-text">20. Quantos alunos da amostragem total escolheram a última opção focada em documentários?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q20-A" onclick="checarResposta(20, 'A', 'C')"><span>(A) 48 alunos</span></div>
+                    <div class="explanation-box" id="exp-q20-A">Incorreto. 48 corresponde ao grupo que assiste a desenhos de super-heróis.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q20-B" onclick="checarResposta(20, 'B', 'C')"><span>(B) 20 alunos</span></div>
+                    <div class="explanation-box" id="exp-q20-B">Incorreto. 20 alunos representa a fatia focada em animes (1/4 de 80).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q20-C" onclick="checarResposta(20, 'C', 'C')"><span>(C) 12 alunos</span></div>
+                    <div class="explanation-box" id="exp-q20-C">Correto! Desenhos: 3/5 de 80 = 48. Animes: 1/4 de 80 = 20. A soma dessas categorias dá 68. O restante para documentários é 80 - 68 = 12 alunos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q20-D" onclick="checarResposta(20, 'D', 'C')"><span>(D) 8 alunos</span></div>
+                    <div class="explanation-box" id="exp-q20-D">Incorreto. Valor impreciso para a margem de diferença calculada.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-banner">
+            <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
+            <div class="action-btn" id="btn-finish-quiz" onclick="terminarMissao()">Terminar Missão</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
