@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Missão Matemática: Operação Overclock V8</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-bg: #16a34a;
+            --incorrect-bg: #dc2626;
+            --border-color: #334155;
+            --tooltip-bg: #0f172a;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        h1 { color: var(--accent-color); text-align: center; font-size: 26px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; user-select: none; }
+        h1:hover { opacity: 0.9; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        .intro-box { background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .intro-title { font-size: 18px; color: var(--accent-color); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h3 { font-size: 16px; margin: 0 0 5px 0; color: #ffffff; }
+        .topic-group p { font-size: 14px; color: var(--text-muted); margin: 0; }
+        .phase-title { background-color: var(--border-color); padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid var(--accent-color); }
+        .phase-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+        .question-block { background-color: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.5; }
+        
+        /* ESTILO PARA AS IMAGENS / ESQUEMAS VISUAIS */
+        .image-placeholder {
+            background-color: #0f172a;
+            border: 2px dashed var(--accent-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--accent-color);
+        }
+        .image-placeholder svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 10px auto;
+        }
+
+        .text-box-analysis { background-color: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-clickable { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-color); padding: 14px 16px; border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; cursor: pointer !important; user-select: none; }
+        .explanation-box { display: none; margin-top: 8px; padding: 12px 16px; background-color: var(--tooltip-bg); border-left: 3px solid var(--accent-color); border-radius: 4px; font-size: 13px; line-height: 1.4; }
+        .option-clickable.correct { background-color: var(--correct-bg) !important; border-color: var(--correct-bg) !important; color: #ffffff !important; }
+        .option-clickable.incorrect { background-color: var(--incorrect-bg) !important; border-color: var(--incorrect-bg) !important; color: #ffffff !important; }
+        .option-clickable.hint-green { border: 2px dashed #16a34a !important; background-color: rgba(22, 163, 74, 0.1) !important; }
+        .score-banner { margin-top: 30px; padding: 20px; background-color: rgba(56, 189, 248, 0.1); border: 2px dashed var(--accent-color); border-radius: 12px; text-align: center; }
+        .score-text { font-size: 20px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; }
+        .action-btn { background-color: var(--accent-color); color: var(--bg-color); border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer !important; display: inline-block; text-align: center; user-select: none; }
+        .center-btn-wrapper { display: flex; justify-content: center; width: 100%; }
+        .disabled-option { pointer-events: none !important; }
+    </style>
+
+    <script>
+        var quizScore = 0;
+        var answeredQuestions = {};
+        var wrongAnswers = [];
+        var totalQuestions = 10;
+        var STORAGE_KEY = 'estudoKevin:scores:materias/matematica/quiz_matematica_2026_tri2_prova_parcial_v2.html';
+
+        function iniciarMissao() {
+            document.getElementById('screen-intro').classList.remove('active');
+            document.getElementById('screen-quiz').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function irParaHome() {
+            document.getElementById('screen-quiz').classList.remove('active');
+            document.getElementById('screen-intro').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function checarResposta(qNum, letraSelecionada, letraCorreta) {
+            if (answeredQuestions[qNum]) return;
+            answeredQuestions[qNum] = letraSelecionada;
+
+            var letras = ['A', 'B', 'C', 'D'];
+            for (var i = 0; i < letras.length; i++) {
+                var atual = letras[i];
+                var elOpt = document.getElementById('opt-q' + qNum + '-' + atual);
+                var elExp = document.getElementById('exp-q' + qNum + '-' + atual);
+                if (elOpt) elOpt.classList.add('disabled-option');
+                if (letraSelecionada === letraCorreta) {
+                    if (atual === letraCorreta && elOpt) elOpt.classList.add('correct');
+                } else {
+                    if (atual === letraSelecionada && elOpt) elOpt.classList.add('incorrect');
+                    else if (atual === letraCorreta && elOpt) elOpt.classList.add('hint-green');
+                }
+                if (elExp) elExp.style.display = 'block';
+            }
+
+            if (letraSelecionada === letraCorreta) {
+                quizScore++;
+            } else {
+                var block = document.getElementById('block-q' + qNum);
+                var elChosen = document.getElementById('opt-q' + qNum + '-' + letraSelecionada);
+                var elCorrect = document.getElementById('opt-q' + qNum + '-' + letraCorreta);
+                wrongAnswers.push({
+                    q: String(qNum),
+                    text: block ? block.querySelector('.question-text').textContent.trim() : '',
+                    chosen: elChosen ? elChosen.querySelector('span').textContent.trim() : letraSelecionada,
+                    correct: elCorrect ? elCorrect.querySelector('span').textContent.trim() : letraCorreta
+                });
+            }
+
+            document.getElementById('score-display').textContent = 'Pontuação: ' + quizScore + ' / ' + totalQuestions;
+
+            if (Object.keys(answeredQuestions).length === totalQuestions) {
+                try {
+                    var history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    history.push({ score: quizScore, total: totalQuestions, date: new Date().toISOString(), wrong: wrongAnswers });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                } catch(e) {}
+            }
+        }
+
+        function terminarMissao() {
+            window.location.href = '/';
+        }
+    </script>
+</head>
+<body>
+<div class="quiz-container">
+    <h1 onclick="irParaHome()">🎮 MISSÃO MATEMÁTICA v8</h1>
+    <div class="subtitle">Nova Maratona com Gráficos e Esquemas Visuais Ativos</div>
+    
+    <div id="screen-intro" class="screen active">
+        <div class="intro-box">
+            <h2 class="intro-title">📋 Conteúdos Mapeados na Missão:</h2>
+            <div class="topic-group">
+                <h3>📐 Geometria Plana e Imagens</h3>
+                <p><b>Tópico:</b> Cálculo de Perímetros com suporte visual e diagramas de formas geométricas.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🔢 Frações Visuais</h3>
+                <p><b>Tópico:</b> Interpretação de frações a partir de retas numéricas e gráficos de blocos.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🧠 Casos e Relatórios</h3>
+                <p><b>Tópico:</b> Problemas analíticos com subdivisões complexas de dados.</p>
+            </div>
+        </div>
+        <div class="center-btn-wrapper">
+            <div class="action-btn" id="btn-start-quiz" onclick="iniciarMissao()">Iniciar Missão</div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+        <div class="phase-title">⚡ FASE 1: ANÁLISE GRÁFICA E GEOMETRIA VISUAL</div>
+        <div class="phase-desc">Observe atentamente os esquemas antes de responder.</div>
+
+        <div class="question-block" id="block-q1">
+            <div class="question-text">1. Observe o esquema visual abaixo que representa o mapa de uma pista em formato de Hexágono Regular (6 lados iguais). Se o lado indicado mede exatamente 7 metros, qual é o perímetro total da pista?</div>
+            
+            <div class="image-placeholder">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                    <polygon points="50,5 90,28 90,72 50,95 10,72 10,28" fill="none" stroke="#38bdf8" stroke-width="3"/>
+                    <text x="53" y="55" fill="#f8fafc" font-size="12">7 m</text>
+                </svg>
+                <span>[ESQUEMA: PISTA HEXAGONAL REGULAR]</span>
+            </div>
+
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q1-A" onclick="checarResposta(1, 'A', 'B')"><span>(A) 35 metros</span></div>
+                    <div class="explanation-box" id="exp-q1-A">Incorreto. Multiplicar por 5 seria o cálculo para um pentágono.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-B" onclick="checarResposta(1, 'B', 'B')"><span>(B) 42 metros</span></div>
+                    <div class="explanation-box" id="exp-q1-B">Correto! O hexágono possui 6 lados de igual medida: 7 metros * 6 = 42 metros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-C" onclick="checarResposta(1, 'C', 'B')"><span>(C) 49 metros</span></div>
+                    <div class="explanation-box" id="exp-q1-C">Incorreto. 49 seria caso a figura tivesse 7 lados (heptágono).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-D" onclick="checarResposta(1, 'D', 'B')"><span>(D) 28 metros</span></div>
+                    <div class="explanation-box" id="exp-q1-D">Incorreto. 28 metros seria o contorno de um quadrado.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q2">
+            <div class="question-text">2. Analise a reta numérica abaixo dividida em partes estritamente iguais entre 0 e 1. Qual é a fração exata representada pela localização do ponto "X"?</div>
+            
+            <div class="image-placeholder">
+                <svg width="220" height="50" viewBox="0 0 220 50">
+                    <line x1="20" y1="25" x2="200" y2="25" stroke="#94a3b8" stroke-width="2"/>
+                    <line x1="20" y1="15" x2="20" y2="35" stroke="#38bdf8" stroke-width="3"/>
+                    <line x1="65" y1="20" x2="65" y2="30" stroke="#94a3b8" stroke-width="2"/>
+                    <line x1="110" y1="20" x2="110" y2="30" stroke="#94a3b8" stroke-width="2"/>
+                    <line x1="155" y1="15" x2="155" y2="35" stroke="#dc2626" stroke-width="3"/>
+                    <line x1="200" y1="15" x2="200" y2="35" stroke="#38bdf8" stroke-width="3"/>
+                    <text x="17" y="48" fill="#f8fafc" font-size="12">0</text>
+                    <text x="150" y="12" fill="#dc2626" font-size="14" font-weight="bold">X</text>
+                    <text x="197" y="48" fill="#f8fafc" font-size="12">1</text>
+                </svg>
+                <span>[RETA NUMÉRICA FRACIONADA]</span>
+            </div>
+
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q2-A" onclick="checarResposta(2, 'A', 'C')"><span>(A) 1/4</span></div>
+                    <div class="explanation-box" id="exp-q2-A">Incorreto. Essa seria a primeira divisão logo após o zero.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-B" onclick="checarResposta(2, 'B', 'C')"><span>(B) 2/4 (ou 1/2)</span></div>
+                    <div class="explanation-box" id="exp-q2-B">Incorreto. Essa marca indica o meio exato da reta.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-C" onclick="checarResposta(2, 'C', 'C')"><span>(C) 3/4</span></div>
+                    <div class="explanation-box" id="exp-q2-C">Correto! A reta foi segmentada em 4 partes iguais, e a marca vermelha do "X" está posicionada sobre o 3º intervalo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-D" onclick="checarResposta(2, 'D', 'C')"><span>(D) 4/4</span></div>
+                    <div class="explanation-box" id="exp-q2-D">Incorreto. 4/4 equivale ao número inteiro 1.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q3">
+            <div class="question-text">3. Um triângulo equilátero possui perímetro de 36 centímetros. Quanto mede a extensão de um único lado?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q3-A" onclick="checarResposta(3, 'A', 'C')"><span>(A) 18 cm</span></div>
+                    <div class="explanation-box" id="exp-q3-A">Incorreto. Dividir por 2 não se aplica, pois o triângulo equilátero tem 3 lados idênticos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-B" onclick="checarResposta(3, 'B', 'C')"><span>(B) 9 cm</span></div>
+                    <div class="explanation-box" id="exp-q3-B">Incorreto. Lado 9 geraria um perímetro total de 27 cm.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-C" onclick="checarResposta(3, 'C', 'C')"><span>(C) 12 cm</span></div>
+                    <div class="explanation-box" id="exp-q3-C">Correto! Invertendo a lógica: 36 cm distribuídos por 3 lados iguais resulta em 12 cm por lado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-D" onclick="checarResposta(3, 'D', 'C')"><span>(D) 6 cm</span></div>
+                    <div class="explanation-box" id="exp-q3-D">Incorreto. Valor muito baixo para o montante do perímetro dado.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q4">
+            <div class="question-text">4. Veja o diagrama em blocos que representa a barra de energia de um personagem. Sabendo que o recipiente completo armazena 80 pontos, quanto vale a quantidade correspondente à região preenchida (destacada)?</div>
+            
+            <div class="image-placeholder">
+                <svg width="200" height="40" viewBox="0 0 200 40">
+                    <rect x="10" y="10" width="45" height="20" fill="#16a34a" stroke="#334155"/>
+                    <rect x="55" y="10" width="45" height="20" fill="#16a34a" stroke="#334155"/>
+                    <rect x="100" y="10" width="45" height="20" fill="#16a34a" stroke="#334155"/>
+                    <rect x="145" y="10" width="45" height="20" fill="none" stroke="#334155"/>
+                </svg>
+                <span>[BARRA DIVIDIDA EM 4 PARTES - 3 PREENCHIDAS]</span>
+            </div>
+
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q4-A" onclick="checarResposta(4, 'A', 'D')"><span>(A) 20 pontos</span></div>
+                    <div class="explanation-box" id="exp-q4-A">Incorreto. 20 pontos equivale a apenas 1/4 da barra.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-B" onclick="checarResposta(4, 'B', 'D')"><span>(B) 40 pontos</span></div>
+                    <div class="explanation-box" id="exp-q4-B">Incorreto. 40 pontos seria a metade (2/4).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-C" onclick="checarResposta(4, 'C', 'D')"><span>(C) 50 pontos</span></div>
+                    <div class="explanation-box" id="exp-q4-C">Incorreto. Valor não corresponde à proporção fracionária exata de 4 partes.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-D" onclick="checarResposta(4, 'D', 'D')"><span>(D) 60 pontos</span></div>
+                    <div class="explanation-box" id="exp-q4-D">Correto! O gráfico indica 3/4 preenchidos. 80 / 4 = 20 por bloco. Multiplicando pelos 3 blocos acesos: 20 * 3 = 60 pontos.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" id="block-q5">
+            <div class="question-text">5. Um item cosmético raro de RPG custa R$ 150. Um jogador obteve um cupom que dá direito a comprar o item por apenas 2/5 do preço original. Quanto o usuário vai desembolsar?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q5-A" onclick="checarResposta(5, 'A', 'B')"><span>(A) R$ 30</span></div>
+                    <div class="explanation-box" id="exp-q5-A">Incorreto. Esse valor é referente a apenas 1/5 do preço.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-B" onclick="checarResposta(5, 'B', 'B')"><span>(B) R$ 60</span></div>
+                    <div class="explanation-box" id="exp-q5-B">Correto! Dividimos o custo total por 5 (150 / 5 = 30) e multiplicamos pelo numerador 2 (30 * 2 = 60).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-C" onclick="checarResposta(5, 'C', 'B')"><span>(C) R$ 75</span></div>
+                    <div class="explanation-box" id="exp-q5-C">Incorreto. R$ 75 representaria exatamente a metade (1/2).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-D" onclick="checarResposta(5, 'D', 'B')"><span>(D) R$ 90</span></div>
+                    <div class="explanation-box" id="exp-q5-D">Incorreto. R$ 90 equivaleria à fração de 3/5.</div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="phase-title">👑 BOSS BATTLE: EXTENSA ANÁLISE INTERPRETATIVA</div>
+        <div class="phase-desc">Analise os relatórios contextuais para desvendar as respostas.</div>
+
+        <div class="text-box-analysis">
+            <strong>LOG DE ZONEAMENTO GEOMÉTRICO:</strong> A imagem abaixo exibe as dimensões planejadas para o quartel-general de uma guilda. Trata-se de uma estrutura retangular de 30 metros de comprimento e 15 metros de largura. O mestre decidiu construir muros defensivos nas duas extensões maiores e em apenas uma das larguras, deixando uma largura aberta para o mar.
+        </div>
+        <div class="question-block" id="block-q6">
+            <div class="question-text">6. Baseado na descrição e na planta esquemática, quantos metros lineares de muralha serão erguidos?</div>
+            
+            <div class="image-placeholder">
+                <svg width="180" height="90" viewBox="0 0 180 90">
+                    <rect x="20" y="10" width="140" height="60" fill="none" stroke="#f8fafc" stroke-width="1"/>
+                    <line x1="20" y1="10" x2="160" y2="10" stroke="#38bdf8" stroke-width="4"/>
+                    <line x1="20" y1="70" x2="160" y2="70" stroke="#38bdf8" stroke-width="4"/>
+                    <line x1="20" y1="10" x2="20" y2="70" stroke="#38bdf8" stroke-width="4"/>
+                    <line x1="160" y1="10" x2="160" y2="70" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="75" y="25" fill="#38bdf8" font-size="11">30 m</text>
+                    <text x="25" y="45" fill="#38bdf8" font-size="11">15 m</text>
+                </svg>
+                <span>[ESQUEMA DE COBERTURA: RETÂNGULO COM UM LADO ABERTO]</span>
+            </div>
+
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q6-A" onclick="checarResposta(6, 'A', 'C')"><span>(A) 90 metros</span></div>
+                    <div class="explanation-box" id="exp-q6-A">Incorreto. Esse seria o perímetro total caso os 4 lados recebessem muros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-B" onclick="checarResposta(6, 'B', 'C')"><span>(B) 60 metros</span></div>
+                    <div class="explanation-box" id="exp-q6-B">Incorreto. Você calculou apenas as duas extensões lineares de comprimento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-C" onclick="checarResposta(6, 'C', 'C')"><span>(C) 75 metros</span></div>
+                    <div class="explanation-box" id="exp-q6-C">Correto! Devem ser somados dois comprimentos (30 + 30 = 60 metros) e apenas uma das larguras (15 metros), totalizando 75 metros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-D" onclick="checarResposta(6, 'D', 'C')"><span>(D) 45 metros</span></div>
+                    <div class="explanation-box" id="exp-q6-D">Incorreto. Soma imprecisa que desconsidera as diretrizes do log estrutural.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>RELATÓRIO FINANCEIRO (E-COMMERCE):</strong> Uma startup recebeu um lote promocional com 120 consoles portáteis. A auditoria fiscal registrou que 2/4 do lote foi vendido logo na primeira hora de lives, 1/3 do total foi reservado para entregas internacionais programadas e os consoles restantes apresentaram avarias cosméticas estruturais e foram para a assistência técnica.
+        </div>
+        <div class="question-block" id="block-q7">
+            <div class="question-text">7. Quantos consoles portáteis do lote original precisaram ser encaminhados para a assistência técnica?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q7-A" onclick="checarResposta(7, 'A', 'B')"><span>(A) 40 unidades</span></div>
+                    <div class="explanation-box" id="exp-q7-A">Incorreto. 40 unidades representa a fração exata de remessas internacionais (1/3).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-B" onclick="checarResposta(7, 'B', 'B')"><span>(B) 20 unidades</span></div>
+                    <div class="explanation-box" id="exp-q7-B">Correto! Vendas iniciais: 2/4 de 120 = 60. Encomendas internacionais: 1/3 de 120 = 40. Somados: 60 + 40 = 100. O saldo remanescente com avaria é 120 - 100 = 20 unidades.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-C" onclick="checarResposta(7, 'C', 'B')"><span>(C) 60 unidades</span></div>
+                    <div class="explanation-box" id="exp-q7-C">Incorreto. 60 unidades corresponde à metade do lote vendida de imediato.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-D" onclick="checarResposta(7, 'D', 'B')"><span>(D) 10 unidades</span></div>
+                    <div class="explanation-box" id="exp-q7-D">Incorreto. Fração residual calculada incorretamente.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>LOGÍSTICA DE EVENTO GEEK:</strong> Um torneio organizado coletou dados amostrais de um grupo contendo exatamente 60 influenciadores digitais convidados. Após o processamento da triagem de dados, constatou-se que 3/5 deles preferem realizar transmissões de jogos de ação competitivos, 1/4 manifestou preferência exclusiva por jogos de estratégia/RPG e o restante do grupo prefere jogos casuais ou simuladores.
+        </div>
+        <div class="question-block" id="block-q8">
+            <div class="question-text">8. Quantos influenciadores da amostragem total declararam preferência pela categoria de jogos casuais ou simuladores?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q8-A" onclick="checarResposta(8, 'A', 'A')"><span>(A) 9 influenciadores</span></div>
+                    <div class="explanation-box" id="exp-q8-A">Correto! Ação: 3/5 de 60 = 36. Estratégia: 1/4 de 60 = 15. Somando ambas as fatias temos 51 pessoas. O restante para casuais é 60 - 51 = 9 influenciadores.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-B" onclick="checarResposta(8, 'B', 'A')"><span>(B) 15 influenciadores</span></div>
+                    <div class="explanation-box" id="exp-q8-B">Incorreto. 15 representa o grupo dedicado a jogos de estratégia.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-C" onclick="checarResposta(8, 'C', 'A')"><span>(C) 36 influenciadores</span></div>
+                    <div class="explanation-box" id="exp-q8-C">Incorreto. 36 é a quantidade massiva daqueles que transmitem ação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-D" onclick="checarResposta(8, 'D', 'A')"><span>(D) 12 influenciadores</span></div>
+                    <div class="explanation-box" id="exp-q8-D">Incorreto. Diferença matemática incorreta para a amostragem dada.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>PROJETO DE GAME DESIGN:</strong> Um designer está mapeando o layout de uma sala secreta em um jogo. A sala tem o formato de um pentágono regular (figura simétrica com 5 lados totalmente iguais), como ilustrado abaixo. Para dar um efeito luminoso, o motor gráfico do jogo precisa criar partículas de neon ao longo de todo o contorno. O corredor deu 4 voltas completas contornando os limites da parede da sala durante o teste de colisão.
+        </div>
+        <div class="question-block" id="block-q9">
+            <div class="question-text">9. Sabendo que cada lado desse pentágono regular mede exatamente 12 metros, qual foi a distância total em metros computada no teste?</div>
+            
+            <div class="image-placeholder">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                    <polygon points="50,5 95,38 78,90 22,90 5,38" fill="none" stroke="#38bdf8" stroke-width="3"/>
+                    <text x="40" y="55" fill="#f8fafc" font-size="12">12 m</text>
+                </svg>
+                <span>[ESQUEMA: SALA PENTAGONAL SIMÉTRICA]</span>
+            </div>
+
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q9-A" onclick="checarResposta(9, 'A', 'D')"><span>(A) 60 metros</span></div>
+                    <div class="explanation-box" id="exp-q9-A">Incorreto. 60 metros representa a extensão de apenas uma única volta completa (12 * 5).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-B" onclick="checarResposta(9, 'B', 'D')"><span>(B) 120 metros</span></div>
+                    <div class="explanation-box" id="exp-q9-B">Incorreto. Corresponde à distância de duas voltas ao redor do aposento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-C" onclick="checarResposta(9, 'C', 'D')"><span>(C) 180 metros</span></div>
+                    <div class="explanation-box" id="exp-q9-C">Incorreto. Valor equivalente a três voltas completas na área.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-D" onclick="checarResposta(9, 'D', 'D')"><span>(D) 240 metros</span></div>
+                    <div class="explanation-box" id="exp-q9-D">Correto! Uma volta completa (perímetro) mede 12 metros * 5 lados = 60 metros. Como foram executadas 4 voltas de teste: 60 * 4 = 240 metros.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>DADO DE PRODUÇÃO (HARDWARE):</strong> Em uma linha de montagem, um robô precisa cortar chapas de acrílico quadradas destinadas a janelas de gabinetes modulares. O robô foi programado para deixar cada placa com um perímetro de contorno total exato de 160 centímetros.
+        </div>
+        <div class="question-block" id="block-q10">
+            <div class="question-text">10. Qual deve ser o comprimento linear de corte configurado para cada lado individual dessas chapas quadradas?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q10-A" onclick="checarResposta(10, 'A', 'C')"><span>(A) 80 cm</span></div>
+                    <div class="explanation-box" id="exp-q10-A">Incorreto. Isso seria apenas a metade do perímetro total do objeto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-B" onclick="checarResposta(10, 'B', 'C')"><span>(B) 20 cm</span></div>
+                    <div class="explanation-box" id="exp-q10-B">Incorreto. Valor excessivamente baixo para o perímetro requisitado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-C" onclick="checarResposta(10, 'C', 'C')"><span>(C) 40 cm</span></div>
+                    <div class="explanation-box" id="exp-q10-C">Correto! Sendo a peça um quadrado regular perfeito com 4 lados idênticos, dividimos o perímetro total por 4: 160 / 4 = 40 cm por lado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-D" onclick="checarResposta(10, 'D', 'C')"><span>(D) 16 cm</span></div>
+                    <div class="explanation-box" id="exp-q10-D">Incorreto. Configuração inválida para os parâmetros operacionais dados.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-banner">
+            <div class="score-text" id="score-display">Pontuação: 0 / 10</div>
+            <div class="action-btn" id="btn-finish-quiz" onclick="terminarMissao()">Terminar Missão</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
