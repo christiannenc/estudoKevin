@@ -30,5 +30,15 @@
         "assunto": "Perímetros de figuras planas, frações de quantidades e interpretação de situações-problema"
       }
     ]
+  },
+  "ciencias": {
+    "nome": "Ciências",
+    "icone": "microscope",
+    "exercicios": [
+      {
+        "arquivo": "materias/ciencias/quiz_ciencias_2026_tri2_prova_parcial_v1.html",
+        "assunto": "Sistemas digestório, respiratório, circulatório, urinário e distribuição de nutrientes"
+      }
+    ]
   }
 }

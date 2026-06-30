@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Missão Ciências: Operação Sistemas Vitais</title>
+    <style>
+        :root {
+            --bg-color: #0d1f0f;
+            --container-bg: #1a2e1c;
+            --accent-color: #4ade80;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-bg: #16a34a;
+            --incorrect-bg: #dc2626;
+            --border-color: #2d4a30;
+            --tooltip-bg: #0d1f0f;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        h1 {
+            color: var(--accent-color);
+            text-align: center;
+            font-size: 26px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            user-select: none;
+        }
+        h1:hover { opacity: 0.85; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        .intro-box {
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .intro-title {
+            font-size: 18px;
+            color: var(--accent-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h3 { font-size: 16px; margin: 0 0 5px 0; color: #ffffff; }
+        .topic-group p { font-size: 14px; color: var(--text-muted); margin: 0; }
+        .phase-title {
+            background-color: var(--border-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent-color);
+        }
+        .phase-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+        .question-block {
+            background-color: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.6; }
+        .text-box-analysis {
+            background-color: rgba(74, 222, 128, 0.07);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        .image-placeholder {
+            background-color: #0d1f0f;
+            border: 2px dashed var(--accent-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--accent-color);
+        }
+        .image-placeholder svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 10px auto;
+        }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-clickable {
+            background-color: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            cursor: pointer !important;
+            user-select: none;
+            line-height: 1.5;
+        }
+        .explanation-box {
+            display: none;
+            margin-top: 8px;
+            padding: 12px 16px;
+            background-color: var(--tooltip-bg);
+            border-left: 3px solid var(--accent-color);
+            border-radius: 4px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+        .option-clickable.correct {
+            background-color: var(--correct-bg) !important;
+            border-color: var(--correct-bg) !important;
+            color: #ffffff !important;
+        }
+        .option-clickable.incorrect {
+            background-color: var(--incorrect-bg) !important;
+            border-color: var(--incorrect-bg) !important;
+            color: #ffffff !important;
+        }
+        .option-clickable.hint-green {
+            border: 2px dashed #16a34a !important;
+            background-color: rgba(22, 163, 74, 0.1) !important;
+        }
+        .option-clickable.disabled-option { pointer-events: none !important; }
+        .score-banner {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(74, 222, 128, 0.08);
+            border: 2px dashed var(--accent-color);
+            border-radius: 12px;
+            text-align: center;
+        }
+        .score-text { font-size: 20px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; }
+        .action-btn {
+            background-color: var(--accent-color);
+            color: #0d1f0f;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer !important;
+            display: inline-block;
+            text-align: center;
+            user-select: none;
+        }
+        .center-btn-wrapper { display: flex; justify-content: center; width: 100%; }
+        .badge-data {
+            display: inline-block;
+            background: rgba(74,222,128,0.15);
+            color: var(--accent-color);
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+    </style>
+
+    <script>
+        var quizScore = 0;
+        var answeredQuestions = {};
+        var totalQuestions = 20;
+        var wrongAnswers = [];
+        var STORAGE_KEY = 'estudoKevin:scores:materias/ciencias/quiz_ciencias_2026_tri2_prova_parcial_v1.html';
+
+        function iniciarMissao() {
+            document.getElementById('screen-intro').classList.remove('active');
+            document.getElementById('screen-quiz').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function irParaHome() {
+            document.getElementById('screen-quiz').classList.remove('active');
+            document.getElementById('screen-intro').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function checarResposta(qNum, letraSelecionada, letraCorreta) {
+            if (answeredQuestions[qNum]) return;
+            answeredQuestions[qNum] = letraSelecionada;
+
+            var letras = ['A', 'B', 'C', 'D'];
+
+            for (var i = 0; i < letras.length; i++) {
+                var atual = letras[i];
+                var elOpt = document.getElementById('opt-q' + qNum + '-' + atual);
+                var elExp = document.getElementById('exp-q' + qNum + '-' + atual);
+
+                if (elOpt) elOpt.classList.add('disabled-option');
+
+                if (letraSelecionada === letraCorreta) {
+                    if (atual === letraCorreta && elOpt) {
+                        elOpt.classList.add('correct');
+                    }
+                } else {
+                    if (atual === letraSelecionada && elOpt) {
+                        elOpt.classList.add('incorrect');
+                    } else if (atual === letraCorreta && elOpt) {
+                        elOpt.classList.add('hint-green');
+                    }
+                }
+
+                if (elExp) elExp.style.display = 'block';
+            }
+
+            if (letraSelecionada === letraCorreta) {
+                quizScore++;
+            } else {
+                var elChosen = document.getElementById('opt-q' + qNum + '-' + letraSelecionada);
+                var elCorrect = document.getElementById('opt-q' + qNum + '-' + letraCorreta);
+                var questionBlock = elChosen ? elChosen.closest('.question-block') : null;
+                wrongAnswers.push({
+                    q: String(qNum),
+                    text: questionBlock ? questionBlock.querySelector('.question-text').textContent.trim() : '',
+                    chosen: elChosen ? elChosen.querySelector('span').textContent.trim() : letraSelecionada,
+                    correct: elCorrect ? elCorrect.querySelector('span').textContent.trim() : letraCorreta
+                });
+            }
+
+            document.getElementById('score-display').textContent = 'Pontuação: ' + quizScore + ' / ' + totalQuestions;
+
+            if (Object.keys(answeredQuestions).length === totalQuestions) {
+                var history = [];
+                try { history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) {}
+                history.push({ score: quizScore, total: totalQuestions, date: new Date().toISOString(), wrong: wrongAnswers });
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch(e) {}
+
+                document.getElementById('btn-finish-quiz').style.display = 'inline-block';
+            }
+        }
+
+        function terminarMissao() {
+            window.location.href = '/';
+        }
+
+        function reiniciarMissao() {
+            quizScore = 0;
+            answeredQuestions = {};
+            wrongAnswers = [];
+            document.getElementById('score-display').textContent = 'Pontuação: 0 / ' + totalQuestions;
+            document.getElementById('btn-finish-quiz').style.display = 'none';
+
+            var letras = ['A', 'B', 'C', 'D'];
+            for (var q = 1; q <= totalQuestions; q++) {
+                for (var i = 0; i < letras.length; i++) {
+                    var atual = letras[i];
+                    var elOpt = document.getElementById('opt-q' + q + '-' + atual);
+                    var elExp = document.getElementById('exp-q' + q + '-' + atual);
+
+                    if (elOpt) elOpt.className = 'option-clickable';
+                    if (elExp) elExp.style.display = 'none';
+                }
+            }
+            irParaHome();
+        }
+    </script>
+</head>
+<body>
+<div class="quiz-container">
+    <h1 onclick="irParaHome()">🧬 MISSÃO CIÊNCIAS v1</h1>
+    <div class="subtitle">Operação Sistemas Vitais • Modo Campanha Ativo</div>
+
+    <!-- ===== TELA INICIAL ===== -->
+    <div id="screen-intro" class="screen active">
+        <div class="intro-box">
+            <h2 class="intro-title">📋 Conteúdos Mapeados na Missão:</h2>
+            <div class="badge-data">📅 Prova Parcial — 01/07/2026 • 5º Ano • Ciências</div>
+
+            <div class="topic-group">
+                <h3>🍽️ Sistema Digestório</h3>
+                <p><b>Tópico:</b> Órgãos, funções, percurso do alimento e absorção de nutrientes.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🫁 Sistema Respiratório</h3>
+                <p><b>Tópico:</b> Estrutura dos pulmões, alvéolos, troca gasosa e rota do ar.</p>
+            </div>
+            <div class="topic-group">
+                <h3>❤️ Sistema Circulatório</h3>
+                <p><b>Tópico:</b> Coração, sangue (componentes), artérias, veias e circulação.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🫘 Sistema Urinário</h3>
+                <p><b>Tópico:</b> Rins, filtração do sangue, produção e eliminação da urina.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🔄 Distribuição dos Nutrientes</h3>
+                <p><b>Tópico:</b> Como os nutrientes absorvidos chegam às células pelo organismo.</p>
+            </div>
+        </div>
+        <div class="center-btn-wrapper">
+            <div class="action-btn" onclick="iniciarMissao()">⚡ Iniciar Missão</div>
+        </div>
+    </div>
+
+    <!-- ===== TELA DO QUIZ ===== -->
+    <div id="screen-quiz" class="screen">
+
+        <!-- ===== FASE 1: SISTEMA DIGESTÓRIO ===== -->
+        <div class="phase-title">🍽️ FASE 1: SISTEMA DIGESTÓRIO</div>
+        <div class="phase-desc">Acompanhe o percurso do alimento e desvende as funções de cada órgão.</div>
+
+        <!-- Q1 -->
+        <div class="question-block">
+            <div class="question-text">1. O que a saliva faz durante a mastigação, além de umedecer o alimento?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q1-A" onclick="checarResposta(1,'A','B')"><span>(A) Absorve vitaminas diretamente para o sangue.</span></div>
+                    <div class="explanation-box" id="exp-q1-A">Incorreto. A absorção de nutrientes ocorre no intestino delgado, não na boca.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-B" onclick="checarResposta(1,'B','B')"><span>(B) Inicia a digestão do amido com a enzima amilase.</span></div>
+                    <div class="explanation-box" id="exp-q1-B">Correto! A saliva contém a enzima amilase salivar, que começa a quebrar o amido (carboidrato) ainda na boca.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-C" onclick="checarResposta(1,'C','B')"><span>(C) Transporta oxigênio para as células do estômago.</span></div>
+                    <div class="explanation-box" id="exp-q1-C">Incorreto. O transporte de oxigênio é função do sangue, não da saliva.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-D" onclick="checarResposta(1,'D','B')"><span>(D) Elimina bactérias do esôfago antes da deglutição.</span></div>
+                    <div class="explanation-box" id="exp-q1-D">Incorreto. Embora a saliva tenha propriedades antimicrobianas, sua função principal na digestão é química (amilase) e mecânica (umedecer o bolo alimentar).</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="question-block">
+            <div class="question-text">2. Após ser engolido, por qual órgão o alimento passa ANTES de chegar ao estômago?</div>
+            <div class="image-placeholder">
+                <svg width="60" height="140" viewBox="0 0 60 140">
+                    <ellipse cx="30" cy="15" rx="20" ry="12" fill="none" stroke="#4ade80" stroke-width="2"/>
+                    <text x="30" y="19" fill="#f8fafc" font-size="9" text-anchor="middle">Boca</text>
+                    <line x1="30" y1="27" x2="30" y2="50" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3"/>
+                    <rect x="15" y="50" width="30" height="25" rx="5" fill="none" stroke="#4ade80" stroke-width="2"/>
+                    <text x="30" y="66" fill="#4ade80" font-size="9" text-anchor="middle">?</text>
+                    <line x1="30" y1="75" x2="30" y2="98" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3"/>
+                    <ellipse cx="30" cy="112" rx="18" ry="14" fill="none" stroke="#94a3b8" stroke-width="2"/>
+                    <text x="30" y="116" fill="#f8fafc" font-size="8" text-anchor="middle">Estômago</text>
+                </svg>
+                <span>[DIAGRAMA: PERCURSO DO ALIMENTO — QUAL ÓRGÃO VEM ANTES DO ESTÔMAGO?]</span>
+            </div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q2-A" onclick="checarResposta(2,'A','D')"><span>(A) Intestino delgado</span></div>
+                    <div class="explanation-box" id="exp-q2-A">Incorreto. O intestino delgado vem depois do estômago, não antes.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-B" onclick="checarResposta(2,'B','D')"><span>(B) Fígado</span></div>
+                    <div class="explanation-box" id="exp-q2-B">Incorreto. O fígado produz bile e auxilia a digestão, mas o alimento não passa diretamente por ele.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-C" onclick="checarResposta(2,'C','D')"><span>(C) Pâncreas</span></div>
+                    <div class="explanation-box" id="exp-q2-C">Incorreto. O pâncreas libera enzimas digestivas no intestino delgado, mas o alimento não percorre por dentro dele.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-D" onclick="checarResposta(2,'D','D')"><span>(D) Esôfago</span></div>
+                    <div class="explanation-box" id="exp-q2-D">Correto! O esôfago é o tubo muscular que conduz o alimento da boca ao estômago por meio de movimentos peristálticos.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="question-block">
+            <div class="question-text">3. Qual é a principal função do intestino delgado no processo digestivo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q3-A" onclick="checarResposta(3,'A','C')"><span>(A) Produzir o suco gástrico ácido para desfazer proteínas.</span></div>
+                    <div class="explanation-box" id="exp-q3-A">Incorreto. A produção de suco gástrico é uma função do estômago.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-B" onclick="checarResposta(3,'B','C')"><span>(B) Eliminar o que o corpo não precisa em forma de fezes.</span></div>
+                    <div class="explanation-box" id="exp-q3-B">Incorreto. A formação e eliminação das fezes é tarefa do intestino grosso.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-C" onclick="checarResposta(3,'C','C')"><span>(C) Absorver a maior parte dos nutrientes para o sangue.</span></div>
+                    <div class="explanation-box" id="exp-q3-C">Correto! As paredes do intestino delgado possuem vilosidades que ampliam a área de contato e absorvem os nutrientes para a corrente sanguínea.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-D" onclick="checarResposta(3,'D','C')"><span>(D) Filtrar substâncias tóxicas antes de chegarem ao fígado.</span></div>
+                    <div class="explanation-box" id="exp-q3-D">Incorreto. A filtragem de toxinas é realizada principalmente pelo fígado e pelos rins.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="question-block">
+            <div class="question-text">4. Qual é a sequência CORRETA do percurso do alimento pelo sistema digestório?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q4-A" onclick="checarResposta(4,'A','C')"><span>(A) Boca → Estômago → Esôfago → Intestino Delgado → Intestino Grosso</span></div>
+                    <div class="explanation-box" id="exp-q4-A">Incorreto. O esôfago vem antes do estômago, não depois.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-B" onclick="checarResposta(4,'B','C')"><span>(B) Boca → Esôfago → Estômago → Intestino Grosso → Intestino Delgado</span></div>
+                    <div class="explanation-box" id="exp-q4-B">Incorreto. O intestino delgado vem antes do intestino grosso no percurso.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-C" onclick="checarResposta(4,'C','C')"><span>(C) Boca → Esôfago → Estômago → Intestino Delgado → Intestino Grosso</span></div>
+                    <div class="explanation-box" id="exp-q4-C">Correto! Essa é a rota completa: mastigação na boca → condução pelo esôfago → digestão no estômago → absorção no intestino delgado → formação de fezes no intestino grosso.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-D" onclick="checarResposta(4,'D','C')"><span>(D) Boca → Intestino Delgado → Esôfago → Estômago → Intestino Grosso</span></div>
+                    <div class="explanation-box" id="exp-q4-D">Incorreto. O intestino delgado não vem antes do esôfago.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FASE 2: SISTEMA RESPIRATÓRIO ===== -->
+        <div class="phase-title">🫁 FASE 2: SISTEMA RESPIRATÓRIO</div>
+        <div class="phase-desc">Desvende o caminho do ar e a mecânica das trocas gasosas.</div>
+
+        <!-- Q5 -->
+        <div class="question-block">
+            <div class="question-text">5. Qual é a rota CORRETA que o ar percorre ao entrar pelo nariz até os pulmões?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q5-A" onclick="checarResposta(5,'A','B')"><span>(A) Nariz → Laringe → Faringe → Traqueia → Brônquios → Pulmões</span></div>
+                    <div class="explanation-box" id="exp-q5-A">Incorreto. A ordem entre faringe e laringe está invertida.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-B" onclick="checarResposta(5,'B','B')"><span>(B) Nariz → Faringe → Laringe → Traqueia → Brônquios → Pulmões</span></div>
+                    <div class="explanation-box" id="exp-q5-B">Correto! Esse é o percurso completo do ar: entra pelo nariz, passa pela faringe, laringe e traqueia, se divide nos brônquios e chega aos pulmões.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-C" onclick="checarResposta(5,'C','B')"><span>(C) Nariz → Traqueia → Faringe → Brônquios → Pulmões</span></div>
+                    <div class="explanation-box" id="exp-q5-C">Incorreto. A faringe vem antes da traqueia, e a laringe foi omitida nessa sequência.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-D" onclick="checarResposta(5,'D','B')"><span>(D) Nariz → Brônquios → Traqueia → Laringe → Pulmões</span></div>
+                    <div class="explanation-box" id="exp-q5-D">Incorreto. Os brônquios ficam após a traqueia, e a laringe fica antes dela.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="question-block">
+            <div class="question-text">6. O que são os alvéolos pulmonares e qual é a sua função?</div>
+            <div class="image-placeholder">
+                <svg width="140" height="100" viewBox="0 0 140 100">
+                    <ellipse cx="45" cy="55" rx="35" ry="38" fill="none" stroke="#4ade80" stroke-width="2"/>
+                    <ellipse cx="95" cy="55" rx="35" ry="38" fill="none" stroke="#4ade80" stroke-width="2"/>
+                    <circle cx="35" cy="45" r="8" fill="none" stroke="#f8fafc" stroke-width="1.5"/>
+                    <circle cx="52" cy="40" r="7" fill="none" stroke="#f8fafc" stroke-width="1.5"/>
+                    <circle cx="42" cy="60" r="7" fill="none" stroke="#f8fafc" stroke-width="1.5"/>
+                    <circle cx="95" cy="43" r="8" fill="none" stroke="#f8fafc" stroke-width="1.5"/>
+                    <circle cx="110" cy="55" r="7" fill="none" stroke="#f8fafc" stroke-width="1.5"/>
+                    <circle cx="88" cy="62" r="7" fill="none" stroke="#f8fafc" stroke-width="1.5"/>
+                    <text x="70" y="14" fill="#4ade80" font-size="9" text-anchor="middle">Alvéolos = bolinhas</text>
+                    <line x1="60" y1="10" x2="60" y2="25" stroke="#4ade80" stroke-width="1" stroke-dasharray="2"/>
+                    <line x1="80" y1="10" x2="80" y2="25" stroke="#4ade80" stroke-width="1" stroke-dasharray="2"/>
+                    <path d="M55 25 Q60 15 65 25" fill="none" stroke="#4ade80" stroke-width="1"/>
+                </svg>
+                <span>[ESQUEMA: PULMÕES COM ALVÉOLOS PULMONARES]</span>
+            </div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q6-A" onclick="checarResposta(6,'A','C')"><span>(A) Músculos que controlam a entrada de ar na laringe.</span></div>
+                    <div class="explanation-box" id="exp-q6-A">Incorreto. Os músculos respiratórios principais são o diafragma e os intercostais, não os alvéolos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-B" onclick="checarResposta(6,'B','C')"><span>(B) Tubos que conduzem o ar dos brônquios para dentro dos pulmões.</span></div>
+                    <div class="explanation-box" id="exp-q6-B">Incorreto. Os tubos que conduzem o ar dentro dos pulmões são os bronquíolos, não os alvéolos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-C" onclick="checarResposta(6,'C','C')"><span>(C) Pequenas estruturas em forma de saco onde ocorre a troca gasosa.</span></div>
+                    <div class="explanation-box" id="exp-q6-C">Correto! Os alvéolos são minúsculos sacos de ar cercados por capilares sanguíneos. É neles que o oxigênio passa para o sangue e o gás carbônico é eliminado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-D" onclick="checarResposta(6,'D','C')"><span>(D) Válvulas que impedem o retorno do ar já expirado.</span></div>
+                    <div class="explanation-box" id="exp-q6-D">Incorreto. Não existem válvulas com essa função no sistema respiratório. Os alvéolos têm papel na troca gasosa, não no controle do fluxo de ar.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="question-block">
+            <div class="question-text">7. Durante a respiração, qual troca de gases ocorre nos alvéolos pulmonares?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q7-A" onclick="checarResposta(7,'A','B')"><span>(A) O sangue libera oxigênio e absorve nitrogênio do ar.</span></div>
+                    <div class="explanation-box" id="exp-q7-A">Incorreto. O nitrogênio não é absorvido pelo sangue durante a respiração normal.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-B" onclick="checarResposta(7,'B','B')"><span>(B) O sangue absorve oxigênio e libera gás carbônico.</span></div>
+                    <div class="explanation-box" id="exp-q7-B">Correto! Nos alvéolos, o oxigênio do ar inspirado passa para o sangue, e o gás carbônico (produzido pelas células) sai do sangue para ser expirado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-C" onclick="checarResposta(7,'C','B')"><span>(C) Os pulmões produzem oxigênio a partir da glicose inspirada.</span></div>
+                    <div class="explanation-box" id="exp-q7-C">Incorreto. Os pulmões não produzem oxigênio; eles apenas realizam a troca entre os gases do ar e os do sangue.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-D" onclick="checarResposta(7,'D','B')"><span>(D) O organismo inspira gás carbônico e expira oxigênio.</span></div>
+                    <div class="explanation-box" id="exp-q7-D">Incorreto. É exatamente o contrário: inspiramos oxigênio e expiramos gás carbônico.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FASE 3: SISTEMA CIRCULATÓRIO ===== -->
+        <div class="phase-title">❤️ FASE 3: SISTEMA CIRCULATÓRIO</div>
+        <div class="phase-desc">Examine o coração, o sangue e as rotas de distribuição pelo corpo.</div>
+
+        <!-- Q8 -->
+        <div class="question-block">
+            <div class="question-text">8. Qual é a função principal do coração no sistema circulatório?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q8-A" onclick="checarResposta(8,'A','C')"><span>(A) Produzir células sanguíneas para combater infecções.</span></div>
+                    <div class="explanation-box" id="exp-q8-A">Incorreto. As células sanguíneas são produzidas na medula óssea, não no coração.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-B" onclick="checarResposta(8,'B','C')"><span>(B) Filtrar toxinas e substâncias desnecessárias do sangue.</span></div>
+                    <div class="explanation-box" id="exp-q8-B">Incorreto. A filtragem do sangue é função dos rins (sistema urinário) e do fígado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-C" onclick="checarResposta(8,'C','C')"><span>(C) Bombear o sangue para todo o organismo.</span></div>
+                    <div class="explanation-box" id="exp-q8-C">Correto! O coração funciona como uma bomba muscular que impulsiona o sangue pelos vasos sanguíneos, distribuindo oxigênio e nutrientes para todas as células do corpo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-D" onclick="checarResposta(8,'D','C')"><span>(D) Armazenar reservas de oxigênio para emergências.</span></div>
+                    <div class="explanation-box" id="exp-q8-D">Incorreto. O corpo não armazena oxigênio em nenhum órgão específico; ele é obtido continuamente pela respiração.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="question-block">
+            <div class="question-text">9. Qual componente do sangue é responsável por transportar o oxigênio até as células do corpo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q9-A" onclick="checarResposta(9,'A','D')"><span>(A) Leucócitos (glóbulos brancos)</span></div>
+                    <div class="explanation-box" id="exp-q9-A">Incorreto. Os leucócitos são as células de defesa do organismo, responsáveis por combater infecções e vírus.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-B" onclick="checarResposta(9,'B','D')"><span>(B) Plaquetas</span></div>
+                    <div class="explanation-box" id="exp-q9-B">Incorreto. As plaquetas atuam na coagulação do sangue, ajudando a estancar sangramentos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-C" onclick="checarResposta(9,'C','D')"><span>(C) Plasma sanguíneo</span></div>
+                    <div class="explanation-box" id="exp-q9-C">Incorreto. O plasma é a parte líquida do sangue e transporta nutrientes, hormônios e proteínas, mas não é o principal transportador de oxigênio.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-D" onclick="checarResposta(9,'D','D')"><span>(D) Hemácias (glóbulos vermelhos)</span></div>
+                    <div class="explanation-box" id="exp-q9-D">Correto! As hemácias contêm hemoglobina, uma proteína que se liga ao oxigênio e o transporta dos pulmões para todas as células do corpo.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="question-block">
+            <div class="question-text">10. Qual é a diferença correta entre artérias e veias?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q10-A" onclick="checarResposta(10,'A','B')"><span>(A) As artérias levam sangue ao coração; as veias levam sangue aos pulmões.</span></div>
+                    <div class="explanation-box" id="exp-q10-A">Incorreto. É o contrário: as veias levam o sangue de volta ao coração, e as artérias partem do coração.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-B" onclick="checarResposta(10,'B','B')"><span>(B) As artérias partem do coração levando sangue aos órgãos; as veias trazem o sangue de volta.</span></div>
+                    <div class="explanation-box" id="exp-q10-B">Correto! As artérias saem do coração e distribuem o sangue (geralmente rico em oxigênio) para o corpo. As veias retornam o sangue (geralmente com gás carbônico) de volta ao coração.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-C" onclick="checarResposta(10,'C','B')"><span>(C) As artérias são maiores que as veias e sempre contêm sangue escuro.</span></div>
+                    <div class="explanation-box" id="exp-q10-C">Incorreto. A cor e o tamanho não definem a função. A artéria pulmonar, por exemplo, leva sangue com gás carbônico (mais escuro) para os pulmões.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-D" onclick="checarResposta(10,'D','B')"><span>(D) Não há diferença; ambas transportam o mesmo tipo de sangue.</span></div>
+                    <div class="explanation-box" id="exp-q10-D">Incorreto. Artérias e veias têm estruturas e funções distintas dentro da circulação sanguínea.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="question-block">
+            <div class="question-text">11. O sangue humano é formado por quatro componentes principais. Qual alternativa lista todos eles corretamente?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q11-A" onclick="checarResposta(11,'A','A')"><span>(A) Plasma, hemácias, leucócitos e plaquetas.</span></div>
+                    <div class="explanation-box" id="exp-q11-A">Correto! O plasma é a parte líquida; as hemácias transportam oxigênio; os leucócitos defendem o organismo; e as plaquetas auxiliam na coagulação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q11-B" onclick="checarResposta(11,'B','A')"><span>(B) Plasma, neurônios, hemoglobina e enzimas.</span></div>
+                    <div class="explanation-box" id="exp-q11-B">Incorreto. Neurônios são células do sistema nervoso. Hemoglobina é uma proteína dentro das hemácias, não um componente separado do sangue.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q11-C" onclick="checarResposta(11,'C','A')"><span>(C) Soro, hemácias, adrenalina e plaquetas.</span></div>
+                    <div class="explanation-box" id="exp-q11-C">Incorreto. O soro é o plasma sem as proteínas de coagulação, e a adrenalina é um hormônio, não um componente estrutural do sangue.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q11-D" onclick="checarResposta(11,'D','A')"><span>(D) Bile, leucócitos, hemácias e hormônios.</span></div>
+                    <div class="explanation-box" id="exp-q11-D">Incorreto. A bile é produzida pelo fígado e atua na digestão, não fazendo parte da composição do sangue.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FASE 4: SISTEMA URINÁRIO ===== -->
+        <div class="phase-title">🫘 FASE 4: SISTEMA URINÁRIO</div>
+        <div class="phase-desc">Acompanhe a rota da filtração e descubra o que os rins fazem pelo organismo.</div>
+
+        <!-- Q12 -->
+        <div class="question-block">
+            <div class="question-text">12. Qual é o órgão principal do sistema urinário responsável por filtrar o sangue?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q12-A" onclick="checarResposta(12,'A','D')"><span>(A) Bexiga</span></div>
+                    <div class="explanation-box" id="exp-q12-A">Incorreto. A bexiga é o órgão que armazena a urina até ela ser eliminada, mas não realiza a filtragem do sangue.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q12-B" onclick="checarResposta(12,'B','D')"><span>(B) Ureter</span></div>
+                    <div class="explanation-box" id="exp-q12-B">Incorreto. Os ureteres são tubos que conduzem a urina dos rins até a bexiga.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q12-C" onclick="checarResposta(12,'C','D')"><span>(C) Fígado</span></div>
+                    <div class="explanation-box" id="exp-q12-C">Incorreto. O fígado pertence ao sistema digestório e realiza funções como produzir bile e metabolizar toxinas, mas não é o filtro principal do sistema urinário.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q12-D" onclick="checarResposta(12,'D','D')"><span>(D) Rins</span></div>
+                    <div class="explanation-box" id="exp-q12-D">Correto! Os rins são os órgãos-chave do sistema urinário. Eles filtram o sangue constantemente, separando o que é útil (que volta ao sangue) do que deve ser eliminado (que vira urina).</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="question-block">
+            <div class="question-text">13. Qual é a rota CORRETA percorrida pela urina desde sua produção até a eliminação?</div>
+            <div class="image-placeholder">
+                <svg width="180" height="80" viewBox="0 0 180 80">
+                    <rect x="5" y="25" width="30" height="30" rx="5" fill="none" stroke="#4ade80" stroke-width="2"/>
+                    <text x="20" y="44" fill="#f8fafc" font-size="8" text-anchor="middle">Rins</text>
+                    <line x1="35" y1="40" x2="55" y2="40" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+                    <rect x="55" y="25" width="35" height="30" rx="5" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+                    <text x="72" y="44" fill="#94a3b8" font-size="8" text-anchor="middle">?</text>
+                    <line x1="90" y1="40" x2="110" y2="40" stroke="#94a3b8" stroke-width="2"/>
+                    <rect x="110" y="25" width="35" height="30" rx="5" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+                    <text x="127" y="44" fill="#94a3b8" font-size="8" text-anchor="middle">?</text>
+                    <line x1="145" y1="40" x2="165" y2="40" stroke="#94a3b8" stroke-width="2"/>
+                    <rect x="155" y="30" width="20" height="20" rx="3" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+                    <text x="165" y="44" fill="#94a3b8" font-size="8" text-anchor="middle">?</text>
+                </svg>
+                <span>[DIAGRAMA: ROTA DA URINA — COMPLETE A SEQUÊNCIA]</span>
+            </div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q13-A" onclick="checarResposta(13,'A','B')"><span>(A) Rins → Bexiga → Ureteres → Uretra</span></div>
+                    <div class="explanation-box" id="exp-q13-A">Incorreto. Os ureteres ficam entre os rins e a bexiga, não depois dela.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q13-B" onclick="checarResposta(13,'B','B')"><span>(B) Rins → Ureteres → Bexiga → Uretra</span></div>
+                    <div class="explanation-box" id="exp-q13-B">Correto! A urina produzida nos rins desce pelos ureteres até a bexiga, onde é armazenada. Quando chega a um certo volume, é eliminada pela uretra.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q13-C" onclick="checarResposta(13,'C','B')"><span>(C) Bexiga → Rins → Uretra → Ureteres</span></div>
+                    <div class="explanation-box" id="exp-q13-C">Incorreto. A bexiga não antecede os rins; ela recebe a urina que já foi produzida por eles.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q13-D" onclick="checarResposta(13,'D','B')"><span>(D) Uretra → Bexiga → Ureteres → Rins</span></div>
+                    <div class="explanation-box" id="exp-q13-D">Incorreto. Essa sequência está totalmente invertida; a uretra é o último trajeto, não o primeiro.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="question-block">
+            <div class="question-text">14. O que os rins eliminam do sangue durante o processo de filtragem?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q14-A" onclick="checarResposta(14,'A','C')"><span>(A) Oxigênio e glicose em excesso, que são reaproveitados pelos pulmões.</span></div>
+                    <div class="explanation-box" id="exp-q14-A">Incorreto. Os rins retêm a glicose e o oxigênio que o corpo precisa; eles eliminam apenas o que é descarte.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q14-B" onclick="checarResposta(14,'B','C')"><span>(B) Apenas água, sem nenhum outro componente.</span></div>
+                    <div class="explanation-box" id="exp-q14-B">Incorreto. A urina não é apenas água; ela carrega ureia, sais minerais em excesso e outras substâncias de descarte.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q14-C" onclick="checarResposta(14,'C','C')"><span>(C) Ureia, sais minerais em excesso e outras substâncias de descarte.</span></div>
+                    <div class="explanation-box" id="exp-q14-C">Correto! Os rins filtram o sangue continuamente, retendo o que é útil e eliminando produtos do metabolismo como a ureia (resíduo de proteínas), excesso de sal e água.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q14-D" onclick="checarResposta(14,'D','C')"><span>(D) Glóbulos vermelhos danificados, que são descartados na urina.</span></div>
+                    <div class="explanation-box" id="exp-q14-D">Incorreto. Os glóbulos vermelhos velhos são destruídos pelo baço e fígado; eles não aparecem na urina saudável.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FASE 5: DISTRIBUIÇÃO DE NUTRIENTES ===== -->
+        <div class="phase-title">🔄 FASE 5: ROTA DOS NUTRIENTES</div>
+        <div class="phase-desc">Como o que você come chega até cada célula do seu corpo?</div>
+
+        <!-- Q15 -->
+        <div class="question-block">
+            <div class="question-text">15. Após serem absorvidos pelo intestino delgado, como os nutrientes chegam a todas as células do organismo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q15-A" onclick="checarResposta(15,'A','C')"><span>(A) Pelo sistema nervoso, que envia sinais elétricos carregando energia para as células.</span></div>
+                    <div class="explanation-box" id="exp-q15-A">Incorreto. O sistema nervoso transmite impulsos elétricos (informações), não nutrientes físicos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q15-B" onclick="checarResposta(15,'B','C')"><span>(B) Pelo sistema respiratório, misturados ao oxigênio inspirado.</span></div>
+                    <div class="explanation-box" id="exp-q15-B">Incorreto. O sistema respiratório cuida das trocas gasosas, não do transporte de nutrientes absorvidos pelo intestino.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q15-C" onclick="checarResposta(15,'C','C')"><span>(C) Pelo sistema circulatório, transportados pelo sangue até cada célula.</span></div>
+                    <div class="explanation-box" id="exp-q15-C">Correto! Os nutrientes absorvidos pelo intestino delgado passam para a corrente sanguínea e são distribuídos pelo coração e pelos vasos sanguíneos a todas as células do corpo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q15-D" onclick="checarResposta(15,'D','C')"><span>(D) Pelo sistema urinário, após serem filtrados e purificados pelos rins.</span></div>
+                    <div class="explanation-box" id="exp-q15-D">Incorreto. O sistema urinário elimina resíduos do sangue; ele não distribui nutrientes.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== BOSS BATTLE ===== -->
+        <div class="phase-title">👑 BOSS BATTLE: INTERPRETAÇÃO DE RELATÓRIOS VITAIS</div>
+        <div class="phase-desc">Leia cada relatório com atenção antes de responder. A prova de verdade começa aqui.</div>
+
+        <!-- Q16 -->
+        <div class="text-box-analysis">
+            <strong>📜 DIÁRIO DE UMA PROTEÍNA:</strong> "Entrei pela boca e fui imediatamente quebrada pelos dentes e pela saliva. Depois, deslizei por um tubo muscular escorregadio até cair em um ambiente cheio de ácido, que me desmontou em pedaços ainda menores. Na etapa seguinte, fui absorvida pelas paredes de um longo corredor repleto de projeções chamadas vilosidades, e meus fragmentos foram parar na corrente sanguínea."
+        </div>
+        <div class="question-block">
+            <div class="question-text">16. Em qual órgão a proteína foi "desmontada em pedaços menores" pelo ambiente ácido?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q16-A" onclick="checarResposta(16,'A','B')"><span>(A) Intestino delgado</span></div>
+                    <div class="explanation-box" id="exp-q16-A">Incorreto. O intestino delgado é o "longo corredor com vilosidades" mencionado na etapa seguinte, onde ocorre a absorção.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q16-B" onclick="checarResposta(16,'B','B')"><span>(B) Estômago</span></div>
+                    <div class="explanation-box" id="exp-q16-B">Correto! O ambiente ácido descrito é o estômago. Ele produz o suco gástrico (ácido clorídrico e enzimas) que quebra as proteínas em moléculas menores.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q16-C" onclick="checarResposta(16,'C','B')"><span>(C) Esôfago</span></div>
+                    <div class="explanation-box" id="exp-q16-C">Incorreto. O esôfago é o "tubo muscular escorregadio" descrito antes do ambiente ácido. Sua função é apenas conduzir o alimento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q16-D" onclick="checarResposta(16,'D','B')"><span>(D) Intestino grosso</span></div>
+                    <div class="explanation-box" id="exp-q16-D">Incorreto. O intestino grosso é o último trecho do sistema digestório, responsável pela absorção de água e formação das fezes.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q17 -->
+        <div class="text-box-analysis">
+            <strong>🏃 RELATÓRIO DE EXERCÍCIO:</strong> Durante uma corrida de 5 minutos, a frequência respiratória de um atleta dobrou. Seu diafragma e músculos intercostais trabalharam com muito mais intensidade para ampliar a capacidade dos pulmões. Mais ar entrou, mais trocas gasosas aconteceram nos alvéolos, e o sangue saiu enriquecido de oxigênio para abastecer os músculos em atividade.
+        </div>
+        <div class="question-block">
+            <div class="question-text">17. Por que a frequência respiratória do atleta aumentou durante a corrida?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q17-A" onclick="checarResposta(17,'A','B')"><span>(A) Os pulmões precisavam eliminar mais nitrogênio acumulado nos músculos.</span></div>
+                    <div class="explanation-box" id="exp-q17-A">Incorreto. O nitrogênio não se acumula nos músculos durante o exercício. O gás produzido é o gás carbônico (CO₂).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q17-B" onclick="checarResposta(17,'B','B')"><span>(B) Os músculos ativos demandavam mais oxigênio e produziam mais gás carbônico.</span></div>
+                    <div class="explanation-box" id="exp-q17-B">Correto! Durante o exercício, as células musculares consomem mais oxigênio e liberam mais gás carbônico. O corpo respira mais rápido para suprir essa demanda e eliminar o excesso de CO₂.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q17-C" onclick="checarResposta(17,'C','B')"><span>(C) O coração parou temporariamente, e os pulmões respiraram mais para compensar.</span></div>
+                    <div class="explanation-box" id="exp-q17-C">Incorreto. O coração não para durante exercícios; na verdade, bate mais rápido para distribuir mais sangue oxigenado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q17-D" onclick="checarResposta(17,'D','B')"><span>(D) A corrida resfriou o sangue, exigindo mais respirações para aquecer o organismo.</span></div>
+                    <div class="explanation-box" id="exp-q17-D">Incorreto. O exercício aquece o corpo, não resfria. O aumento respiratório está relacionado à demanda de oxigênio e não à temperatura.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q18 -->
+        <div class="text-box-analysis">
+            <strong>❤️ LOG CARDÍACO:</strong> Em repouso, o coração bateu 70 vezes por minuto. A cada batimento, o ventrículo esquerdo empurrou sangue rico em oxigênio pelas artérias até os órgãos do corpo. Simultaneamente, o ventrículo direito enviou sangue carregado de gás carbônico em outra direção para ser renovado. As veias devolveram o sangue ao átrio direito para reiniciar o ciclo completo.
+        </div>
+        <div class="question-block">
+            <div class="question-text">18. Para onde o ventrículo direito envia o sangue, e qual é o motivo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q18-A" onclick="checarResposta(18,'A','B')"><span>(A) Para os órgãos do corpo, pois o sangue está rico em oxigênio e nutrientes.</span></div>
+                    <div class="explanation-box" id="exp-q18-A">Incorreto. Quem envia sangue aos órgãos do corpo é o ventrículo esquerdo, com sangue já oxigenado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q18-B" onclick="checarResposta(18,'B','B')"><span>(B) Para os pulmões, pois o sangue está carregado de gás carbônico e precisa ser renovado.</span></div>
+                    <div class="explanation-box" id="exp-q18-B">Correto! O ventrículo direito bombeia sangue venoso (com gás carbônico) para os pulmões, onde ocorre a troca gasosa: o CO₂ é eliminado e o sangue capta oxigênio para retornar ao coração.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q18-C" onclick="checarResposta(18,'C','B')"><span>(C) Para os rins, para que o sangue seja filtrado antes de voltar ao coração.</span></div>
+                    <div class="explanation-box" id="exp-q18-C">Incorreto. Os rins recebem sangue pelas artérias renais para filtrar resíduos, mas isso não é controlado diretamente pelo ventrículo direito.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q18-D" onclick="checarResposta(18,'D','B')"><span>(D) Para o intestino, para absorver os nutrientes recém-digeridos.</span></div>
+                    <div class="explanation-box" id="exp-q18-D">Incorreto. O intestino recebe sangue pelas artérias mesentéricas; o ventrículo direito envia sangue especificamente para os pulmões.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q19 -->
+        <div class="text-box-analysis">
+            <strong>🫘 RELATÓRIO DE FILTRAGEM:</strong> A cada minuto, aproximadamente 1,2 litro de sangue passa pelos rins. Estruturas microscópicas chamadas néfrons realizam a filtragem, separando o que o corpo precisa manter — como glicose e proteínas úteis — do que deve ser eliminado — como ureia e excesso de sais minerais. O líquido resultante dessa filtragem segue para a bexiga e é eliminado quando atinge um determinado volume.
+        </div>
+        <div class="question-block">
+            <div class="question-text">19. Segundo o texto, qual é a função dos néfrons nos rins?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q19-A" onclick="checarResposta(19,'A','C')"><span>(A) Produzir bile para auxiliar na digestão das gorduras no intestino.</span></div>
+                    <div class="explanation-box" id="exp-q19-A">Incorreto. A bile é produzida pelo fígado, não pelos rins. Os néfrons têm função de filtragem sanguínea.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q19-B" onclick="checarResposta(19,'B','C')"><span>(B) Transportar o sangue já filtrado diretamente de volta ao coração.</span></div>
+                    <div class="explanation-box" id="exp-q19-B">Incorreto. O retorno do sangue ao coração é realizado pelas veias renais, não pelos néfrons.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q19-C" onclick="checarResposta(19,'C','C')"><span>(C) Realizar a filtragem do sangue, retendo o que é útil e eliminando os resíduos.</span></div>
+                    <div class="explanation-box" id="exp-q19-C">Correto! Conforme o texto, os néfrons são as unidades de filtragem dos rins. Eles separam substâncias úteis (que voltam ao sangue) das substâncias de descarte (que formam a urina).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q19-D" onclick="checarResposta(19,'D','C')"><span>(D) Armazenar a urina produzida até que o organismo esteja pronto para eliminá-la.</span></div>
+                    <div class="explanation-box" id="exp-q19-D">Incorreto. O armazenamento da urina é função da bexiga, conforme mencionado no próprio texto.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q20 -->
+        <div class="text-box-analysis">
+            <strong>🍚 ANÁLISE NUTRICIONAL:</strong> Uma criança consumiu arroz (fonte de carboidratos), feijão (fonte de proteínas) e uma laranja (fonte de vitamina C). Após a digestão completa, esses nutrientes foram absorvidos pelo intestino delgado e lançados na corrente sanguínea. O coração distribuiu esse sangue nutrido por todo o corpo. As células utilizaram a glicose para gerar energia, as proteínas para se reparar e crescer, e a vitamina C para fortalecer as defesas do organismo.
+        </div>
+        <div class="question-block">
+            <div class="question-text">20. Qual sistema foi FUNDAMENTAL para que os nutrientes absorvidos pelo intestino chegassem até as células do corpo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q20-A" onclick="checarResposta(20,'A','C')"><span>(A) Sistema urinário, pois ele filtra e redistribui os nutrientes purificados.</span></div>
+                    <div class="explanation-box" id="exp-q20-A">Incorreto. O sistema urinário elimina resíduos do organismo; ele não distribui nutrientes às células.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q20-B" onclick="checarResposta(20,'B','C')"><span>(B) Sistema respiratório, pois o oxigênio inspira e carrega os nutrientes dissolvidos.</span></div>
+                    <div class="explanation-box" id="exp-q20-B">Incorreto. O sistema respiratório realiza trocas gasosas; não transporta os nutrientes absorvidos pelo intestino.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q20-C" onclick="checarResposta(20,'C','C')"><span>(C) Sistema circulatório, pois o sangue transportou os nutrientes do intestino até cada célula.</span></div>
+                    <div class="explanation-box" id="exp-q20-C">Correto! O texto confirma que os nutrientes foram "lançados na corrente sanguínea" e que "o coração distribuiu esse sangue nutrido por todo o corpo" — evidência direta do papel do sistema circulatório.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q20-D" onclick="checarResposta(20,'D','C')"><span>(D) Sistema nervoso, pois ele coordena a absorção e a entrega dos nutrientes.</span></div>
+                    <div class="explanation-box" id="exp-q20-D">Incorreto. O sistema nervoso coordena funções do corpo, mas quem efetivamente transporta e entrega os nutrientes é o sistema circulatório.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLACAR -->
+        <div class="score-banner">
+            <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
+            <div class="action-btn" id="btn-finish-quiz" style="display:none;" onclick="terminarMissao()">Terminar Missão</div>
+        </div>
+
+    </div><!-- fim screen-quiz -->
+</div><!-- fim quiz-container -->
+</body>
+</html>
