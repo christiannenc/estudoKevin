@@ -7,34 +7,78 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/tabler-icons.min.css">
     <link rel="stylesheet" href="assets/style.css">
     <style>
-        .card-right {
+        /* Card redefinido: container com link + lista de tentativas */
+        .exercicio-card {
+            display: block;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: border-color 0.15s;
+        }
+        .exercicio-card:hover { border-color: #475569; }
+
+        .exercicio-card-link {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-        .score-badge {
-            display: inline-flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 3px 9px;
-            border-radius: 999px;
-            white-space: nowrap;
+            padding: 14px 16px;
+            text-decoration: none;
+            color: inherit;
+            gap: 12px;
         }
-        .score-badge.done {
-            background: rgba(22,163,74,0.15);
-            color: #4ade80;
-            border: 1px solid rgba(22,163,74,0.3);
+        .exercicio-card-link:hover { background: rgba(255,255,255,0.02); }
+
+        .exercicio-info { flex: 1; min-width: 0; }
+        .exercicio-nome { display: block; font-size: 14px; font-weight: 600; color: #f8fafc; }
+        .exercicio-assunto { display: block; font-size: 12px; color: #94a3b8; margin-top: 3px; }
+
+        .card-badge-area { flex-shrink: 0; }
+
+        /* Lista de tentativas dentro do card */
+        .attempt-list { border-top: 1px solid #334155; }
+        .attempt-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 16px;
             cursor: pointer;
+            border-bottom: 1px solid #1e293b;
+            transition: background 0.1s;
         }
-        .score-badge.done:hover { background: rgba(22,163,74,0.25); }
-        .score-badge.not-done {
-            background: rgba(148,163,184,0.1);
+        .attempt-row:last-child { border-bottom: none; }
+        .attempt-row:hover { background: rgba(56,189,248,0.06); }
+        .attempt-score {
+            font-size: 12px;
+            font-weight: 700;
+            color: #4ade80;
+            min-width: 90px;
+        }
+        .attempt-date {
+            font-size: 12px;
             color: #94a3b8;
-            border: 1px solid rgba(148,163,184,0.2);
+            flex: 1;
+        }
+        .attempt-arrow { font-size: 12px; color: #475569; }
+        .attempt-delete {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #475569;
+            font-size: 14px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            line-height: 1;
+        }
+        .attempt-delete:hover { color: #dc2626; background: rgba(220,38,38,0.1); }
+
+        .not-done-row {
+            padding: 8px 16px;
+            font-size: 12px;
+            color: #475569;
+            border-top: 1px solid #334155;
+            font-style: italic;
         }
 
         /* Modal */
@@ -63,7 +107,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 6px;
         }
         .modal-title { font-size: 18px; font-weight: 700; color: #f8fafc; }
         .modal-close {
@@ -76,14 +120,17 @@
             padding: 0;
         }
         .modal-close:hover { color: #f8fafc; }
-        .modal-score-summary {
-            font-size: 14px;
+        .modal-subtitle {
+            font-size: 13px;
             color: #94a3b8;
             margin-bottom: 20px;
             padding-bottom: 16px;
             border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .modal-score-summary strong { color: #4ade80; }
+        .modal-subtitle strong { color: #4ade80; }
         .wrong-item {
             background: rgba(255,255,255,0.03);
             border: 1px solid #334155;
@@ -91,62 +138,32 @@
             padding: 14px 16px;
             margin-bottom: 12px;
         }
-        .wrong-item-q {
-            font-size: 13px;
-            color: #f8fafc;
-            margin-bottom: 8px;
-            line-height: 1.5;
-        }
-        .wrong-item-answer {
-            font-size: 12px;
-            color: #4ade80;
-            background: rgba(22,163,74,0.1);
-            border-left: 3px solid #16a34a;
-            padding: 6px 10px;
-            border-radius: 4px;
-            margin-top: 6px;
-        }
-        .wrong-item-answer span { font-weight: 700; }
+        .wrong-item-q { font-size: 13px; color: #f8fafc; margin-bottom: 8px; line-height: 1.5; }
         .wrong-item-chosen {
-            font-size: 12px;
-            color: #f87171;
+            font-size: 12px; color: #f87171;
             background: rgba(220,38,38,0.08);
             border-left: 3px solid #dc2626;
-            padding: 6px 10px;
-            border-radius: 4px;
-            margin-top: 6px;
+            padding: 6px 10px; border-radius: 4px; margin-top: 6px;
         }
         .wrong-item-chosen span { font-weight: 700; }
+        .wrong-item-answer {
+            font-size: 12px; color: #4ade80;
+            background: rgba(22,163,74,0.1);
+            border-left: 3px solid #16a34a;
+            padding: 6px 10px; border-radius: 4px; margin-top: 6px;
+        }
+        .wrong-item-answer span { font-weight: 700; }
         .modal-empty { text-align: center; color: #4ade80; font-size: 15px; padding: 20px 0; }
-        .history-list { margin-bottom: 20px; }
-        .history-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            margin-bottom: 8px;
-            font-size: 13px;
-            color: #f8fafc;
-        }
-        .history-item.active { border-color: #38bdf8; background: rgba(56,189,248,0.05); }
-        .history-item-info { display: flex; align-items: center; gap: 10px; }
-        .history-item-score { font-weight: 700; color: #4ade80; }
-        .history-item-date { color: #94a3b8; font-size: 12px; }
-        .history-item-current { font-size: 10px; color: #38bdf8; font-weight: 600; }
-        .btn-delete {
+        .btn-delete-modal {
             background: none;
-            border: none;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 6px;
             cursor: pointer;
-            color: #475569;
-            font-size: 16px;
-            padding: 2px 4px;
-            border-radius: 4px;
-            line-height: 1;
         }
-        .btn-delete:hover { color: #dc2626; background: rgba(220,38,38,0.1); }
-        .history-divider { border: none; border-top: 1px solid #334155; margin: 16px 0; }
+        .btn-delete-modal:hover { color: #dc2626; border-color: #dc2626; }
     </style>
 </head>
 <body>
@@ -163,14 +180,14 @@
     <div id="materias-container"></div>
 </div>
 
-<!-- Modal de revisão -->
+<!-- Modal de revisão de uma tentativa -->
 <div class="modal-overlay" id="review-modal" onclick="closeModal(event)">
     <div class="modal">
         <div class="modal-header">
             <span class="modal-title" id="modal-title">Revisão</span>
             <button class="modal-close" onclick="document.getElementById('review-modal').classList.remove('open')">✕</button>
         </div>
-        <div class="modal-score-summary" id="modal-summary"></div>
+        <div class="modal-subtitle" id="modal-subtitle"></div>
         <div id="modal-body"></div>
     </div>
 </div>
@@ -187,6 +204,11 @@
     function saveScores(arquivo, scores) {
         try { localStorage.setItem(STORAGE_PREFIX + arquivo, JSON.stringify(scores)); }
         catch {}
+    }
+
+    function fmtDatetime(iso) {
+        const d = new Date(iso);
+        return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     }
 
     function parseFilename(path) {
@@ -223,56 +245,24 @@
         headerEl.closest('.materia-section').classList.toggle('open');
     }
 
-    // Arquivo atualmente aberto no modal
     let _modalArquivo = null;
+    let _modalIndex = null;
 
-    function deleteRun(index) {
-        const senha = prompt('Digite a senha para excluir:');
-        if (senha !== DELETE_PASSWORD) {
-            if (senha !== null) alert('Senha incorreta.');
-            return;
-        }
-        const scores = getScores(_modalArquivo);
-        scores.splice(index, 1);
-        saveScores(_modalArquivo, scores);
-        if (scores.length === 0) {
-            document.getElementById('review-modal').classList.remove('open');
-            // Re-renderiza a página para atualizar os cards
-            location.reload();
-        } else {
-            renderModalBody(_modalArquivo, scores);
-        }
-    }
+    function openReview(arquivo, titulo, index) {
+        _modalArquivo = arquivo;
+        _modalIndex = index;
+        const scores = getScores(arquivo);
+        const entry = scores[index];
+        const pct = Math.round((entry.score / entry.total) * 100);
 
-    function renderModalBody(arquivo, scores) {
-        const last = scores[scores.length - 1];
-        const pct = Math.round((last.score / last.total) * 100);
-        document.getElementById('modal-summary').innerHTML =
-            `Última tentativa: <strong>${last.score}/${last.total} (${pct}%)</strong> · ${new Date(last.date).toLocaleDateString('pt-BR')}`;
+        document.getElementById('modal-title').textContent = titulo;
+        document.getElementById('modal-subtitle').innerHTML =
+            `<span>${fmtDatetime(entry.date)} · <strong>${entry.score}/${entry.total} (${pct}%)</strong></span>
+             <button class="btn-delete-modal" onclick="deleteRun()">🗑 Excluir tentativa</button>`;
 
-        const historyHtml = `
-            <div class="history-list">
-                ${[...scores].reverse().map((s, i) => {
-                    const realIndex = scores.length - 1 - i;
-                    const isLast = realIndex === scores.length - 1;
-                    const p = Math.round((s.score / s.total) * 100);
-                    return `
-                        <div class="history-item${isLast ? ' active' : ''}">
-                            <div class="history-item-info">
-                                <span class="history-item-score">${s.score}/${s.total} (${p}%)</span>
-                                <span class="history-item-date">${new Date(s.date).toLocaleDateString('pt-BR')}</span>
-                                ${isLast ? '<span class="history-item-current">↑ mais recente</span>' : ''}
-                            </div>
-                            <button class="btn-delete" onclick="deleteRun(${realIndex})" title="Excluir esta tentativa">🗑</button>
-                        </div>`;
-                }).join('')}
-            </div>
-            <hr class="history-divider">
-        `;
-
-        const wrong = last.wrong || [];
-        const wrongHtml = wrong.length === 0
-            ? '<div class="modal-empty">🎉 Nenhum erro na última tentativa!</div>'
+        const wrong = entry.wrong || [];
+        document.getElementById('modal-body').innerHTML = wrong.length === 0
+            ? '<div class="modal-empty">🎉 Nenhum erro nesta tentativa!</div>'
             : wrong.map(w => `
                 <div class="wrong-item">
                     <div class="wrong-item-q">${w.text}</div>
@@ -280,15 +270,20 @@
                     <div class="wrong-item-answer"><span>Resposta correta:</span> ${w.correct}</div>
                 </div>`).join('');
 
-        document.getElementById('modal-body').innerHTML = historyHtml + wrongHtml;
+        document.getElementById('review-modal').classList.add('open');
     }
 
-    function openReview(arquivo, titulo) {
-        _modalArquivo = arquivo;
-        const scores = getScores(arquivo);
-        document.getElementById('modal-title').textContent = titulo;
-        renderModalBody(arquivo, scores);
-        document.getElementById('review-modal').classList.add('open');
+    function deleteRun() {
+        const senha = prompt('Digite a senha para excluir:');
+        if (senha !== DELETE_PASSWORD) {
+            if (senha !== null) alert('Senha incorreta.');
+            return;
+        }
+        const scores = getScores(_modalArquivo);
+        scores.splice(_modalIndex, 1);
+        saveScores(_modalArquivo, scores);
+        document.getElementById('review-modal').classList.remove('open');
+        location.reload();
     }
 
     function closeModal(e) {
@@ -303,28 +298,35 @@
         const badgeClass = isQuiz ? 'badge-quiz' : 'badge-imprimir';
         const badgeLabel = isQuiz ? 'Quiz' : 'Imprimir';
         const target = isQuiz ? ' target="_blank" rel="noopener"' : '';
-        const scores = getScores(exercicio.arquivo);
-        const hasDone = isQuiz && scores.length > 0;
-        const last = hasDone ? scores[scores.length - 1] : null;
-        const pct = last ? Math.round((last.score / last.total) * 100) : 0;
+        const scores = isQuiz ? getScores(exercicio.arquivo) : [];
 
-        const scoreBadge = isQuiz
-            ? (hasDone
-                ? `<span class="score-badge done" onclick="event.preventDefault();event.stopPropagation();openReview('${exercicio.arquivo}','${info.titulo}')">✓ ${last.score}/${last.total} (${pct}%)</span>`
-                : `<span class="score-badge not-done">Não feito</span>`)
+        const attemptsHtml = isQuiz
+            ? (scores.length === 0
+                ? `<div class="not-done-row">Ainda não feito</div>`
+                : `<div class="attempt-list">${[...scores].reverse().map((s, i) => {
+                    const realIndex = scores.length - 1 - i;
+                    const pct = Math.round((s.score / s.total) * 100);
+                    return `<div class="attempt-row" onclick="openReview('${exercicio.arquivo}','${info.titulo}',${realIndex})">
+                        <span class="attempt-score">✓ ${s.score}/${s.total} (${pct}%)</span>
+                        <span class="attempt-date">${fmtDatetime(s.date)}</span>
+                        <span class="attempt-arrow">→</span>
+                    </div>`;
+                }).join('')}</div>`)
             : '';
 
         return `
-            <a href="${exercicio.arquivo}"${target} class="exercicio-card">
-                <div class="exercicio-info">
-                    <span class="exercicio-nome">${info.titulo}</span>
-                    <span class="exercicio-assunto">${exercicio.assunto}</span>
-                </div>
-                <div class="card-right">
-                    <span class="badge ${badgeClass}">${badgeLabel}</span>
-                    ${scoreBadge}
-                </div>
-            </a>
+            <div class="exercicio-card">
+                <a href="${exercicio.arquivo}"${target} class="exercicio-card-link">
+                    <div class="exercicio-info">
+                        <span class="exercicio-nome">${info.titulo}</span>
+                        <span class="exercicio-assunto">${exercicio.assunto}</span>
+                    </div>
+                    <div class="card-badge-area">
+                        <span class="badge ${badgeClass}">${badgeLabel}</span>
+                    </div>
+                </a>
+                ${attemptsHtml}
+            </div>
         `;
     }
 
