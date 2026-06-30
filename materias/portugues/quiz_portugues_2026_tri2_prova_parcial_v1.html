@@ -462,7 +462,7 @@
 
         <div class="score-banner">
             <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
-            <div class="action-btn" id="btn-restart-quiz" onclick="">Reiniciar Missão</div>
+            <div class="action-btn" id="btn-finish-quiz" onclick="">Terminar Missão</div>
         </div>
     </div>
 </div>
@@ -470,34 +470,36 @@
     (function() {
         let score = 0;
         let answeredQuestions = {};
+        let wrongAnswers = [];
         const totalQuestions = 20;
+        const STORAGE_KEY = 'estudoKevin:scores:materias/portugues/quiz_portugues_2026_tri2_prova_parcial_v1.html';
         const screenIntro = document.getElementById('screen-intro');
         const screenQuiz = document.getElementById('screen-quiz');
         const btnStart = document.getElementById('btn-start-quiz');
-        const btnRestart = document.getElementById('btn-restart-quiz');
+        const btnFinish = document.getElementById('btn-finish-quiz');
         const mainTitle = document.getElementById('main-title');
-        
+
         function showScreen(screenToShow) {
             screenIntro.classList.remove('active');
             screenQuiz.classList.remove('active');
             screenToShow.classList.add('active');
             window.scrollTo(0, 0);
         }
-        
+
         if (btnStart) {
             btnStart.addEventListener('click', function(e) {
                 e.preventDefault();
                 showScreen(screenQuiz);
             });
         }
-        
+
         if (mainTitle) {
             mainTitle.addEventListener('click', function(e) {
                 e.preventDefault();
                 showScreen(screenIntro);
             });
         }
-        
+
         function handleResponse(element) {
             const block = element.closest('.question-block');
             if (!block) return;
@@ -520,34 +522,37 @@
                 }
                 if (expBox) expBox.style.display = 'block';
             }
-            if (selectedLetter === correctAnswer) score++;
+            if (selectedLetter === correctAnswer) {
+                score++;
+            } else {
+                const correctEl = block.querySelector(`.option-clickable[data-letter="${correctAnswer}"]`);
+                wrongAnswers.push({
+                    q: qNum,
+                    text: block.querySelector('.question-text').textContent.trim(),
+                    correct: correctEl ? correctEl.querySelector('span').textContent.trim() : correctAnswer
+                });
+            }
             document.getElementById('score-display').textContent = `Pontuação: ${score} / ${totalQuestions}`;
             if (Object.keys(answeredQuestions).length === totalQuestions) {
                 try {
-                    const key = 'estudoKevin:scores:materias/portugues/quiz_portugues_2026_tri2_prova_parcial_v1.html';
-                    const history = JSON.parse(localStorage.getItem(key) || '[]');
-                    history.push({ score, total: totalQuestions, date: new Date().toISOString() });
-                    localStorage.setItem(key, JSON.stringify(history));
+                    const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    history.push({ score, total: totalQuestions, date: new Date().toISOString(), wrong: wrongAnswers });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
                 } catch(e) {}
             }
         }
-        
+
         document.querySelectorAll('.option-clickable').forEach(el => {
             el.addEventListener('click', function(e) {
                 e.preventDefault();
                 handleResponse(this);
             });
         });
-        
-        if (btnRestart) {
-            btnRestart.addEventListener('click', function(e) {
+
+        if (btnFinish) {
+            btnFinish.addEventListener('click', function(e) {
                 e.preventDefault();
-                score = 0;
-                answeredQuestions = {};
-                document.getElementById('score-display').textContent = `Pontuação: 0 / ${totalQuestions}`;
-                document.querySelectorAll('.option-clickable').forEach(el => { el.className = 'option-clickable'; });
-                document.querySelectorAll('.explanation-box').forEach(box => { box.style.display = 'none'; });
-                showScreen(screenIntro);
+                window.location.href = '/';
             });
         }
     })();

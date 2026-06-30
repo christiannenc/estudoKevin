@@ -7,14 +7,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/tabler-icons.min.css">
     <link rel="stylesheet" href="assets/style.css">
     <style>
-        .exercicio-card { position: relative; }
+        .card-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            flex-shrink: 0;
+        }
         .score-badge {
             display: inline-flex;
             align-items: center;
             gap: 4px;
             font-size: 11px;
             font-weight: 600;
-            padding: 2px 8px;
+            padding: 3px 9px;
             border-radius: 999px;
             white-space: nowrap;
         }
@@ -22,19 +28,98 @@
             background: rgba(22,163,74,0.15);
             color: #4ade80;
             border: 1px solid rgba(22,163,74,0.3);
+            cursor: pointer;
         }
+        .score-badge.done:hover { background: rgba(22,163,74,0.25); }
         .score-badge.not-done {
             background: rgba(148,163,184,0.1);
             color: #94a3b8;
             border: 1px solid rgba(148,163,184,0.2);
         }
-        .card-right {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 5px;
-            flex-shrink: 0;
+        .btn-reiniciar {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: rgba(56,189,248,0.1);
+            color: #38bdf8;
+            border: 1px solid rgba(56,189,248,0.3);
+            cursor: pointer;
+            white-space: nowrap;
+            text-decoration: none;
         }
+        .btn-reiniciar:hover { background: rgba(56,189,248,0.2); }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 640px;
+            margin: auto;
+            border: 1px solid #334155;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title { font-size: 18px; font-weight: 700; color: #f8fafc; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 22px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+        .modal-close:hover { color: #f8fafc; }
+        .modal-score-summary {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #334155;
+        }
+        .modal-score-summary strong { color: #4ade80; }
+        .wrong-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+        }
+        .wrong-item-q {
+            font-size: 13px;
+            color: #f8fafc;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .wrong-item-answer {
+            font-size: 12px;
+            color: #4ade80;
+            background: rgba(22,163,74,0.1);
+            border-left: 3px solid #16a34a;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+        .wrong-item-answer span { font-weight: 700; }
+        .modal-empty { text-align: center; color: #4ade80; font-size: 15px; padding: 20px 0; }
     </style>
 </head>
 <body>
@@ -51,28 +136,32 @@
     <div id="materias-container"></div>
 </div>
 
+<!-- Modal de revisão -->
+<div class="modal-overlay" id="review-modal" onclick="closeModal(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title" id="modal-title">Revisão</span>
+            <button class="modal-close" onclick="document.getElementById('review-modal').classList.remove('open')">✕</button>
+        </div>
+        <div class="modal-score-summary" id="modal-summary"></div>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
 <script>
     const STORAGE_PREFIX = 'estudoKevin:scores:';
 
     function getScores(arquivo) {
-        try {
-            return JSON.parse(localStorage.getItem(STORAGE_PREFIX + arquivo) || '[]');
-        } catch { return []; }
+        try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX + arquivo) || '[]'); }
+        catch { return []; }
     }
 
-    // Espera nomes no formato:
-    // {tipo}_{materia}_{ano}_tri{N}_{descricao}_{parcial|completa}_v{N}.{html|pdf}
     function parseFilename(path) {
         const filename = path.split('/').pop();
         const match = filename.match(/^([a-z]+)_([a-z]+)_(\d{4})_tri(\d)_.+_(parcial|completa)_v(\d+)\.(html|pdf)$/i);
-
-        if (!match) {
-            return { titulo: filename, extensao: filename.split('.').pop(), versao: 1, ano: 0, tri: 0 };
-        }
-
+        if (!match) return { titulo: filename, extensao: filename.split('.').pop(), versao: 1, ano: 0, tri: 0 };
         const [, , , ano, tri, completude, versao, extensao] = match;
         const completudeLabel = completude.charAt(0).toUpperCase() + completude.slice(1);
-
         return {
             titulo: `${tri}º trimestre ${ano} · ${completudeLabel} · v${versao}`,
             extensao: extensao.toLowerCase(),
@@ -86,13 +175,11 @@
         const scores = getScores(exercicio.arquivo);
         const info = parseFilename(exercicio.arquivo);
         const done = scores.length > 0 ? 1 : 0;
-        // not done first (done=0 sorts before done=1), then most recent first
         return [done, -info.ano, -info.tri, -info.versao];
     }
 
     function compareSortKeys(a, b) {
-        const ka = sortKey(a);
-        const kb = sortKey(b);
+        const ka = sortKey(a), kb = sortKey(b);
         for (let i = 0; i < ka.length; i++) {
             if (ka[i] !== kb[i]) return ka[i] < kb[i] ? -1 : 1;
         }
@@ -103,15 +190,32 @@
         headerEl.closest('.materia-section').classList.toggle('open');
     }
 
-    function renderScoreBadge(arquivo, extensao) {
-        if (extensao !== 'html') return '<span class="score-badge not-done">Não feito</span>';
+    function openReview(arquivo, titulo) {
         const scores = getScores(arquivo);
-        if (scores.length === 0) {
-            return '<span class="score-badge not-done">Não feito</span>';
-        }
         const last = scores[scores.length - 1];
+        document.getElementById('modal-title').textContent = titulo;
         const pct = Math.round((last.score / last.total) * 100);
-        return `<span class="score-badge done">✓ ${last.score}/${last.total} (${pct}%)</span>`;
+        document.getElementById('modal-summary').innerHTML =
+            `Última tentativa: <strong>${last.score}/${last.total} (${pct}%)</strong> · ${new Date(last.date).toLocaleDateString('pt-BR')}`;
+        const body = document.getElementById('modal-body');
+        const wrong = last.wrong || [];
+        if (wrong.length === 0) {
+            body.innerHTML = '<div class="modal-empty">🎉 Parabéns! Nenhum erro na última tentativa.</div>';
+        } else {
+            body.innerHTML = wrong.map(w => `
+                <div class="wrong-item">
+                    <div class="wrong-item-q">${w.text}</div>
+                    <div class="wrong-item-answer"><span>Resposta correta:</span> ${w.correct}</div>
+                </div>
+            `).join('');
+        }
+        document.getElementById('review-modal').classList.add('open');
+    }
+
+    function closeModal(e) {
+        if (e.target === document.getElementById('review-modal')) {
+            document.getElementById('review-modal').classList.remove('open');
+        }
     }
 
     function renderExercicio(exercicio) {
@@ -120,7 +224,20 @@
         const badgeClass = isQuiz ? 'badge-quiz' : 'badge-imprimir';
         const badgeLabel = isQuiz ? 'Quiz' : 'Imprimir';
         const target = isQuiz ? ' target="_blank" rel="noopener"' : '';
-        const scoreBadge = renderScoreBadge(exercicio.arquivo, info.extensao);
+        const scores = getScores(exercicio.arquivo);
+        const hasDone = isQuiz && scores.length > 0;
+        const last = hasDone ? scores[scores.length - 1] : null;
+        const pct = last ? Math.round((last.score / last.total) * 100) : 0;
+
+        const scoreBadge = isQuiz
+            ? (hasDone
+                ? `<span class="score-badge done" onclick="event.preventDefault();event.stopPropagation();openReview('${exercicio.arquivo}','${info.titulo}')">✓ ${last.score}/${last.total} (${pct}%)</span>`
+                : `<span class="score-badge not-done">Não feito</span>`)
+            : '';
+
+        const reiniciarBtn = hasDone
+            ? `<a class="btn-reiniciar" href="${exercicio.arquivo}"${target}>Reiniciar</a>`
+            : '';
 
         return `
             <a href="${exercicio.arquivo}"${target} class="exercicio-card">
@@ -131,6 +248,7 @@
                 <div class="card-right">
                     <span class="badge ${badgeClass}">${badgeLabel}</span>
                     ${scoreBadge}
+                    ${reiniciarBtn}
                 </div>
             </a>
         `;
@@ -141,7 +259,6 @@
         const exerciciosHtml = sorted.length
             ? sorted.map(renderExercicio).join('')
             : '<p class="empty-msg">Nenhum exercício ainda.</p>';
-
         return `
             <div class="materia-section" id="materia-${key}">
                 <button class="materia-header" onclick="toggleMateria(this)">

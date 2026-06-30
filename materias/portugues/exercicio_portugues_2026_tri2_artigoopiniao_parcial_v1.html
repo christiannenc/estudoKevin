@@ -407,7 +407,7 @@
     <!-- SCORE BANNER -->
     <div class="score-banner">
         <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
-        <button class="restart-btn" id="btn-restart-quiz">Reiniciar Missão</button>
+        <button class="restart-btn" id="btn-finish-quiz">Terminar Missão</button>
     </div>
 </div>
 
@@ -415,6 +415,8 @@
     (function() {
         let score = 0;
         let answeredQuestions = {};
+        let wrongAnswers = [];
+        const STORAGE_KEY = 'estudoKevin:scores:materias/portugues/exercicio_portugues_2026_tri2_artigoopiniao_parcial_v1.html';
 
         function handleResponse(button) {
             const block = button.closest('.question-block');
@@ -430,51 +432,45 @@
             const buttons = block.querySelectorAll('.option-btn');
             buttons.forEach(btn => {
                 const btnLetter = btn.getAttribute('data-letter');
-                
                 if (selectedLetter === correctAnswer) {
-                    if (btnLetter === correctAnswer) {
-                        btn.classList.add('selected-correct');
-                    }
+                    if (btnLetter === correctAnswer) btn.classList.add('selected-correct');
                 } else {
-                    if (btn === button) {
-                        btn.classList.add('selected-incorrect');
-                    } else if (btnLetter === correctAnswer) {
-                        btn.classList.add('reveal-hint');
-                    }
+                    if (btn === button) btn.classList.add('selected-incorrect');
+                    else if (btnLetter === correctAnswer) btn.classList.add('reveal-hint');
                 }
             });
 
             if (selectedLetter === correctAnswer) {
                 score++;
+            } else {
+                const correctEl = block.querySelector(`.option-btn[data-letter="${correctAnswer}"]`);
+                wrongAnswers.push({
+                    q: qNum,
+                    text: block.querySelector('.question-text').textContent.trim(),
+                    correct: correctEl ? correctEl.querySelector('span').textContent.trim() : correctAnswer
+                });
             }
 
             document.getElementById('score-display').textContent = `Pontuação: ${score} / 20`;
             if (Object.keys(answeredQuestions).length === 20) {
                 try {
-                    const key = 'estudoKevin:scores:materias/portugues/exercicio_portugues_2026_tri2_artigoopiniao_parcial_v1.html';
-                    const history = JSON.parse(localStorage.getItem(key) || '[]');
-                    history.push({ score, total: 20, date: new Date().toISOString() });
-                    localStorage.setItem(key, JSON.stringify(history));
+                    const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    history.push({ score, total: 20, date: new Date().toISOString(), wrong: wrongAnswers });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
                 } catch(e) {}
             }
         }
 
-        // Abordagem limpa baseada estritamente no evento 'click' nativo traduzido pelo iOS
         document.querySelectorAll('.option-btn').forEach(button => {
             button.addEventListener('click', function() {
                 handleResponse(this);
             });
         });
 
-        const restartBtn = document.getElementById('btn-restart-quiz');
-        if (restartBtn) {
-            restartBtn.addEventListener('click', function() {
-                score = 0;
-                answeredQuestions = {};
-                document.getElementById('score-display').textContent = `Pontuação: 0 / 20`;
-                document.querySelectorAll('.option-btn').forEach(btn => {
-                    btn.classList.remove('selected-correct', 'selected-incorrect', 'reveal-hint');
-                });
+        const btnFinish = document.getElementById('btn-finish-quiz');
+        if (btnFinish) {
+            btnFinish.addEventListener('click', function() {
+                window.location.href = '/';
             });
         }
     })();
