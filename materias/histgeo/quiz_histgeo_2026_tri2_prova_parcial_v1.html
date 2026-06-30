@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Missão Hist/Geo: Operação Explorador V1</title>
+    <style>
+        :root {
+            --bg-color: #0f0f1a;
+            --container-bg: #1a1a2e;
+            --accent-color: #f59e0b;
+            --accent-dim: #78350f;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-bg: #16a34a;
+            --incorrect-bg: #dc2626;
+            --border-color: #2d2d4e;
+            --tooltip-bg: #0f0f1a;
+            --phase-bg: #2d2d4e;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(ellipse at 20% 50%, rgba(245,158,11,0.04) 0%, transparent 60%),
+                              radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.04) 0%, transparent 50%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 720px;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(245,158,11,0.08);
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        h1 {
+            color: var(--accent-color);
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            user-select: none;
+            text-shadow: 0 0 20px rgba(245,158,11,0.4);
+        }
+        h1:hover { opacity: 0.85; }
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        .intro-box {
+            background-color: rgba(245,158,11,0.04);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+        .intro-title {
+            font-size: 17px;
+            color: var(--accent-color);
+            margin-top: 0;
+            margin-bottom: 18px;
+            border-bottom: 1px solid rgba(245,158,11,0.2);
+            padding-bottom: 10px;
+        }
+        .topic-group { margin-bottom: 18px; }
+        .topic-group h3 { font-size: 15px; margin: 0 0 4px 0; color: #ffffff; }
+        .topic-group p { font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+        .info-strip {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        .info-chip {
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.25);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12px;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .phase-title {
+            background: linear-gradient(90deg, var(--phase-bg), rgba(245,158,11,0.05));
+            padding: 11px 16px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 32px;
+            margin-bottom: 6px;
+            border-left: 4px solid var(--accent-color);
+            letter-spacing: 0.5px;
+        }
+        .phase-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-style: italic;
+            margin-left: 4px;
+        }
+
+        .question-block {
+            background-color: rgba(255,255,255,0.015);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 22px;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.2s;
+        }
+        .question-block:hover { border-color: rgba(245,158,11,0.2); }
+        .question-text {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 14px;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+        .q-number {
+            display: inline-block;
+            background: var(--accent-color);
+            color: #0f0f1a;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .text-box-analysis {
+            background-color: rgba(245,158,11,0.06);
+            border-left: 4px solid var(--accent-color);
+            padding: 14px 16px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+        .text-box-analysis strong { color: var(--accent-color); }
+
+        .options-container { display: flex; flex-direction: column; gap: 10px; }
+        .option-clickable {
+            background-color: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 13px 15px;
+            border-radius: 9px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer !important;
+            user-select: none;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .option-clickable:hover { background-color: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.3); }
+        .option-clickable * { pointer-events: none !important; }
+        .feedback-badge { display: none; font-size: 16px; margin-left: 8px; flex-shrink: 0; }
+
+        .option-clickable.correct { background-color: var(--correct-bg) !important; border-color: var(--correct-bg) !important; color: #ffffff !important; }
+        .option-clickable.correct .badge-correct { display: inline-block !important; }
+        .option-clickable.incorrect { background-color: var(--incorrect-bg) !important; border-color: var(--incorrect-bg) !important; color: #ffffff !important; }
+        .option-clickable.incorrect .badge-incorrect { display: inline-block !important; }
+        .option-clickable.hint-green { border: 2px dashed #16a34a !important; background-color: rgba(22,163,74,0.1) !important; }
+        .option-clickable.hint-green .badge-hint { display: inline-block !important; }
+        .option-clickable.disabled-option { pointer-events: none !important; }
+
+        .explanation-box {
+            display: none;
+            margin-top: 7px;
+            padding: 10px 14px;
+            background-color: var(--tooltip-bg);
+            border-left: 3px solid var(--accent-color);
+            border-radius: 5px;
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+
+        .score-banner {
+            margin-top: 32px;
+            padding: 22px;
+            background: rgba(245,158,11,0.07);
+            border: 2px dashed var(--accent-color);
+            border-radius: 14px;
+            text-align: center;
+        }
+        .score-text {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 16px;
+            text-shadow: 0 0 20px rgba(245,158,11,0.3);
+        }
+        .action-btn {
+            background: linear-gradient(135deg, var(--accent-color), #d97706);
+            color: #0f0f1a;
+            border: none;
+            padding: 13px 28px;
+            font-size: 15px;
+            font-weight: 800;
+            border-radius: 9px;
+            cursor: pointer !important;
+            display: inline-block;
+            text-align: center;
+            user-select: none;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 14px rgba(245,158,11,0.3);
+        }
+        .action-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .center-btn-wrapper { display: flex; justify-content: center; width: 100%; }
+
+        .map-deco {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 6px;
+            filter: drop-shadow(0 0 12px rgba(245,158,11,0.5));
+        }
+    </style>
+
+    <script>
+        var quizScore = 0;
+        var answeredQuestions = {};
+        var totalQuestions = 20;
+        var wrongAnswers = [];
+        var STORAGE_KEY = 'estudoKevin:scores:materias/histgeo/quiz_histgeo_2026_tri2_prova_parcial_v1.html';
+
+        function iniciarMissao() {
+            document.getElementById('screen-intro').classList.remove('active');
+            document.getElementById('screen-quiz').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function irParaHome() {
+            document.getElementById('screen-quiz').classList.remove('active');
+            document.getElementById('screen-intro').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function checarResposta(qNum, letraSelecionada, letraCorreta) {
+            if (answeredQuestions[qNum]) return;
+            answeredQuestions[qNum] = letraSelecionada;
+
+            var letras = ['A', 'B', 'C', 'D'];
+
+            for (var i = 0; i < letras.length; i++) {
+                var atual = letras[i];
+                var elOpt = document.getElementById('opt-q' + qNum + '-' + atual);
+                var elExp = document.getElementById('exp-q' + qNum + '-' + atual);
+
+                if (elOpt) elOpt.classList.add('disabled-option');
+
+                if (letraSelecionada === letraCorreta) {
+                    if (atual === letraCorreta && elOpt) elOpt.classList.add('correct');
+                } else {
+                    if (atual === letraSelecionada && elOpt) elOpt.classList.add('incorrect');
+                    else if (atual === letraCorreta && elOpt) elOpt.classList.add('hint-green');
+                }
+
+                if (elExp) elExp.style.display = 'block';
+            }
+
+            if (letraSelecionada === letraCorreta) {
+                quizScore++;
+            } else {
+                var elChosen = document.getElementById('opt-q' + qNum + '-' + letraSelecionada);
+                var elCorrect = document.getElementById('opt-q' + qNum + '-' + letraCorreta);
+                var questionBlock = elChosen ? elChosen.closest('.question-block') : null;
+                wrongAnswers.push({
+                    q: String(qNum),
+                    text: questionBlock ? questionBlock.querySelector('.question-text').textContent.trim() : '',
+                    chosen: elChosen ? elChosen.querySelector('span').textContent.trim() : letraSelecionada,
+                    correct: elCorrect ? elCorrect.querySelector('span').textContent.trim() : letraCorreta
+                });
+            }
+
+            document.getElementById('score-display').textContent = 'Pontuação: ' + quizScore + ' / ' + totalQuestions;
+
+            if (Object.keys(answeredQuestions).length === totalQuestions) {
+                var history = [];
+                try { history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) {}
+                history.push({ score: quizScore, total: totalQuestions, date: new Date().toISOString(), wrong: wrongAnswers });
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch(e) {}
+                document.getElementById('btn-finish-quiz').style.display = 'inline-block';
+            }
+        }
+
+        function terminarMissao() {
+            window.location.href = '/';
+        }
+
+        function reiniciarMissao() {
+            quizScore = 0;
+            answeredQuestions = {};
+            wrongAnswers = [];
+            document.getElementById('score-display').textContent = 'Pontuação: 0 / ' + totalQuestions;
+            document.getElementById('btn-finish-quiz').style.display = 'none';
+
+            var letras = ['A', 'B', 'C', 'D'];
+            for (var q = 1; q <= totalQuestions; q++) {
+                for (var i = 0; i < letras.length; i++) {
+                    var elOpt = document.getElementById('opt-q' + q + '-' + letras[i]);
+                    var elExp = document.getElementById('exp-q' + q + '-' + letras[i]);
+                    if (elOpt) elOpt.className = 'option-clickable';
+                    if (elExp) elExp.style.display = 'none';
+                }
+            }
+            irParaHome();
+        }
+    </script>
+</head>
+<body>
+<div class="quiz-container">
+
+    <h1 onclick="irParaHome()">🗺️ MISSÃO HIST/GEO v1</h1>
+    <div class="subtitle">Operação Explorador • Prova Parcial — 2ª Etapa • 5º Ano</div>
+
+    <!-- ===================== TELA INTRO ===================== -->
+    <div id="screen-intro" class="screen active">
+        <div class="map-deco">🧭</div>
+
+        <div class="intro-box">
+            <h2 class="intro-title">📋 Conteúdos Mapeados na Missão:</h2>
+
+            <div class="topic-group">
+                <h3>⚔️ História — Cidadania e Conquistas Históricas</h3>
+                <p><b>Tópicos:</b> O que é cidadania, direitos e deveres, Lei Áurea e abolição da escravidão, Constituição de 1988, ECA — Estatuto da Criança e do Adolescente.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🏛️ História — Patrimônio Histórico e Cultural</h3>
+                <p><b>Tópicos:</b> Patrimônio material e imaterial, IPHAN, UNESCO, exemplos brasileiros como Ouro Preto, Capoeira e o Frevo.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🌎 Geografia — Territórios e Biomas do Brasil</h3>
+                <p><b>Tópicos:</b> As 5 regiões geográficas do Brasil, biomas brasileiros (Amazônia, Cerrado, Caatinga, Mata Atlântica, Pampa e Pantanal) e suas características.</p>
+            </div>
+        </div>
+
+        <div class="info-strip">
+            <span class="info-chip">🎯 20 Questões</span>
+            <span class="info-chip">⚡ 4 Fases</span>
+            <span class="info-chip">📅 Prova: 06/07/2026</span>
+            <span class="info-chip">🏫 5º Ano</span>
+        </div>
+
+        <div class="center-btn-wrapper">
+            <div class="action-btn" onclick="iniciarMissao()">🚀 Iniciar Exploração</div>
+        </div>
+    </div>
+
+    <!-- ===================== TELA DO QUIZ ===================== -->
+    <div id="screen-quiz" class="screen">
+
+        <!-- ===== FASE 1 ===== -->
+        <div class="phase-title">⚔️ FASE 1: CIDADANIA E CONQUISTAS HISTÓRICAS</div>
+        <div class="phase-desc">Questões 1 a 5 — Selecione a alternativa correta.</div>
+
+        <!-- Q1 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">01</span> O que é <b>cidadania</b>?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q1-A" onclick="checarResposta(1,'A','B')">
+                        <span>(A) O direito exclusivo de votar nas eleições presidenciais.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q1-A">Incorreto. Votar é apenas um dos muitos direitos políticos que compõem a cidadania.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-B" onclick="checarResposta(1,'B','B')">
+                        <span>(B) O conjunto de direitos e deveres que uma pessoa tem como membro de um país.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q1-B">Correto! 🏅 Cidadania envolve direitos (saúde, educação, voto) e deveres (pagar impostos, respeitar as leis) de quem pertence a uma nação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-C" onclick="checarResposta(1,'C','B')">
+                        <span>(C) Apenas a obrigação de pagar impostos ao governo.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q1-C">Incorreto. Pagar impostos é um dever, mas cidadania abrange muito mais do que isso.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q1-D" onclick="checarResposta(1,'D','B')">
+                        <span>(D) O direito de morar em qualquer lugar do mundo sem restrições.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q1-D">Incorreto. A liberdade de ir e vir é um direito, mas não define o conceito completo de cidadania.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">02</span> A <b>Lei Áurea</b>, assinada em 13 de maio de 1888, foi uma conquista histórica porque:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q2-A" onclick="checarResposta(2,'A','C')">
+                        <span>(A) Criou o direito de voto para todas as mulheres brasileiras.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q2-A">Incorreto. O voto feminino foi conquistado somente em 1932, com o Código Eleitoral.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-B" onclick="checarResposta(2,'B','C')">
+                        <span>(B) Proclamou a República e derrubou a monarquia no Brasil.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q2-B">Incorreto. A Proclamação da República aconteceu em 15 de novembro de 1889 — um evento diferente.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-C" onclick="checarResposta(2,'C','C')">
+                        <span>(C) Aboliu oficialmente a escravidão em todo o território brasileiro.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q2-C">Correto! 🏅 A Lei Áurea libertou todos os escravizados no Brasil, tornando o país o último das Américas a abolir a escravidão.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q2-D" onclick="checarResposta(2,'D','C')">
+                        <span>(D) Garantiu educação gratuita e obrigatória para todas as crianças.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q2-D">Incorreto. A educação obrigatória foi regulamentada em leis posteriores, não pela Lei Áurea.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">03</span> Quem assinou a Lei Áurea, representando o Império do Brasil?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q3-A" onclick="checarResposta(3,'A','B')">
+                        <span>(A) Dom Pedro I</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q3-A">Incorreto. Dom Pedro I governou o Brasil de 1822 a 1831 — muito antes da Lei Áurea.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-B" onclick="checarResposta(3,'B','B')">
+                        <span>(B) Princesa Isabel</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q3-B">Correto! 🏅 A Princesa Isabel, filha de Dom Pedro II, assinou a lei enquanto governava o Brasil como regente — e ficou conhecida como "A Redentora".</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-C" onclick="checarResposta(3,'C','B')">
+                        <span>(C) Tiradentes</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q3-C">Incorreto. Tiradentes (Joaquim José da Silva Xavier) foi um mártir da Inconfidência Mineira em 1789 — um século antes da Lei Áurea.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q3-D" onclick="checarResposta(3,'D','B')">
+                        <span>(D) Getúlio Vargas</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q3-D">Incorreto. Getúlio Vargas governou o Brasil a partir de 1930 — já na era republicana, décadas depois da abolição.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">04</span> A Constituição Federal de 1988 é chamada de <b>"Constituição Cidadã"</b> porque:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q4-A" onclick="checarResposta(4,'A','C')">
+                        <span>(A) Foi a primeira constituição do Brasil depois da Independência.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q4-A">Incorreto. A primeira constituição brasileira foi em 1824. A de 1988 foi a oitava da nossa história.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-B" onclick="checarResposta(4,'B','C')">
+                        <span>(B) Foi escrita diretamente pelos cidadãos comuns em praça pública.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q4-B">Incorreto. Foi redigida por uma Assembleia Constituinte eleita, com grande participação popular, mas não diretamente pelo povo nas ruas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-C" onclick="checarResposta(4,'C','C')">
+                        <span>(C) Garantiu um amplo conjunto de direitos fundamentais aos cidadãos brasileiros.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q4-C">Correto! 🏅 A Constituição de 1988 assegurou direitos como saúde, educação, moradia, liberdade de expressão e voto para todos — um grande avanço após a ditadura militar.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q4-D" onclick="checarResposta(4,'D','C')">
+                        <span>(D) Proibiu completamente a cobrança de impostos no Brasil.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q4-D">Incorreto. A Constituição regulamenta os impostos, mas não os proíbe — eles financiam os serviços públicos.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">05</span> O <b>ECA</b> (Estatuto da Criança e do Adolescente), aprovado em 1990, tem como principal objetivo:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q5-A" onclick="checarResposta(5,'A','D')">
+                        <span>(A) Regular o trabalho de adultos nas fábricas brasileiras.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q5-A">Incorreto. O trabalho adulto é regulado pela CLT (Consolidação das Leis do Trabalho), não pelo ECA.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-B" onclick="checarResposta(5,'B','D')">
+                        <span>(B) Criar regras somente para o ambiente escolar de crianças e jovens.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q5-B">Incorreto. O ECA abrange muito mais do que a escola — cobre saúde, lazer, família, justiça e proteção contra violência.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-C" onclick="checarResposta(5,'C','D')">
+                        <span>(C) Definir a idade mínima para o uso de redes sociais.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q5-C">Incorreto. Essa é uma regulamentação mais recente e específica — bem diferente do escopo geral do ECA.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q5-D" onclick="checarResposta(5,'D','D')">
+                        <span>(D) Garantir a proteção integral dos direitos de crianças e adolescentes no Brasil.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q5-D">Correto! 🏅 O ECA assegura direitos como vida, saúde, educação, lazer, dignidade e proteção contra qualquer forma de exploração ou violência.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FASE 2 ===== -->
+        <div class="phase-title">🏛️ FASE 2: PATRIMÔNIO HISTÓRICO E CULTURAL</div>
+        <div class="phase-desc">Questões 6 a 10 — Preserve o conhecimento!</div>
+
+        <!-- Q6 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">06</span> O que é <b>patrimônio histórico e cultural</b>?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q6-A" onclick="checarResposta(6,'A','B')">
+                        <span>(A) A herança financeira que uma família passa de geração em geração.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q6-A">Incorreto. Patrimônio histórico não se refere à riqueza financeira de famílias, mas a bens de importância para toda a sociedade.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-B" onclick="checarResposta(6,'B','B')">
+                        <span>(B) Bens materiais e imateriais de valor histórico e cultural que um povo deve preservar.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q6-B">Correto! 🏅 Patrimônio histórico inclui construções, monumentos (material) e também festas, músicas, saberes e tradições (imaterial).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-C" onclick="checarResposta(6,'C','B')">
+                        <span>(C) Somente os museus e bibliotecas de uma cidade.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q6-C">Incorreto. Museus e bibliotecas são importantes, mas o patrimônio cultural vai muito além — inclui festas, receitas, danças, línguas e muito mais.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q6-D" onclick="checarResposta(6,'D','B')">
+                        <span>(D) Apenas as moedas e objetos antigos guardados em cofres do governo.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q6-D">Incorreto. Moedas e objetos são parte do patrimônio material, mas não representam todo o conceito.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">07</span> Qual órgão do governo brasileiro é responsável por identificar, proteger e preservar o <b>patrimônio histórico</b> nacional?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q7-A" onclick="checarResposta(7,'A','C')">
+                        <span>(A) IBGE — Instituto Brasileiro de Geografia e Estatística</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q7-A">Incorreto. O IBGE é responsável por censos e pesquisas estatísticas sobre a população e o território brasileiro.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-B" onclick="checarResposta(7,'B','C')">
+                        <span>(B) IBAMA — Instituto Brasileiro do Meio Ambiente</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q7-B">Incorreto. O IBAMA cuida da proteção ambiental e dos recursos naturais, não do patrimônio histórico-cultural.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-C" onclick="checarResposta(7,'C','C')">
+                        <span>(C) IPHAN — Instituto do Patrimônio Histórico e Artístico Nacional</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q7-C">Correto! 🏅 O IPHAN é o órgão federal que "tomba" (registra e protege) os bens históricos, artísticos e culturais mais importantes do Brasil.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q7-D" onclick="checarResposta(7,'D','C')">
+                        <span>(D) INSS — Instituto Nacional do Seguro Social</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q7-D">Incorreto. O INSS gerencia a previdência social e as aposentadorias dos trabalhadores brasileiros.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">08</span> Qual das opções a seguir é um exemplo de <b>patrimônio IMATERIAL</b> brasileiro reconhecido pela UNESCO?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q8-A" onclick="checarResposta(8,'A','B')">
+                        <span>(A) A Estátua do Cristo Redentor, no Rio de Janeiro.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q8-A">Incorreto. O Cristo Redentor é um patrimônio MATERIAL — é uma construção física que podemos tocar e visitar.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-B" onclick="checarResposta(8,'B','B')">
+                        <span>(B) A Capoeira, arte marcial e expressão cultural afro-brasileira.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q8-B">Correto! 🏅 A Capoeira é patrimônio imaterial porque é um saber, uma prática cultural passada de mestre para aprendiz. Ela foi reconhecida pela UNESCO em 2014.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-C" onclick="checarResposta(8,'C','B')">
+                        <span>(C) O Aqueduto da Carioca (Arcos da Lapa), no Rio de Janeiro.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q8-C">Incorreto. O Aqueduto é uma construção do século XVIII — um exemplo claro de patrimônio MATERIAL.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q8-D" onclick="checarResposta(8,'D','B')">
+                        <span>(D) O Museu do Ipiranga, em São Paulo.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q8-D">Incorreto. O Museu do Ipiranga é um prédio histórico — patrimônio MATERIAL.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">09</span> A cidade de <b>Ouro Preto</b>, em Minas Gerais, é um importante patrimônio histórico nacional. Por que ela é tão especial?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q9-A" onclick="checarResposta(9,'A','C')">
+                        <span>(A) É a cidade mais populosa do Brasil e concentra a maior tecnologia do país.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q9-A">Incorreto. São Paulo é a cidade mais populosa. Ouro Preto tem cerca de 70 mil habitantes.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-B" onclick="checarResposta(9,'B','C')">
+                        <span>(B) Foi a capital federal do Brasil durante todo o período imperial.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q9-B">Incorreto. A capital durante o Império foi o Rio de Janeiro. Ouro Preto (antiga Vila Rica) foi a capital da capitania de Minas Gerais.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-C" onclick="checarResposta(9,'C','C')">
+                        <span>(C) Preserva a arquitetura barroca do século XVIII, época em que o ouro era extraído na região.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q9-C">Correto! 🏅 Ouro Preto foi o centro do Ciclo do Ouro no Brasil (séc. XVIII). Suas igrejas, casarões e ruas de pedra são exemplos únicos do estilo barroco, reconhecido pela UNESCO em 1980.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q9-D" onclick="checarResposta(9,'D','C')">
+                        <span>(D) Foi o local onde a Lei Áurea foi assinada pela Princesa Isabel.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q9-D">Incorreto. A Lei Áurea foi assinada no Palácio Imperial de Petrópolis (RJ), não em Ouro Preto.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">10</span> A <b>UNESCO</b> é uma organização internacional que, entre outras funções, reconhece e protege o patrimônio cultural e natural do mundo. A qual grupo de países ela pertence?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q10-A" onclick="checarResposta(10,'A','B')">
+                        <span>(A) É uma organização privada criada por grandes empresas de tecnologia.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q10-A">Incorreto. A UNESCO não é privada e não tem ligação com empresas de tecnologia.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-B" onclick="checarResposta(10,'B','B')">
+                        <span>(B) É uma agência especializada da ONU (Organização das Nações Unidas).</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q10-B">Correto! 🏅 A UNESCO (Organização das Nações Unidas para a Educação, a Ciência e a Cultura) é parte do sistema ONU e reúne 193 países membros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-C" onclick="checarResposta(10,'C','B')">
+                        <span>(C) É uma organização exclusivamente dos países da América do Sul.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q10-C">Incorreto. A UNESCO é global — inclui países da Europa, Ásia, África, América e Oceania.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q10-D" onclick="checarResposta(10,'D','B')">
+                        <span>(D) É um órgão do governo brasileiro criado para proteger o patrimônio nacional.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q10-D">Incorreto. O órgão brasileiro para isso é o IPHAN. A UNESCO é internacional, não brasileira.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FASE 3 ===== -->
+        <div class="phase-title">🌎 FASE 3: TERRITÓRIOS E BIOMAS DO BRASIL</div>
+        <div class="phase-desc">Questões 11 a 15 — Explore o mapa do Brasil!</div>
+
+        <!-- Q11 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">11</span> O Brasil é dividido em <b>quantas regiões geográficas</b> oficiais?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q11-A" onclick="checarResposta(11,'A','C')">
+                        <span>(A) 3 regiões</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q11-A">Incorreto. Três regiões seria pouco para um país do tamanho do Brasil.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q11-B" onclick="checarResposta(11,'B','C')">
+                        <span>(B) 4 regiões</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q11-B">Incorreto. Quatro regiões seria correto se não existisse o Centro-Oeste.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q11-C" onclick="checarResposta(11,'C','C')">
+                        <span>(C) 5 regiões</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q11-C">Correto! 🏅 O Brasil possui 5 regiões: Norte, Nordeste, Centro-Oeste, Sudeste e Sul. Essa divisão foi estabelecida pelo IBGE.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q11-D" onclick="checarResposta(11,'D','C')">
+                        <span>(D) 7 regiões</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q11-D">Incorreto. Sete seria o número de regiões se o Brasil fosse dividido de forma diferente, o que não acontece oficialmente.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">12</span> Qual é o <b>maior bioma do Brasil</b> em extensão territorial?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q12-A" onclick="checarResposta(12,'A','A')">
+                        <span>(A) Amazônia — cobre cerca de 49% do território nacional.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q12-A">Correto! 🏅 A Amazônia é a maior floresta tropical do mundo e o maior bioma brasileiro, cobrindo quase metade do país — principalmente a região Norte.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q12-B" onclick="checarResposta(12,'B','A')">
+                        <span>(B) Cerrado — o segundo maior bioma, famoso pelas árvores tortas.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q12-B">Incorreto. O Cerrado é o SEGUNDO maior bioma, não o primeiro. Ele cobre cerca de 22% do território.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q12-C" onclick="checarResposta(12,'C','A')">
+                        <span>(C) Caatinga — o único bioma exclusivamente brasileiro.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q12-C">Incorreto. A Caatinga é exclusivamente brasileira, mas em extensão é bem menor que a Amazônia (cobre cerca de 11% do país).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q12-D" onclick="checarResposta(12,'D','A')">
+                        <span>(D) Mata Atlântica — bioma litorâneo de alta biodiversidade.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q12-D">Incorreto. A Mata Atlântica originalmente cobria cerca de 15% do país, mas perdeu mais de 85% de sua área original para o desmatamento.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">13</span> O bioma <b>Caatinga</b> é característico de qual região do Brasil?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q13-A" onclick="checarResposta(13,'A','B')">
+                        <span>(A) Região Sul — conhecida pelo frio e pela vegetação de pinheiros.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q13-A">Incorreto. A Região Sul tem o bioma Pampa e parte da Mata Atlântica — o clima é muito diferente da Caatinga.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q13-B" onclick="checarResposta(13,'B','B')">
+                        <span>(B) Região Nordeste — marcada por longos períodos de seca.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q13-B">Correto! 🏅 A Caatinga é um bioma semiárido, com chuvas irregulares e secas longas, encontrado principalmente no interior do Nordeste brasileiro. Suas plantas (como o mandacaru e a catingueira) são adaptadas para sobreviver sem água.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q13-C" onclick="checarResposta(13,'C','B')">
+                        <span>(C) Região Sudeste — onde ficam as maiores cidades do país.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q13-C">Incorreto. O Sudeste tem predominância de Mata Atlântica e Cerrado, não Caatinga.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q13-D" onclick="checarResposta(13,'D','B')">
+                        <span>(D) Região Norte — onde fica a maior floresta tropical do mundo.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q13-D">Incorreto. O Norte é dominado pela Floresta Amazônica — muito úmida, o oposto da Caatinga semiárida.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">14</span> O <b>Pantanal</b> é um bioma famoso mundialmente. Qual é a sua principal característica?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q14-A" onclick="checarResposta(14,'A','C')">
+                        <span>(A) É o deserto mais extenso e quente do Brasil, com dunas de areia.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q14-A">Incorreto. O Pantanal não é um deserto — pelo contrário, é uma das regiões mais alagadas do planeta!</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q14-B" onclick="checarResposta(14,'B','C')">
+                        <span>(B) É uma floresta de alta altitude, com pinheiros e neve no inverno.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q14-B">Incorreto. Essa descrição se aproxima mais da vegetação de altitude da Serra Gaúcha ou da Serra da Mantiqueira.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q14-C" onclick="checarResposta(14,'C','C')">
+                        <span>(C) É a maior planície alagada tropical do mundo, rico em animais como onças e jacarés.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q14-C">Correto! 🏅 O Pantanal fica no Centro-Oeste (Mato Grosso e Mato Grosso do Sul) e é um dos ecossistemas mais ricos do planeta, alagando sazonalmente e abrigando onças-pintadas, tuiuiús e jacarés.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q14-D" onclick="checarResposta(14,'D','C')">
+                        <span>(D) É o bioma exclusivo da Região Sul, semelhante à savana africana.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q14-D">Incorreto. O Pantanal fica no Centro-Oeste, não no Sul. O bioma do Sul é o Pampa.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">15</span> Qual das alternativas apresenta corretamente a capital de um estado da <b>Região Norte do Brasil</b>?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q15-A" onclick="checarResposta(15,'A','D')">
+                        <span>(A) Recife — capital do estado de Pernambuco.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q15-A">Incorreto. Recife é capital do Nordeste, não do Norte. Pernambuco fica na Região Nordeste.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q15-B" onclick="checarResposta(15,'B','D')">
+                        <span>(B) Cuiabá — capital do estado de Mato Grosso.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q15-B">Incorreto. Cuiabá é capital do Centro-Oeste, não do Norte. Mato Grosso fica na Região Centro-Oeste.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q15-C" onclick="checarResposta(15,'C','D')">
+                        <span>(C) Goiânia — capital do estado de Goiás.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q15-C">Incorreto. Goiânia é capital da Região Centro-Oeste. Goiás faz fronteira com o Norte mas pertence ao Centro-Oeste.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q15-D" onclick="checarResposta(15,'D','D')">
+                        <span>(D) Manaus — capital do estado do Amazonas.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q15-D">Correto! 🏅 Manaus é a maior cidade da Região Norte e capital do Amazonas — o maior estado do Brasil, localizado no coração da Amazônia.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== BOSS BATTLE ===== -->
+        <div class="phase-title">👑 BOSS BATTLE: ANÁLISE DE DOCUMENTOS HISTÓRICOS</div>
+        <div class="phase-desc">Questões 16 a 20 — Leia com atenção cada registro antes de responder!</div>
+
+        <!-- TEXTO 1 -->
+        <div class="text-box-analysis">
+            <strong>📜 REGISTRO HISTÓRICO — A ABOLIÇÃO:</strong><br>
+            Em 1850, o tráfico de escravizados africanos para o Brasil foi proibido pela Lei Eusébio de Queirós. Porém, a escravidão continuou dentro do país por mais de 30 anos. Em 1871, a Lei do Ventre Livre declarou livres todos os filhos de mães escravizadas que nascessem a partir daquela data. Em 1885, a Lei Saraiva-Cotegipe libertou os escravizados com mais de 65 anos. Somente em 1888, com a Lei Áurea, a escravidão foi completamente abolida no Brasil — tornando o país o último das Américas a dar esse passo histórico.
+        </div>
+
+        <!-- Q16 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">16</span> De acordo com o texto, qual foi a <b>sequência correta</b> das leis que caminharam rumo à abolição da escravidão?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q16-A" onclick="checarResposta(16,'A','A')">
+                        <span>(A) Lei Eusébio de Queirós → Lei do Ventre Livre → Lei Saraiva-Cotegipe → Lei Áurea.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q16-A">Correto! 🏅 Essa é a ordem exata: 1850, 1871, 1885 e finalmente 1888. Foi um processo gradual de décadas até a abolição total.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q16-B" onclick="checarResposta(16,'B','A')">
+                        <span>(B) Lei Áurea → Lei do Ventre Livre → Lei Eusébio de Queirós → Lei Saraiva-Cotegipe.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q16-B">Incorreto. A Lei Áurea foi a última lei, não a primeira. Leia novamente as datas no texto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q16-C" onclick="checarResposta(16,'C','A')">
+                        <span>(C) Lei do Ventre Livre → Lei Áurea → Lei Eusébio de Queirós → Lei Saraiva-Cotegipe.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q16-C">Incorreto. A Lei Eusébio de Queirós foi a primeira (1850), muito antes da Lei do Ventre Livre (1871).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q16-D" onclick="checarResposta(16,'D','A')">
+                        <span>(D) Lei Saraiva-Cotegipe → Lei Eusébio de Queirós → Lei Áurea → Lei do Ventre Livre.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q16-D">Incorreto. A sequência está completamente fora de ordem em relação às datas indicadas no texto.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q17 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">17</span> O texto afirma que o Brasil foi o <b>"último das Américas"</b> a abolir a escravidão. O que isso revela sobre o processo histórico brasileiro?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q17-A" onclick="checarResposta(17,'A','B')">
+                        <span>(A) Que o Brasil foi pioneiro na luta pelos direitos dos escravizados no continente.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q17-A">Incorreto. "Último" indica o oposto de pioneiro — o Brasil foi o mais lento a abolir, não o primeiro.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q17-B" onclick="checarResposta(17,'B','B')">
+                        <span>(B) Que a abolição foi um processo lento no Brasil, com resistência para acabar com a escravidão.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q17-B">Correto! 🏅 O texto mostra que foram necessárias várias leis ao longo de décadas antes da abolição total. A escravidão foi defendida por grupos poderosos, o que tornou o processo muito lento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q17-C" onclick="checarResposta(17,'C','B')">
+                        <span>(C) Que o Brasil aboliu a escravidão rapidamente, em menos de 5 anos.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q17-C">Incorreto. O texto mostra que o processo durou mais de 38 anos (de 1850 a 1888) — muito longo, não rápido.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q17-D" onclick="checarResposta(17,'D','B')">
+                        <span>(D) Que outros países das Américas nunca tiveram escravidão.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q17-D">Incorreto. "Último das Américas" indica que os outros países das Américas também tiveram escravidão, mas acabaram com ela antes do Brasil.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TEXTO 2 -->
+        <div class="text-box-analysis">
+            <strong>🏛️ NOTÍCIA DO PATRIMÔNIO — O FREVO PERNAMBUCANO:</strong><br>
+            Em dezembro de 2012, a UNESCO inscreveu o Frevo na Lista Representativa do Patrimônio Cultural Imaterial da Humanidade. O Frevo é um estilo musical e de dança típico de Pernambuco, especialmente animado no Carnaval do Recife e de Olinda. Seus dançarinos carregam sombrinhas coloridas e realizam movimentos acrobáticos e ágeis. O reconhecimento internacional veio após anos de trabalho de mestres do Frevo, escolas e grupos culturais para preservar e transmitir essa tradição às novas gerações.
+        </div>
+
+        <!-- Q18 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">18</span> Segundo o texto, por que o Frevo é classificado como <b>patrimônio imaterial</b> e não material?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q18-A" onclick="checarResposta(18,'A','C')">
+                        <span>(A) Porque as sombrinhas coloridas dos dançarinos têm alto valor histórico e artístico.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q18-A">Incorreto. As sombrinhas são objetos (patrimônio material). O que torna o Frevo imaterial é a dança, a música e a tradição viva.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q18-B" onclick="checarResposta(18,'B','C')">
+                        <span>(B) Porque o Frevo é um prédio histórico tombado em Recife.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q18-B">Incorreto. O Frevo não é uma construção física — é uma prática cultural. Prédios são patrimônio material.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q18-C" onclick="checarResposta(18,'C','C')">
+                        <span>(C) Porque é uma tradição viva — uma dança e um ritmo transmitidos de geração em geração.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q18-C">Correto! 🏅 Patrimônio imaterial é aquilo que não se pode "tocar" diretamente — são saberes, danças, músicas e festas transmitidos entre as pessoas. O Frevo é exatamente isso.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q18-D" onclick="checarResposta(18,'D','C')">
+                        <span>(D) Porque o Frevo foi criado por um único artista famoso e sua obra é protegida por copyright.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q18-D">Incorreto. O Frevo é uma criação coletiva e popular, não de um único artista. Patrimônios imateriais pertencem a toda a comunidade.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q19 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">19</span> O texto menciona que o reconhecimento da UNESCO veio "após anos de trabalho de mestres, escolas e grupos culturais". O que isso nos ensina sobre a <b>preservação do patrimônio imaterial</b>?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q19-A" onclick="checarResposta(19,'A','B')">
+                        <span>(A) Que patrimônios imateriais se preservam sozinhos, sem necessidade de esforço humano.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q19-A">Incorreto. O texto mostra exatamente o oposto: a preservação exigiu muito esforço e dedicação de muitas pessoas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q19-B" onclick="checarResposta(19,'B','B')">
+                        <span>(B) Que preservar uma tradição exige esforço coletivo — de mestres, escolas e comunidades.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q19-B">Correto! 🏅 O texto deixa claro que a preservação do Frevo foi resultado de um esforço coletivo e prolongado. Tradições precisam ser ensinadas, praticadas e transmitidas para não desaparecerem.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q19-C" onclick="checarResposta(19,'C','B')">
+                        <span>(C) Que apenas os governos podem preservar o patrimônio, sem a participação da comunidade.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q19-C">Incorreto. O texto ressalta exatamente o papel da comunidade — mestres e grupos culturais — não apenas do governo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q19-D" onclick="checarResposta(19,'D','B')">
+                        <span>(D) Que a UNESCO proibiu a prática do Frevo fora do Carnaval para protegê-lo.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q19-D">Incorreto. A UNESCO reconhece e valoriza o patrimônio, mas não proíbe ou restringe sua prática — pelo contrário, incentiva sua difusão.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TEXTO 3 -->
+        <div class="text-box-analysis">
+            <strong>🌿 RELATÓRIO AMBIENTAL — OS BIOMAS AMEAÇADOS:</strong><br>
+            O Brasil possui 6 biomas: Amazônia, Cerrado, Caatinga, Mata Atlântica, Pampa e Pantanal. Cada um tem características únicas e abriga espécies animais e vegetais que não existem em nenhum outro lugar do planeta. A Mata Atlântica, que já cobria 15% do território brasileiro, perdeu mais de 85% de sua cobertura original por causa do desmatamento para construção de cidades e fazendas. O Cerrado — chamado de "berço das águas" — é responsável por alimentar grandes rios do Brasil. Apesar de sua importância, mais da metade do Cerrado original já foi destruída.
+        </div>
+
+        <!-- Q20 -->
+        <div class="question-block">
+            <div class="question-text"><span class="q-number">20</span> Com base no texto, qual é o <b>maior problema</b> enfrentado pelos biomas brasileiros como a Mata Atlântica e o Cerrado?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" id="opt-q20-A" onclick="checarResposta(20,'A','C')">
+                        <span>(A) O surgimento de novas espécies animais que ameaçam os animais nativos.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q20-A">Incorreto. O texto não menciona o surgimento de novas espécies como problema principal — o foco é no desmatamento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q20-B" onclick="checarResposta(20,'B','C')">
+                        <span>(B) O excesso de chuvas que inunda e destrói a vegetação nativa.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q20-B">Incorreto. O texto aponta o desmatamento como o problema, não o excesso de chuvas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q20-C" onclick="checarResposta(20,'C','C')">
+                        <span>(C) O desmatamento acelerado para dar lugar a cidades e fazendas, destruindo a vegetação original.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q20-C">Correto! 🏅 O texto é claro: a Mata Atlântica perdeu mais de 85% de sua cobertura e mais da metade do Cerrado foi destruída — tudo por causa do desmatamento para construção e agricultura.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" id="opt-q20-D" onclick="checarResposta(20,'D','C')">
+                        <span>(D) A falta de diversidade de espécies nos biomas brasileiros.</span>
+                        <span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span>
+                    </div>
+                    <div class="explanation-box" id="exp-q20-D">Incorreto. O texto diz o contrário — cada bioma "abriga espécies que não existem em nenhum outro lugar", indicando grande diversidade.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCORE BANNER -->
+        <div class="score-banner">
+            <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
+            <div class="action-btn" id="btn-finish-quiz" style="display:none;" onclick="terminarMissao()">Terminar Missão</div>
+        </div>
+
+    </div><!-- fim screen-quiz -->
+</div><!-- fim quiz-container -->
+</body>
+</html>

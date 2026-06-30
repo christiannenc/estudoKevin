@@ -31,6 +31,16 @@
       }
     ]
   },
+  "histgeo": {
+    "nome": "História e Geografia",
+    "icone": "world",
+    "exercicios": [
+      {
+        "arquivo": "materias/histgeo/quiz_histgeo_2026_tri2_prova_parcial_v1.html",
+        "assunto": "Cidadania, Lei Áurea, Constituição de 1988, ECA, patrimônio histórico e cultural, regiões e biomas do Brasil"
+      }
+    ]
+  },
   "ciencias": {
     "nome": "Ciências",
     "icone": "microscope",
