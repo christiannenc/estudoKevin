@@ -529,6 +529,7 @@
                 wrongAnswers.push({
                     q: qNum,
                     text: block.querySelector('.question-text').textContent.trim(),
+                    chosen: element.querySelector('span').textContent.trim(),
                     correct: correctEl ? correctEl.querySelector('span').textContent.trim() : correctAnswer
                 });
             }
