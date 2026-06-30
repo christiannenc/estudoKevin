@@ -120,6 +120,35 @@
         }
         .wrong-item-answer span { font-weight: 700; }
         .modal-empty { text-align: center; color: #4ade80; font-size: 15px; padding: 20px 0; }
+        .history-list { margin-bottom: 20px; }
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #f8fafc;
+        }
+        .history-item.active { border-color: #38bdf8; background: rgba(56,189,248,0.05); }
+        .history-item-info { display: flex; align-items: center; gap: 10px; }
+        .history-item-score { font-weight: 700; color: #4ade80; }
+        .history-item-date { color: #94a3b8; font-size: 12px; }
+        .history-item-current { font-size: 10px; color: #38bdf8; font-weight: 600; }
+        .btn-delete {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #475569;
+            font-size: 16px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            line-height: 1;
+        }
+        .btn-delete:hover { color: #dc2626; background: rgba(220,38,38,0.1); }
+        .history-divider { border: none; border-top: 1px solid #334155; margin: 16px 0; }
     </style>
 </head>
 <body>
@@ -150,10 +179,16 @@
 
 <script>
     const STORAGE_PREFIX = 'estudoKevin:scores:';
+    const DELETE_PASSWORD = 'deletar'; // trocar aqui se quiser mudar a senha
 
     function getScores(arquivo) {
         try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX + arquivo) || '[]'); }
         catch { return []; }
+    }
+
+    function saveScores(arquivo, scores) {
+        try { localStorage.setItem(STORAGE_PREFIX + arquivo, JSON.stringify(scores)); }
+        catch {}
     }
 
     function parseFilename(path) {
@@ -190,25 +225,70 @@
         headerEl.closest('.materia-section').classList.toggle('open');
     }
 
-    function openReview(arquivo, titulo) {
-        const scores = getScores(arquivo);
+    // Arquivo atualmente aberto no modal
+    let _modalArquivo = null;
+
+    function deleteRun(index) {
+        const senha = prompt('Digite a senha para excluir:');
+        if (senha !== DELETE_PASSWORD) {
+            if (senha !== null) alert('Senha incorreta.');
+            return;
+        }
+        const scores = getScores(_modalArquivo);
+        scores.splice(index, 1);
+        saveScores(_modalArquivo, scores);
+        if (scores.length === 0) {
+            document.getElementById('review-modal').classList.remove('open');
+            // Re-renderiza a página para atualizar os cards
+            location.reload();
+        } else {
+            renderModalBody(_modalArquivo, scores);
+        }
+    }
+
+    function renderModalBody(arquivo, scores) {
         const last = scores[scores.length - 1];
-        document.getElementById('modal-title').textContent = titulo;
         const pct = Math.round((last.score / last.total) * 100);
         document.getElementById('modal-summary').innerHTML =
             `Última tentativa: <strong>${last.score}/${last.total} (${pct}%)</strong> · ${new Date(last.date).toLocaleDateString('pt-BR')}`;
-        const body = document.getElementById('modal-body');
+
+        const historyHtml = `
+            <div class="history-list">
+                ${[...scores].reverse().map((s, i) => {
+                    const realIndex = scores.length - 1 - i;
+                    const isLast = realIndex === scores.length - 1;
+                    const p = Math.round((s.score / s.total) * 100);
+                    return `
+                        <div class="history-item${isLast ? ' active' : ''}">
+                            <div class="history-item-info">
+                                <span class="history-item-score">${s.score}/${s.total} (${p}%)</span>
+                                <span class="history-item-date">${new Date(s.date).toLocaleDateString('pt-BR')}</span>
+                                ${isLast ? '<span class="history-item-current">↑ mais recente</span>' : ''}
+                            </div>
+                            <button class="btn-delete" onclick="deleteRun(${realIndex})" title="Excluir esta tentativa">🗑</button>
+                        </div>`;
+                }).join('')}
+            </div>
+            <hr class="history-divider">
+        `;
+
         const wrong = last.wrong || [];
-        if (wrong.length === 0) {
-            body.innerHTML = '<div class="modal-empty">🎉 Parabéns! Nenhum erro na última tentativa.</div>';
-        } else {
-            body.innerHTML = wrong.map(w => `
+        const wrongHtml = wrong.length === 0
+            ? '<div class="modal-empty">🎉 Nenhum erro na última tentativa!</div>'
+            : wrong.map(w => `
                 <div class="wrong-item">
                     <div class="wrong-item-q">${w.text}</div>
                     <div class="wrong-item-answer"><span>Resposta correta:</span> ${w.correct}</div>
-                </div>
-            `).join('');
-        }
+                </div>`).join('');
+
+        document.getElementById('modal-body').innerHTML = historyHtml + wrongHtml;
+    }
+
+    function openReview(arquivo, titulo) {
+        _modalArquivo = arquivo;
+        const scores = getScores(arquivo);
+        document.getElementById('modal-title').textContent = titulo;
+        renderModalBody(arquivo, scores);
         document.getElementById('review-modal').classList.add('open');
     }
 
