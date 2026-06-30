@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Subset Quiz iPad Test</title>
+    <title>Missão Português: Operação Overclock V7</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -16,7 +16,6 @@
             --border-color: #334155;
             --tooltip-bg: #0f172a;
         }
-        
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
@@ -25,262 +24,533 @@
             padding: 20px;
             display: flex;
             justify-content: center;
-            /* Remove completamente o delay de toque e destaques nativos do Safari iOS */
             -webkit-tap-highlight-color: transparent;
         }
-
         .quiz-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             background-color: var(--container-bg);
-            padding: 25px;
+            padding: 30px;
             border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
-
-        h1 {
-            color: var(--accent-color);
-            text-align: center;
-            font-size: 22px;
-            margin-bottom: 20px;
-        }
-
-        .question-block {
-            background-color: rgba(255, 255, 255, 0.02);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-        }
-
-        .question-text {
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 15px;
-        }
-
-        .options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        /* Usando DIV simulando botão para aceitar toques imediatos no Safari iOS */
-        .option-clickable {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 14px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-sizing: border-box;
-            cursor: pointer;
-            /* Força o Safari a entender que este elemento é um botão clicável */
-            cursor: pointer !important;
-        }
-
-        /* Bloqueia qualquer interferência interna de spans/ícones no toque */
-        .option-clickable * {
-            pointer-events: none !important;
-        }
-
-        .feedback-badge {
-            display: none;
-            font-size: 16px;
-        }
-
-        /* Explicação que expande logo abaixo ao errar/acertar (Perfeito para iPad) */
-        .explanation-box {
-            display: none;
-            margin-top: 8px;
-            padding: 12px;
-            background-color: var(--tooltip-bg);
-            border-left: 3px solid var(--accent-color);
-            border-radius: 4px;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-
-        /* Estados de Feedback */
-        .option-clickable.correct {
-            background-color: var(--correct-bg) !important;
-            border-color: var(--correct-bg) !important;
-        }
-        .option-clickable.correct .badge-correct {
-            display: inline-block !important;
-        }
-
-        .option-clickable.incorrect {
-            background-color: var(--incorrect-bg) !important;
-            border-color: var(--incorrect-bg) !important;
-        }
-        .option-clickable.incorrect .badge-incorrect {
-            display: inline-block !important;
-        }
-
-        .option-clickable.hint-green {
-            border: 2px dashed #16a34a !important;
-            background-color: rgba(22, 163, 74, 0.1) !important;
-        }
-        .option-clickable.hint-green .badge-hint {
-            display: inline-block !important;
-        }
-
-        .score-banner {
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px dashed var(--accent-color);
-            border-radius: 8px;
-        }
-
-        .restart-btn {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: bold;
-            margin-top: 10px;
-            cursor: pointer;
-        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        h1 { color: var(--accent-color); text-align: center; font-size: 26px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; user-select: none; }
+        h1:hover { opacity: 0.9; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        .intro-box { background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .intro-title { font-size: 18px; color: var(--accent-color); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h3 { font-size: 16px; margin: 0 0 5px 0; color: #ffffff; }
+        .topic-group p { font-size: 14px; color: var(--text-muted); margin: 0; }
+        .phase-title { background-color: var(--border-color); padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid var(--accent-color); }
+        .phase-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+        .question-block { background-color: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.5; }
+        .text-box-analysis { background-color: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-clickable { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-color); padding: 14px 16px; border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; cursor: pointer !important; user-select: none; }
+        .option-clickable * { pointer-events: none !important; }
+        .feedback-badge { display: none; font-size: 16px; }
+        .explanation-box { display: none; margin-top: 8px; padding: 12px 16px; background-color: var(--tooltip-bg); border-left: 3px solid var(--accent-color); border-radius: 4px; font-size: 13px; line-height: 1.4; }
+        .option-clickable.correct { background-color: var(--correct-bg) !important; border-color: var(--correct-bg) !important; color: #ffffff !important; }
+        .option-clickable.correct .badge-correct { display: inline-block !important; }
+        .option-clickable.incorrect { background-color: var(--incorrect-bg) !important; border-color: var(--incorrect-bg) !important; color: #ffffff !important; }
+        .option-clickable.incorrect .badge-incorrect { display: inline-block !important; }
+        .option-clickable.hint-green { border: 2px dashed #16a34a !important; background-color: rgba(22, 163, 74, 0.1) !important; }
+        .option-clickable.hint-green .badge-hint { display: inline-block !important; }
+        .score-banner { margin-top: 30px; padding: 20px; background-color: rgba(56, 189, 248, 0.1); border: 2px dashed var(--accent-color); border-radius: 12px; text-align: center; }
+        .score-text { font-size: 20px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; }
+        .action-btn { background-color: var(--accent-color); color: var(--bg-color); border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer !important; display: inline-block; text-align: center; user-select: none; }
+        .center-btn-wrapper { display: flex; justify-content: center; width: 100%; }
     </style>
 </head>
 <body>
-
 <div class="quiz-container">
-    <h1>🧪 Teste de Clique - Safari iPad</h1>
-
-    <div class="question-block" data-q="1" data-correct="A">
-        <div class="question-text">1. Fomos verificar e descobrimos que já ________ dois meses que nenhum patch era lançado.</div>
-        <div class="options-container">
-            <div>
-                <div class="option-clickable" data-letter="A">
-                    <span>(A) fazia</span>
-                    <span class="feedback-badge badge-correct">✅</span>
-                    <span class="feedback-badge badge-incorrect">❌</span>
-                    <span class="feedback-badge badge-hint">💡</span>
-                </div>
-                <div class="explanation-box"><b>Por que esta é a certa?</b> O verbo 'fazer', quando indica tempo decorrido, é impessoal. Ele não tem sujeito e fica obrigatoriamente no singular ("fazia dois meses").</div>
+    <h1 id="main-title">🎮 MISSÃO PORTUGUÊS v6</h1>
+    <div class="subtitle">Operação Overclock • Modo Campanha Ativo</div>
+    <div id="screen-intro" class="screen active">
+        <div class="intro-box">
+            <h2 class="intro-title">📋 Conteúdos Mapeados na Missão:</h2>
+            <div class="topic-group">
+                <h3>📖 Leitura e Interpretação de Textos</h3>
+                <p><b>Tópico:</b> Gênero sistematizado: Textos de opinião (Análise de logs, patch notes e intencionalidade).</p>
             </div>
-            <div>
-                <div class="option-clickable" data-letter="B">
-                    <span>(B) faziam</span>
-                    <span class="feedback-badge badge-correct">✅</span>
-                    <span class="feedback-badge badge-incorrect">❌</span>
-                    <span class="feedback-badge badge-hint">💡</span>
-                </div>
-                <div class="explanation-box"><b>Por que esta é a certa?</b> O verbo 'fazer', quando indica tempo decorrido, é impessoal. Ele não tem sujeito e fica obrigatoriamente no singular ("fazia dois meses").</div>
+            <div class="topic-group">
+                <h3>🛠️ Morfologia e Sintaxe</h3>
+                <p><b>Tópico:</b> Pronomes (caso reto, possessivo e de tratamento), classes gramaticais e concordância de verbos impessoais.</p>
+            </div>
+            <div class="topic-group">
+                <h3>✒️ Ortografia</h3>
+                <p><b>Tópico:</b> Uso preciso das palavras mal/mau, variáveis dos porquês e grafia padrão dos verbos.</p>
             </div>
         </div>
-    </div>
-
-    <div class="question-block" data-q="2" data-correct="A">
-        <div class="question-text">2. Indique a alternativa em que o uso de mal ou mau está totalmente correto:</div>
-        <div class="options-container">
-            <div>
-                <div class="option-clickable" data-letter="A">
-                    <span>(A) O chefe do clã estava de <strong>mau</strong> humor hoje.</span>
-                    <span class="feedback-badge badge-correct">✅</span>
-                    <span class="feedback-badge badge-incorrect">❌</span>
-                    <span class="feedback-badge badge-hint">💡</span>
-                </div>
-                <div class="explanation-box"><b>Por que esta é a certa?</b> 'Mau' com 'U' é um adjetivo e é o oposto exato de 'bom' ('bom humor'). Nas outras opções, o correto seria 'mal-educado' e 'jogou mal'.</div>
-            </div>
-            <div>
-                <div class="option-clickable" data-letter="B">
-                    <span>(B) Aquele jogador é um cara muito <strong>mau</strong> educado.</span>
-                    <span class="feedback-badge badge-correct">✅</span>
-                    <span class="feedback-badge badge-incorrect">❌</span>
-                    <span class="feedback-badge badge-hint">💡</span>
-                </div>
-                <div class="explanation-box"><b>Por que esta é a certa?</b> 'Mau' com 'U' é um adjetivo e é o oposto exato de 'bom' ('bom humor'). Nas outras opções, o correto seria 'mal-educado' e 'jogou mal'.</div>
-            </div>
+        <div class="center-btn-wrapper">
+            <div class="action-btn" id="btn-start-quiz" onclick="">Iniciar Missão</div>
         </div>
     </div>
+    <div id="screen-quiz" class="screen">
+        <div class="phase-title">⚡ FASE 1: VARIÁVEIS DOS "PORQUÊS"</div>
+        <div class="phase-desc">Selecione a alternativa correta.</div>
+        <div class="question-block" data-q="1" data-correct="B">
+            <div class="question-text">1. Eles estão discutindo no chat de voz e eu quero saber o ________ de tanta confusão.</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) por que</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto. Usamos "por que" separado para perguntas. O correto é "o porquê".</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) o porquê</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! "O porquê" funciona como um substantivo sinónimo de "o motivo".</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) por quê</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto. "Por quê" com acento só é utilizado no fim de frases.</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="question-block" data-q="2" data-correct="A">
+            <div class="question-text">2. ________ caminho os desenvolvedores decidiram seguir para criar este mapa?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Por que</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! "Por que" separado e sem acento serve para iniciar perguntas diretas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Porque</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto. "Porque" junto é uma conjunção explicativa para respostas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Por quê</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto. O acento só surge no encerramento da frase.</div>
+                </div>
+            </div>
+        </div>
 
-    <div class="score-banner">
-        <div id="score-display">Pontuação: 0 / 2</div>
-        <button class="restart-btn" id="btn-restart">Reiniciar</button>
+        <div class="question-block" data-q="3" data-correct="C">
+            <div class="question-text">3. A equipe perdeu o round e o capitão ficou bravo. Alguém sabe ________?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) porque</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) por que</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto. Falta o acento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) por quê</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Sempre antes do ponto de interrogação deve ser separado e com acento.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="4" data-correct="B">
+            <div class="question-text">4. O jogo foi adiado ________ os testes identificaram bugs severos na engine.</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) por que</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) porque</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Conjunção explicativa.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) o porquê</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">🗲 FASE 2: COMPILAÇÃO DE CONCORDÂNCIA</div>
+        <div class="question-block" data-q="5" data-correct="B">
+            <div class="question-text">5. Perto da base inimiga, ________ muitos perigos guardando o tesouro secreto.</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) havia de existir</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) existiam</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! O verbo "existir" concorda com o sujeito plural.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) havia</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto aqui pois pede concordância com "existiam".</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="6" data-correct="A">
+            <div class="question-text">6. No inventário do herói, ________ um escudo mágico e duas poções raras de mana.</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) faltavam</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Sujeito composto pós-posto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) faltava</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="7" data-correct="A">
+            <div class="question-text">7. Fomos verificar e descobrimos que já ________ dois meses que nenhum patch era lançado.</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) fazia</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Verbo fazer indicando tempo decorrido é impessoal (singular).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) faziam</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="8" data-correct="C">
+            <div class="question-text">8. A maioria dos jogadores da guilda ________ abandonar o servidor após o reset.</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) decidiram apenas</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incompleto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) decidiu apenas</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incompleto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Tanto "decidiu" quanto "decidiram" estão corretos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Com expressões partitivas a concordância é facultativa.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">⛓️ FASE 3: CONECTIVOS LOGICAMENTE TRAVADOS</div>
+        <div class="question-block" data-q="9" data-correct="A">
+            <div class="question-text">9. O vilão final do jogo era extremamente poderoso; ________, conseguimos derrotá-lo usando estratégia.</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) todavia</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Conjunção adversativa (oposição).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) portanto</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) porque</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="10" data-correct="C">
+            <div class="question-text">10. Eu gostaria de comprar aquela skin lendária, ________ estou guardando moedas virtuais para o próximo Passe de Batalha.</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) mais</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto. "Mais" indica quantidade.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) porquê</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) mas</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! "Mas" indica oposição.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="11" data-correct="A">
+            <div class="question-text">11. Nosso ping estava alto demais, ________ nossa taxa de quadros por segundo estivesse excelente.</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) embora</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Concessiva.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) conforme</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) logo</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">🧪 FASE 4: SCANNER ORTOGRÁFICO E CLASSES</div>
+        <div class="question-block" data-q="12" data-correct="C">
+            <div class="question-text">12. Qual das seguintes opções contém um erro clássico de grafia?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Privilégio</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto. Está correto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Companhia</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto. Está correto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Enxergar com CH</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Escreve-se com X.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="13" data-correct="B">
+            <div class="question-text">13. Na sentença "O guerreiro agiu rapidamente", a palavra em destaque é:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Adjetivo</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Advérbio</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Indica modo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Substantivo</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="14" data-correct="A">
+            <div class="question-text">14. Indique a alternativa correta:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) O chefe do clã estava de mau humor hoje.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Mau é o oposto de bom.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Aquele jogador é mal educado.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Deveria ser mal-educado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Ele jogou muito mau.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Deveria ser mal (oposto de bem).</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="15" data-correct="B">
+            <div class="question-text">15. "Se nós quisermos vencer..." A grafia é com:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Z (Quizermos)</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) S (Quisermos)</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto! Derivados de querer são com S.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">👑 BOSS BATTLE: PREGUIÇA DE LEITURA</div>
+        <div class="text-box-analysis">
+            <strong>REGISTRO (PATCH NOTES):</strong> O escudo absorve 100% do dano de queda e 50% de monstros. Cancela se coletar ouro ou atacar outro jogador.
+        </div>
+        <div class="question-block" data-q="16" data-correct="C">
+            <div class="question-text">16. Em qual situação perde o escudo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Ao pular de uma montanha.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Ao ser cercado por criaturas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Ao pegar moedas do chão.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>CONVERSA:</strong> Atirador diz que a armadura converte cura em veneno.
+        </div>
+        <div class="question-block" data-q="17" data-correct="B">
+            <div class="question-text">17. Por que o Atirador pediu para segurar a cura?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Queria solar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) O efeito negativo transformaria a ajuda em dano.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto!</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Suporte sem mana.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>BUG REPORT:</strong> Tinha 500, comprou espada por 450, caiu a conexão, voltou sem espada e com zero moedas.
+        </div>
+        <div class="question-block" data-q="18" data-correct="A">
+            <div class="question-text">18. Qual a falha do sistema?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Cobrou o valor sem entregar o item.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto!</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Ferreiro cobrou mais caro.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Esqueceu de salvar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>TORNEIO:</strong> Inscrição garante vaga mas confirmação depende de entregar 1kg de alimento até sábado.
+        </div>
+        <div class="question-block" data-q="19" data-correct="B">
+            <div class="question-text">19. Se preencher na quarta mas esquecer o alimento, o que acontece?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Participa normalmente.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Perdem a vaga por falta de confirmação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto!</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Terá mais uma semana.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            <strong>CRÍTICA:</strong> A nostalgia faz esquecer os defeitos dos jogos antigos dos anos 90 e esconde indies incríveis do presente.
+        </div>
+        <div class="question-block" data-q="20" data-correct="C">
+            <div class="question-text">20. Qual o problema ao comparar os jogos?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Jogos dos anos 90 eram melhores.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Novos dependem só de gráficos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Incorreto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) A memória afetiva distorce o passado e ofusca as boas opções do presente.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">Correto!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-banner">
+            <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
+            <div class="action-btn" id="btn-restart-quiz" onclick="">Reiniciar Missão</div>
+        </div>
     </div>
 </div>
-
 <script>
     (function() {
         let score = 0;
-        let answered = {};
-
-        function processSelection(element) {
+        let answeredQuestions = {};
+        const totalQuestions = 20;
+        const screenIntro = document.getElementById('screen-intro');
+        const screenQuiz = document.getElementById('screen-quiz');
+        const btnStart = document.getElementById('btn-start-quiz');
+        const btnRestart = document.getElementById('btn-restart-quiz');
+        const mainTitle = document.getElementById('main-title');
+        
+        function showScreen(screenToShow) {
+            screenIntro.classList.remove('active');
+            screenQuiz.classList.remove('active');
+            screenToShow.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+        
+        if (btnStart) {
+            btnStart.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenQuiz);
+            });
+        }
+        
+        if (mainTitle) {
+            mainTitle.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenIntro);
+            });
+        }
+        
+        function handleResponse(element) {
             const block = element.closest('.question-block');
             if (!block) return;
-
             const qNum = block.getAttribute('data-q');
             const correctAnswer = block.getAttribute('data-correct');
             const selectedLetter = element.getAttribute('data-letter');
-
-            if (answered[qNum]) return;
-            answered[qNum] = selectedLetter;
-
-            // Encontra todas as opções deste bloco
+            if (answeredQuestions[qNum]) return;
+            answeredQuestions[qNum] = selectedLetter;
             const parentContainer = block.querySelector('.options-container');
             const wrappers = parentContainer.children;
-
             for (let i = 0; i < wrappers.length; i++) {
                 const opt = wrappers[i].querySelector('.option-clickable');
                 const expBox = wrappers[i].querySelector('.explanation-box');
                 const optLetter = opt.getAttribute('data-letter');
-
                 if (selectedLetter === correctAnswer) {
-                    if (optLetter === correctAnswer) {
-                        opt.classList.add('correct');
-                    }
+                    if (optLetter === correctAnswer) opt.classList.add('correct');
                 } else {
-                    if (opt === element) {
-                        opt.classList.add('incorrect');
-                    } else if (optLetter === correctAnswer) {
-                        opt.classList.add('hint-green');
-                    }
+                    if (opt === element) opt.classList.add('incorrect');
+                    else if (optLetter === correctAnswer) opt.classList.add('hint-green');
                 }
-
-                // Sempre mostra o box explicativo logo abaixo da opção ao responder
-                if (expBox) {
-                    expBox.style.display = 'block';
-                }
+                if (expBox) expBox.style.display = 'block';
             }
-
-            if (selectedLetter === correctAnswer) {
-                score++;
+            if (selectedLetter === correctAnswer) score++;
+            document.getElementById('score-display').textContent = `Pontuação: ${score} / ${totalQuestions}`;
+            if (Object.keys(answeredQuestions).length === totalQuestions) {
+                try {
+                    const key = 'estudoKevin:scores:materias/portugues/quiz_portugues_2026_tri2_prova_parcial_v1.html';
+                    const history = JSON.parse(localStorage.getItem(key) || '[]');
+                    history.push({ score, total: totalQuestions, date: new Date().toISOString() });
+                    localStorage.setItem(key, JSON.stringify(history));
+                } catch(e) {}
             }
-
-            document.getElementById('score-display').textContent = `Pontuação: ${score} / 2`;
         }
-
-        // Mapeia tanto cliques normais quanto eventos de toque rápidos do iOS Safari
+        
         document.querySelectorAll('.option-clickable').forEach(el => {
             el.addEventListener('click', function(e) {
-                processSelection(this);
-            });
-            el.addEventListener('touchstart', function(e) {
-                // Previne o comportamento duplo do Safari
-                processSelection(this);
-            }, {passive: true});
-        });
-
-        document.getElementById('btn-restart').addEventListener('click', function() {
-            score = 0;
-            answered = {};
-            document.getElementById('score-display').textContent = `Pontuação: 0 / 2`;
-            document.querySelectorAll('.option-clickable').forEach(el => {
-                el.className = 'option-clickable';
-            });
-            document.querySelectorAll('.explanation-box').forEach(box => {
-                box.style.display = 'none';
+                e.preventDefault();
+                handleResponse(this);
             });
         });
+        
+        if (btnRestart) {
+            btnRestart.addEventListener('click', function(e) {
+                e.preventDefault();
+                score = 0;
+                answeredQuestions = {};
+                document.getElementById('score-display').textContent = `Pontuação: 0 / ${totalQuestions}`;
+                document.querySelectorAll('.option-clickable').forEach(el => { el.className = 'option-clickable'; });
+                document.querySelectorAll('.explanation-box').forEach(box => { box.style.display = 'none'; });
+                showScreen(screenIntro);
+            });
+        }
     })();
 </script>
-
 </body>
 </html>

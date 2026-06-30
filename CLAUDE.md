@@ -56,8 +56,31 @@ A extensão do arquivo decide o badge e o comportamento do link:
 
 Os quizzes seguem o estilo do arquivo já existente em `materias/portugues/`: tema escuro, perguntas em `.question-block` com `data-q` e `data-correct`, opções clicáveis com feedback visual (verde = correto, vermelho = incorreto, dica em verde tracejado na opção certa quando o usuário erra), explicação que expande abaixo da opção respondida, e placar no final com botão de reiniciar. Ao criar um quiz novo, reaproveitar essa estrutura/CSS para manter consistência visual entre os exercícios.
 
+## Mascote (`assets/mascote.svg`)
+
+- Desenho original, sem IP de terceiros
+- Design definido: boneco com **dois olhos** e **segurando uma banana**
+- Ao editar ou recriar o mascote, manter essas características
+
+## Histórico de pontuação dos quizzes
+
+O `index.html` deve exibir, em cada card de quiz, o histórico de pontuação de tentativas anteriores e indicar visualmente se o quiz já foi feito ou não. Regras:
+
+- Usar `localStorage` **somente** para armazenar o histórico de pontuação dos quizzes (chave: nome do arquivo, valor: array de `{score, total, date}`). Esta é a única exceção ao "não usar localStorage".
+- Card não feito: visual neutro/padrão
+- Card já feito: exibir a última pontuação e badge de "Feito" (ou similar)
+- O histórico detalhado pode ser exibido em tooltip ou expansão no card
+
+## Ordenação dos cards de exercício
+
+Dentro de cada matéria, os cards devem ser ordenados por:
+1. **Não feitos primeiro** (quizzes sem histórico no localStorage aparecem antes dos feitos)
+2. **Mais recentes primeiro** (desempate pelo ano + trimestre + versão, do maior para o menor)
+
+PDFs (sem histórico possível) são sempre tratados como "não feitos" para fins de ordenação.
+
 ## O que NÃO fazer
 
-- Não usar localStorage/sessionStorage (não é necessário aqui, mas evitar de qualquer forma).
+- Não usar localStorage/sessionStorage para nada além do histórico de pontuação dos quizzes.
 - Não adicionar build step, framework ou dependências de pacote sem necessidade — o ponto forte deste projeto é a simplicidade de só soltar um arquivo HTML/PDF novo e atualizar o manifest.
 - Não usar imagens ou personagens com direitos autorais de terceiros (ex: Minions) — o mascote do site é um desenho original.
