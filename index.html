@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajudando o Kevin a estudar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/tabler-icons.min.css">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="page">
+    <div class="header-row">
+        <img src="assets/mascote.svg" alt="Mascote" class="mascot">
+        <div>
+            <h1>Ajudando o Kevin a estudar</h1>
+            <p class="subtitle">Material de estudo organizado por matéria</p>
+        </div>
+    </div>
+
+    <div id="materias-container"></div>
+</div>
+
+<script>
+    // Espera nomes no formato:
+    // {tipo}_{materia}_{ano}_tri{N}_{descricao}_{parcial|completa}_v{N}.{html|pdf}
+    function parseFilename(path) {
+        const filename = path.split('/').pop();
+        const match = filename.match(/^([a-z]+)_([a-z]+)_(\d{4})_tri(\d)_.+_(parcial|completa)_v(\d+)\.(html|pdf)$/i);
+
+        if (!match) {
+            return {
+                titulo: filename,
+                extensao: filename.split('.').pop(),
+                versao: 1
+            };
+        }
+
+        const [, , , ano, tri, completude, versao, extensao] = match;
+        const completudeLabel = completude.charAt(0).toUpperCase() + completude.slice(1);
+
+        return {
+            titulo: `${tri}º trimestre ${ano} · ${completudeLabel} · v${versao}`,
+            extensao: extensao.toLowerCase(),
+            versao: parseInt(versao, 10)
+        };
+    }
+
+    function toggleMateria(headerEl) {
+        headerEl.closest('.materia-section').classList.toggle('open');
+    }
+
+    function renderExercicio(exercicio) {
+        const info = parseFilename(exercicio.arquivo);
+        const isQuiz = info.extensao === 'html';
+        const badgeClass = isQuiz ? 'badge-quiz' : 'badge-imprimir';
+        const badgeLabel = isQuiz ? 'Quiz' : 'Imprimir';
+        const target = isQuiz ? ' target="_blank" rel="noopener"' : '';
+
+        return `
+            <a href="${exercicio.arquivo}"${target} class="exercicio-card">
+                <div class="exercicio-info">
+                    <span class="exercicio-nome">${info.titulo}</span>
+                    <span class="exercicio-assunto">${exercicio.assunto}</span>
+                </div>
+                <span class="badge ${badgeClass}">${badgeLabel}</span>
+            </a>
+        `;
+    }
+
+    function renderMateria(key, materia) {
+        const exerciciosHtml = materia.exercicios.length
+            ? materia.exercicios.map(renderExercicio).join('')
+            : '<p class="empty-msg">Nenhum exercício ainda.</p>';
+
+        return `
+            <div class="materia-section" id="materia-${key}">
+                <button class="materia-header" onclick="toggleMateria(this)">
+                    <span class="materia-header-left">
+                        <i class="ti ti-${materia.icone}"></i>
+                        ${materia.nome}
+                        <span class="materia-count">(${materia.exercicios.length})</span>
+                    </span>
+                    <span class="chevron">▾</span>
+                </button>
+                <div class="materia-body">
+                    <div class="materia-body-inner">
+                        ${exerciciosHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    fetch('manifest.json')
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById('materias-container');
+            container.innerHTML = Object.entries(data)
+                .map(([key, materia]) => renderMateria(key, materia))
+                .join('');
+        })
+        .catch(err => {
+            document.getElementById('materias-container').innerHTML =
+                '<p class="empty-msg">Não foi possível carregar o manifest.json</p>';
+            console.error(err);
+        });
+</script>
+
+</body>
+</html>

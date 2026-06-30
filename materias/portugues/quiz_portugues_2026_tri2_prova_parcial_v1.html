@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Subset Quiz iPad Test</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-bg: #16a34a;
+            --incorrect-bg: #dc2626;
+            --border-color: #334155;
+            --tooltip-bg: #0f172a;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            /* Remove completamente o delay de toque e destaques nativos do Safari iOS */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .quiz-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--container-bg);
+            padding: 25px;
+            border-radius: 16px;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .question-block {
+            background-color: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Usando DIV simulando botão para aceitar toques imediatos no Safari iOS */
+        .option-clickable {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            cursor: pointer;
+            /* Força o Safari a entender que este elemento é um botão clicável */
+            cursor: pointer !important;
+        }
+
+        /* Bloqueia qualquer interferência interna de spans/ícones no toque */
+        .option-clickable * {
+            pointer-events: none !important;
+        }
+
+        .feedback-badge {
+            display: none;
+            font-size: 16px;
+        }
+
+        /* Explicação que expande logo abaixo ao errar/acertar (Perfeito para iPad) */
+        .explanation-box {
+            display: none;
+            margin-top: 8px;
+            padding: 12px;
+            background-color: var(--tooltip-bg);
+            border-left: 3px solid var(--accent-color);
+            border-radius: 4px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* Estados de Feedback */
+        .option-clickable.correct {
+            background-color: var(--correct-bg) !important;
+            border-color: var(--correct-bg) !important;
+        }
+        .option-clickable.correct .badge-correct {
+            display: inline-block !important;
+        }
+
+        .option-clickable.incorrect {
+            background-color: var(--incorrect-bg) !important;
+            border-color: var(--incorrect-bg) !important;
+        }
+        .option-clickable.incorrect .badge-incorrect {
+            display: inline-block !important;
+        }
+
+        .option-clickable.hint-green {
+            border: 2px dashed #16a34a !important;
+            background-color: rgba(22, 163, 74, 0.1) !important;
+        }
+        .option-clickable.hint-green .badge-hint {
+            display: inline-block !important;
+        }
+
+        .score-banner {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px dashed var(--accent-color);
+            border-radius: 8px;
+        }
+
+        .restart-btn {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>🧪 Teste de Clique - Safari iPad</h1>
+
+    <div class="question-block" data-q="1" data-correct="A">
+        <div class="question-text">1. Fomos verificar e descobrimos que já ________ dois meses que nenhum patch era lançado.</div>
+        <div class="options-container">
+            <div>
+                <div class="option-clickable" data-letter="A">
+                    <span>(A) fazia</span>
+                    <span class="feedback-badge badge-correct">✅</span>
+                    <span class="feedback-badge badge-incorrect">❌</span>
+                    <span class="feedback-badge badge-hint">💡</span>
+                </div>
+                <div class="explanation-box"><b>Por que esta é a certa?</b> O verbo 'fazer', quando indica tempo decorrido, é impessoal. Ele não tem sujeito e fica obrigatoriamente no singular ("fazia dois meses").</div>
+            </div>
+            <div>
+                <div class="option-clickable" data-letter="B">
+                    <span>(B) faziam</span>
+                    <span class="feedback-badge badge-correct">✅</span>
+                    <span class="feedback-badge badge-incorrect">❌</span>
+                    <span class="feedback-badge badge-hint">💡</span>
+                </div>
+                <div class="explanation-box"><b>Por que esta é a certa?</b> O verbo 'fazer', quando indica tempo decorrido, é impessoal. Ele não tem sujeito e fica obrigatoriamente no singular ("fazia dois meses").</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="question-block" data-q="2" data-correct="A">
+        <div class="question-text">2. Indique a alternativa em que o uso de mal ou mau está totalmente correto:</div>
+        <div class="options-container">
+            <div>
+                <div class="option-clickable" data-letter="A">
+                    <span>(A) O chefe do clã estava de <strong>mau</strong> humor hoje.</span>
+                    <span class="feedback-badge badge-correct">✅</span>
+                    <span class="feedback-badge badge-incorrect">❌</span>
+                    <span class="feedback-badge badge-hint">💡</span>
+                </div>
+                <div class="explanation-box"><b>Por que esta é a certa?</b> 'Mau' com 'U' é um adjetivo e é o oposto exato de 'bom' ('bom humor'). Nas outras opções, o correto seria 'mal-educado' e 'jogou mal'.</div>
+            </div>
+            <div>
+                <div class="option-clickable" data-letter="B">
+                    <span>(B) Aquele jogador é um cara muito <strong>mau</strong> educado.</span>
+                    <span class="feedback-badge badge-correct">✅</span>
+                    <span class="feedback-badge badge-incorrect">❌</span>
+                    <span class="feedback-badge badge-hint">💡</span>
+                </div>
+                <div class="explanation-box"><b>Por que esta é a certa?</b> 'Mau' com 'U' é um adjetivo e é o oposto exato de 'bom' ('bom humor'). Nas outras opções, o correto seria 'mal-educado' e 'jogou mal'.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="score-banner">
+        <div id="score-display">Pontuação: 0 / 2</div>
+        <button class="restart-btn" id="btn-restart">Reiniciar</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        let score = 0;
+        let answered = {};
+
+        function processSelection(element) {
+            const block = element.closest('.question-block');
+            if (!block) return;
+
+            const qNum = block.getAttribute('data-q');
+            const correctAnswer = block.getAttribute('data-correct');
+            const selectedLetter = element.getAttribute('data-letter');
+
+            if (answered[qNum]) return;
+            answered[qNum] = selectedLetter;
+
+            // Encontra todas as opções deste bloco
+            const parentContainer = block.querySelector('.options-container');
+            const wrappers = parentContainer.children;
+
+            for (let i = 0; i < wrappers.length; i++) {
+                const opt = wrappers[i].querySelector('.option-clickable');
+                const expBox = wrappers[i].querySelector('.explanation-box');
+                const optLetter = opt.getAttribute('data-letter');
+
+                if (selectedLetter === correctAnswer) {
+                    if (optLetter === correctAnswer) {
+                        opt.classList.add('correct');
+                    }
+                } else {
+                    if (opt === element) {
+                        opt.classList.add('incorrect');
+                    } else if (optLetter === correctAnswer) {
+                        opt.classList.add('hint-green');
+                    }
+                }
+
+                // Sempre mostra o box explicativo logo abaixo da opção ao responder
+                if (expBox) {
+                    expBox.style.display = 'block';
+                }
+            }
+
+            if (selectedLetter === correctAnswer) {
+                score++;
+            }
+
+            document.getElementById('score-display').textContent = `Pontuação: ${score} / 2`;
+        }
+
+        // Mapeia tanto cliques normais quanto eventos de toque rápidos do iOS Safari
+        document.querySelectorAll('.option-clickable').forEach(el => {
+            el.addEventListener('click', function(e) {
+                processSelection(this);
+            });
+            el.addEventListener('touchstart', function(e) {
+                // Previne o comportamento duplo do Safari
+                processSelection(this);
+            }, {passive: true});
+        });
+
+        document.getElementById('btn-restart').addEventListener('click', function() {
+            score = 0;
+            answered = {};
+            document.getElementById('score-display').textContent = `Pontuação: 0 / 2`;
+            document.querySelectorAll('.option-clickable').forEach(el => {
+                el.className = 'option-clickable';
+            });
+            document.querySelectorAll('.explanation-box').forEach(box => {
+                box.style.display = 'none';
+            });
+        });
+    })();
+</script>
+
+</body>
+</html>

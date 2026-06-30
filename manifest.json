@@ -1,0 +1,21 @@
+{
+  "portugues": {
+    "nome": "Português",
+    "icone": "book-2",
+    "exercicios": [
+      {
+        "arquivo": "materias/portugues/quiz_portugues_2026_tri2_prova_parcial_v1.html",
+        "assunto": "Verbos impessoais (fazer), uso de mau e mal"
+      },
+      {
+        "arquivo": "materias/portugues/quiz_portugues_2026_tri2_redacao_completa_v1.pdf",
+        "assunto": "Estrutura do artigo de opinião, levantamento de argumentos"
+      }
+    ]
+  },
+  "matematica": {
+    "nome": "Matemática",
+    "icone": "calculator",
+    "exercicios": []
+  }
+}
