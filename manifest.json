@@ -31,23 +31,35 @@
       }
     ]
   },
-  "histgeo": {
-    "nome": "História e Geografia",
-    "icone": "world",
-    "exercicios": [
-      {
-        "arquivo": "materias/histgeo/quiz_histgeo_2026_tri2_prova_parcial_v1.html",
-        "assunto": "Cidadania, Lei Áurea, Constituição de 1988, ECA, patrimônio histórico e cultural, regiões e biomas do Brasil"
-      }
-    ]
-  },
   "ciencias": {
     "nome": "Ciências",
-    "icone": "microscope",
+    "icone": "flask",
     "exercicios": [
       {
         "arquivo": "materias/ciencias/quiz_ciencias_2026_tri2_prova_parcial_v1.html",
-        "assunto": "Sistemas digestório, respiratório, circulatório, urinário e distribuição de nutrientes"
+        "assunto": "Sistemas digestório, respiratório, circulatório e urinário — quiz temático com cenários de gamer, laboratório, crônica e cinema"
+      },
+      {
+        "arquivo": "materias/ciencias/quiz_ciencias_2026_tri2_prova_parcial_v2.html",
+        "assunto": "Sistemas digestório, respiratório, circulatório e urinário — órgãos, funções, experimentos e inter-relação dos sistemas"
+      },
+      {
+        "arquivo": "materias/ciencias/impressao_ciencias_2026_tri2_avaliacao_parcial_v1.html",
+        "assunto": "Circuito da Energia (corrida no recreio) e Digestão Omissa — avaliação dissertativa com gabarito do professor"
+      },
+      {
+        "arquivo": "materias/ciencias/exercicio_ciencias_2026_tri2_atividade_parcial_v1.pdf",
+        "assunto": "Sistemas digestório, respiratório, circulatório e urinário — exercício para imprimir"
+      }
+    ]
+  },
+  "histgeo": {
+    "nome": "História e Geografia",
+    "icone": "map",
+    "exercicios": [
+      {
+        "arquivo": "materias/histgeo/quiz_histgeo_2026_tri2_prova_parcial_v1.html",
+        "assunto": "Cidadania, ECA, UNICEF, Revolução Industrial, patrimônio histórico e cultural, IPHAN, trabalho infantil, Greve de 1917 e Lei da Greve"
       }
     ]
   }
