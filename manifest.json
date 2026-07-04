@@ -58,6 +58,10 @@
     "icone": "map",
     "exercicios": [
       {
+        "arquivo": "materias/histgeo/quiz_histgeo_2026_tri2_prova_parcial_v3.html",
+        "assunto": "Patrimônio histórico, cidadania, direitos humanos, mundo do trabalho, INSS, sindicatos, dupla jornada e trabalho infantil — questões objetivas e interpretação de texto"
+      },
+      {
         "arquivo": "materias/histgeo/quiz_histgeo_2026_tri2_prova_parcial_v1.html",
         "assunto": "Cidadania, ECA, UNICEF, Revolução Industrial, patrimônio histórico e cultural, IPHAN, trabalho infantil, Greve de 1917 e Lei da Greve"
       }

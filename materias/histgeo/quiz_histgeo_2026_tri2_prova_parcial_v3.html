@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio de História e Geografia - 5º Ano</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --background: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #7F8C8D;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .intro-list {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+
+        .intro-list li {
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-finish {
+            display: none;
+            width: 100%;
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+            margin-top: 12px;
+        }
+
+        .btn-finish:hover {
+            background: #15803d;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #E0E6ED;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .text-box {
+            background: #F8FAFC;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            font-size: 15px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option-btn {
+            background: #FAFAFA;
+            border: 2px solid #E0E6ED;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 15px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background: #EDF4FC;
+            border-color: var(--primary);
+        }
+
+        .option-btn.correct {
+            background: #E8F8F5;
+            border-color: var(--success);
+            color: #117A65;
+        }
+
+        .option-btn.wrong {
+            background: #FDEDEC;
+            border-color: var(--error);
+            color: #78281F;
+        }
+
+        .score-title {
+            font-size: 48px;
+            color: var(--primary);
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .feedback-text {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- TELA INTRODUTÓRIA -->
+    <div id="screen-intro">
+        <h1>🏆 Desafio de Ciências Humanas</h1>
+        <p>Bem-vindo ao Quiz de revisão para o 5º ano! Este teste foi preparado para avaliar o conhecimento nos seguintes grandes temas macros estudados em sala de aula:</p>
+
+        <ul class="intro-list">
+            <li>🏛️ Patrimônio Histórico, Memória e Paisagens Urbanas</li>
+            <li>⚖️ Cidadania e a Evolução dos Direitos Humanos</li>
+            <li>💼 O Mundo do Trabalho, INSS, Sindicatos e Tecnologia</li>
+            <li>🛑 A Luta contra o Trabalho Infantil no Brasil e no Mundo</li>
+        </ul>
+
+        <p><strong>Estrutura do Quiz:</strong><br>O desafio contém 15 questões objetivas diretas e 5 questões baseadas na interpretação de pequenos textos.</p>
+
+        <button class="btn" onclick="startQuiz()">Começar Desafio!</button>
+    </div>
+
+    <!-- TELA DE JOGO -->
+    <div id="screen-game" class="hidden">
+        <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <h2 id="question-number">Questão 1 de 20</h2>
+        <div id="text-context" class="text-box hidden"></div>
+        <p id="question-text" style="font-weight: 600; font-size: 17px;"></p>
+
+        <div class="options-container" id="options-box">
+            <!-- As opções serão injetadas via JavaScript -->
+        </div>
+
+        <button id="next-btn" class="btn hidden" onclick="nextQuestion()">Próxima Questão</button>
+    </div>
+
+    <!-- TELA FINAL -->
+    <div id="screen-results" class="hidden">
+        <h1>Desafio Concluído!</h1>
+        <div class="score-title" id="final-score">0 / 20</div>
+        <p class="feedback-text" id="feedback-message"></p>
+        <button class="btn" onclick="restartQuiz()">Tentar Novamente</button>
+        <button class="btn-finish" id="btn-finish-quiz" onclick="terminarMissao()">🏁 Terminar Missão</button>
+    </div>
+</div>
+
+<script>
+    var STORAGE_KEY = 'estudoKevin:scores:materias/histgeo/quiz_histgeo_2026_tri2_prova_parcial_v3.html';
+    var wrongAnswers = [];
+
+    // BANCO DE QUESTÕES
+    const quizData = [
+        // --- QUESTÕES OBJETIVAS (1 a 15) ---
+        {
+            question: "Muitos edifícios urbanos antigos mudam de função ao longo do tempo. O prédio do Museu Imperial de Petrópolis (RJ), antes de ser museu e escola, foi construído originalmente para servir como:",
+            options: [
+                "Uma fábrica de tecidos industrial.",
+                "A residência de verão do imperador Dom Pedro II.",
+                "Um quartel militar das forças da República.",
+                "A sede do Palácio do Governo Colonial."
+            ],
+            answer: 1
+        },
+        {
+            question: "Ao analisar imagens de uma mesma cidade em épocas diferentes, o que representa uma 'permanência na paisagem'?",
+            options: [
+                "A abertura de novas avenidas de asfalto.",
+                "A construção de prédios modernos e altos.",
+                "A preservação de um monumento histórico ou elemento natural.",
+                "O desmatamento de florestas para expansão urbana."
+            ],
+            answer: 2
+        },
+        {
+            question: "Em que período da História do Brasil foram inaugurados os Arcos da Lapa, no Rio de Janeiro, em 1750?",
+            options: [
+                "Período Colonial.",
+                "Período Imperial.",
+                "Período Republicano.",
+                "Brasil Contemporâneo."
+            ],
+            answer: 0
+        },
+        {
+            question: "Qual das seguintes construções históricas NÃO faz parte da lista oficial das Sete Novas Maravilhas do Mundo eleitas em 2007?",
+            options: [
+                "Cristo Redentor (Brasil).",
+                "Muralha da China (China).",
+                "Torre Eiffel (França).",
+                "Machu Picchu (Peru)."
+            ],
+            answer: 2
+        },
+        {
+            question: "Onde nasceu o conceito histórico de cidadania, na Antiguidade, por volta do século VI a.C.?",
+            options: [
+                "Em Roma, Itália.",
+                "Em Atenas, na Grécia Antiga.",
+                "Em Paris, na França.",
+                "No Cairo, Egito."
+            ],
+            answer: 1
+        },
+        {
+            question: "Na Grécia Antiga, a cidadania era restrita e injusta. Quem tinha direitos de participação política na época?",
+            options: [
+                "Todas as mulheres livres e homens adultos.",
+                "Apenas os reis e os sacerdotes do império.",
+                "Somente homens adultos, nascidos livres e filhos de atenienses.",
+                "Estrangeiros que possuíam grandes pedaços de terra."
+            ],
+            answer: 2
+        },
+        {
+            question: "Qual documento histórico de grande relevância internacional foi criado logo após a Segunda Guerra Mundial, em 1948, para proteger a dignidade humana de todas as pessoas?",
+            options: [
+                "A Declaração Universal dos Direitos Humanos.",
+                "A Constituição da República Brasileira.",
+                "A Declaração dos Direitos do Homem e do Cidadão.",
+                "O Estatuto da Criança e do Adolescente."
+            ],
+            answer: 0
+        },
+        {
+            question: "A instalação de rampas de acesso, calçadas niveladas e ônibus adaptados atende diretamente aos objetivos de qual documento internacional?",
+            options: [
+                "Declaração dos Direitos do Homem (1789).",
+                "Declaração dos Direitos das Pessoas Deficientes (1975).",
+                "Tratado de Lisboa (2007).",
+                "Declaração dos Direitos da Criança (1959)."
+            ],
+            answer: 1
+        },
+        {
+            question: "No Brasil, os direitos trabalhistas (como férias remuneradas, 13º salário e licença-maternidade) são assegurados ao trabalhador por meio de qual registro oficial feito pelo empregador?",
+            options: [
+                "Inscrição no Cadastro Único.",
+                "Título de Eleitor.",
+                "Registro na Carteira de Trabalho.",
+                "Certificado de Alistamento Militar."
+            ],
+            answer: 2
+        },
+        {
+            question: "Como se chama o órgão do governo federal para o qual o trabalhador de carteira assinada faz contribuições mensais para garantir sua aposentadoria ou auxílio-doença?",
+            options: [
+                "ECA (Estatuto da Criança e do Adolescente).",
+                "INSS (Instituto Nacional do Seguro Social).",
+                "IBGE (Instituto Brasileiro de Geografia e Estatística).",
+                "OIT (Organização Internacional do Trabalho)."
+            ],
+            answer: 1
+        },
+        {
+            question: "As associações formadas por trabalhadores de uma mesma profissão que têm a função de lutar por melhorias salariais e garantir os direitos da categoria são os:",
+            options: [
+                "Ministérios Públicos.",
+                "Conselhos Tutelares.",
+                "Sindicatos.",
+                "Tribunais de Justiça."
+            ],
+            answer: 2
+        },
+        {
+            question: "A substituição do trabalho humano por máquinas agrícolas (como colheitadeiras nas plantações de café) ou por tecnologia nas indústrias e bancos é chamada de:",
+            options: [
+                "Mecanização do trabalho.",
+                "Subemprego estrutural.",
+                "Trabalho artesanal.",
+                "Êxodo rural planejado."
+            ],
+            answer: 0
+        },
+        {
+            question: "De acordo com as leis atuais do Brasil e o Estatuto da Criança e do Adolescente (ECA), qual é a idade mínima permitida para trabalhar, e sob qual condição específica?",
+            options: [
+                "Qualquer idade, desde que os pais autorizem.",
+                "A partir dos 10 anos, ajudando no comércio da família.",
+                "A partir dos 14 anos, estritamente na condição de aprendiz.",
+                "Apenas a partir dos 18 anos completos, sem exceções."
+            ],
+            answer: 2
+        },
+        {
+            question: "Estatisticamente, as mulheres que trabalham fora de casa enfrentam a chamada 'dupla jornada'. O que significa esse termo?",
+            options: [
+                "Trabalhar em duas empresas diferentes no mesmo dia.",
+                "Trabalhar fora e ainda dedicar horas extras significativas aos afazeres domésticos e cuidados com os filhos.",
+                "Fazer o trabalho correspondente a dois homens na mesma empresa.",
+                "Ter direito a receber o dobro do salário mínimo estipulado."
+            ],
+            answer: 1
+        },
+        {
+            question: "Segundo as pesquisas do IBGE (como a PNAD), qual é a faixa etária que concentra o maior número total de crianças e adolescentes trabalhando em situação de trabalho infantil no Brasil?",
+            options: [
+                "De 5 a 9 anos.",
+                "De 10 a 13 anos.",
+                "De 14 a 17 anos.",
+                "Apenas jovens maiores de 18 anos."
+            ],
+            answer: 2
+        },
+
+        // --- QUESTÕES COM TEXTO DE INTERPRETAÇÃO (16 a 20) ---
+        {
+            text: "Texto adaptado da Declaração Universal dos Direitos Humanos (por Ruth Rocha): 'Todas as pessoas têm direito ao tipo de trabalho que preferirem, e a boas condições de trabalho. Todos devem receber remuneração igual, quando fazem o mesmo trabalho, e devem ganhar o suficiente para saúde, alimentação e vestuário.'",
+            question: "Com base no texto de Ruth Rocha e no que estudamos sobre a realidade do Brasil, assinale a afirmação correta:",
+            options: [
+                "Todos os brasileiros sem exceção têm esses direitos garantidos na prática do dia a dia.",
+                "Quem está no mercado de trabalho informal ou subemprego muitas vezes fica desassistido dessas garantias.",
+                "A remuneração de homens e mulheres para o mesmo cargo sempre foi igual ao longo da história.",
+                "O texto afirma que as condições de trabalho não influenciam na saúde e vestuário das pessoas."
+            ],
+            answer: 1
+        },
+        {
+            text: "Trecho da música 'Criança não trabalha' (Arnaldo Antunes e Paulo Tatit):\n'Lápis, caderno, chiclete, pião\nSol, bicicleta, skate, calção\nEsconderijo, avião, correria\nCachoeira, estandarte, fruta na feira...\nCriança não trabalha, criança dá trabalho'",
+            question: "Ao listar brinquedos, materiais escolares e brincadeiras, qual é o principal objetivo da letra da música?",
+            options: [
+                "Mostrar que as crianças precisam trabalhar para conseguir comprar brinquedos.",
+                "Indicar que os materiais de escola são muito caros para os pais.",
+                "Reforçar o direito lúdico da infância, defendendo que o tempo da criança deve ser dedicado aos estudos e ao brincar.",
+                "Explicar que dar trabalho na escola é algo positivo para o crescimento."
+            ],
+            answer: 2
+        },
+        {
+            text: "Dados estatísticos mostram que em 2015, no Brasil, as mulheres que trabalhavam fora de casa dedicavam cerca de 20 horas semanais aos afazeres domésticos e cuidado de pessoas. No mesmo período, os homens que trabalhavam fora dedicavam apenas cerca de 10 horas semanais a essas mesmas atividades de casa.",
+            question: "A análise desses dados revela que no cotidiano das famílias brasileiras:",
+            options: [
+                "Existe uma divisão perfeitamente igualitária das tarefas domésticas entre homens e mulheres.",
+                "Os homens assumem a maior parte das obrigações da casa por dedicarem menos horas.",
+                "As mulheres sofrem uma sobrecarga de tempo, trabalhando muito mais no cuidado com o lar do que os homens.",
+                "As tarefas domésticas deixaram de existir devido à tecnologia dos eletrodomésticos."
+            ],
+            answer: 2
+        },
+        {
+            text: "Análise histórica sobre a Revolução Industrial (século XVIII): 'Com o surgimento das primeiras fábricas na Europa, a utilização da mão de obra de crianças aumentou de forma alarmante. Elas trabalhavam as mesmas horas que os adultos, em ambientes escuros, perigosos e recebendo salários muito menores. Situação parecida ocorreu no Brasil até o início do século XX.'",
+            question: "O texto nos permite concluir que o trabalho infantil:",
+            options: [
+                "Sempre foi proibido por lei desde as primeiras indústrias na Europa.",
+                "Foi uma prática comum no passado industrial, que hoje combatemos por violar os direitos fundamentais das crianças.",
+                "Era bom para as crianças do século XVIII porque elas aprendiam uma profissão cedo.",
+                "Ocorreu apenas na Europa, nunca tendo afetado as indústrias no Brasil."
+            ],
+            answer: 1
+        },
+        {
+            text: "Um gráfico pictórico do IBGE utiliza pequenos desenhos de pessoas para representar blocos de 70.000 trabalhadores infantis no país. Ao olhar o gráfico, percebe-se que a Região Norte apresenta proporcionalmente mais símbolos por habitante do que outras regiões, embora o número total do país venha caindo nos últimos anos.",
+            question: "A interpretação correta desse tipo de gráfico indica que:",
+            options: [
+                "O trabalho infantil está aumentando drasticamente em todo o Brasil.",
+                "A Região Norte é a única área do país onde ainda existe trabalho infantil.",
+                "Os gráficos pictóricos servem para dificultar a leitura dos dados estatísticos.",
+                "O trabalho infantil está em tendência de queda no país, mas ainda se concentra de forma preocupante na Região Norte."
+            ],
+            answer: 3
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const screenIntro = document.getElementById('screen-intro');
+    const screenGame = document.getElementById('screen-game');
+    const screenResults = document.getElementById('screen-results');
+
+    const questionNumberEl = document.getElementById('question-number');
+    const textContextEl = document.getElementById('text-context');
+    const questionTextEl = document.getElementById('question-text');
+    const optionsBox = document.getElementById('options-box');
+    const nextBtn = document.getElementById('next-btn');
+    const progressFill = document.getElementById('progress-fill');
+
+    const finalScoreEl = document.getElementById('final-score');
+    const feedbackMessageEl = document.getElementById('feedback-message');
+
+    function startQuiz() {
+        screenIntro.classList.add('hidden');
+        screenGame.classList.remove('hidden');
+        showQuestion();
+    }
+
+    function showQuestion() {
+        nextBtn.classList.add('hidden');
+        optionsBox.innerHTML = '';
+
+        let q = quizData[currentQuestionIndex];
+
+        questionNumberEl.innerText = `Questão ${currentQuestionIndex + 1} de ${quizData.length}`;
+        progressFill.style.width = `${((currentQuestionIndex) / quizData.length) * 100}%`;
+
+        if (q.text) {
+            textContextEl.innerText = q.text;
+            textContextEl.classList.remove('hidden');
+        } else {
+            textContextEl.classList.add('hidden');
+        }
+
+        questionTextEl.innerText = q.question;
+
+        q.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.innerText = option;
+            button.classList.add('option-btn');
+            button.addEventListener('click', () => selectOption(index, button));
+            optionsBox.appendChild(button);
+        });
+    }
+
+    function selectOption(selectedIndex, clickedButton) {
+        let q = quizData[currentQuestionIndex];
+        const allButtons = optionsBox.querySelectorAll('.option-btn');
+
+        allButtons.forEach(btn => btn.disabled = true);
+
+        if (selectedIndex === q.answer) {
+            clickedButton.classList.add('correct');
+            score++;
+        } else {
+            clickedButton.classList.add('wrong');
+            allButtons[q.answer].classList.add('correct');
+            wrongAnswers.push({
+                q: String(currentQuestionIndex + 1),
+                text: q.question,
+                chosen: clickedButton.innerText.trim(),
+                correct: allButtons[q.answer].innerText.trim()
+            });
+        }
+
+        nextBtn.classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizData.length) {
+            showQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        screenGame.classList.add('hidden');
+        screenResults.classList.remove('hidden');
+
+        finalScoreEl.innerText = `${score} / ${quizData.length}`;
+
+        var history = [];
+        try { history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) {}
+        history.push({ score: score, total: quizData.length, date: new Date().toISOString(), wrong: wrongAnswers });
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch(e) {}
+
+        document.getElementById('btn-finish-quiz').style.display = 'block';
+
+        let percentage = (score / quizData.length) * 100;
+        if (percentage >= 85) {
+            feedbackMessageEl.innerText = "🌟 Excelente! Você dominou completamente a matéria de História e Geografia!";
+        } else if (percentage >= 60) {
+            feedbackMessageEl.innerText = "👍 Muito bom! Você tem uma ótima base, mas vale revisar os pontos que errou para garantir o 10!";
+        } else {
+            feedbackMessageEl.innerText = "📚 Vamos revisar mais um pouco? Releia os tópicos do caderno e tente o desafio novamente!";
+        }
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        wrongAnswers = [];
+        document.getElementById('btn-finish-quiz').style.display = 'none';
+        screenResults.classList.add('hidden');
+        screenIntro.classList.remove('hidden');
+    }
+
+    function terminarMissao() {
+        window.location.href = '/';
+    }
+</script>
+
+</body>
+</html>
