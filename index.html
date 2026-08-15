@@ -73,6 +73,26 @@
         }
         .attempt-delete:hover { color: #dc2626; background: rgba(220,38,38,0.1); }
 
+        /* Separador de trimestre dentro da matéria */
+        .trimestre-sep {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0 10px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+        .trimestre-sep:first-child { margin-top: 0; }
+        .trimestre-sep::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #334155;
+        }
+
         .not-done-row {
             padding: 8px 16px;
             font-size: 12px;
@@ -232,6 +252,7 @@
             titulo: filename,
             tipo: filename.split('_')[0].toLowerCase(),
             extensao: filename.split('.').pop(),
+            completude: null,
             versao: 1, ano: 0, tri: 0
         };
         const [, tipo, , ano, tri, completude, versao, extensao] = match;
@@ -240,10 +261,16 @@
             titulo: `${tipoLabel(tipo.toLowerCase())} · ${tri}º trimestre ${ano} · ${completudeLabel} · v${versao}`,
             tipo: tipo.toLowerCase(),
             extensao: extensao.toLowerCase(),
+            completude: completude.toLowerCase(),
             versao: parseInt(versao, 10),
             ano: parseInt(ano, 10),
             tri: parseInt(tri, 10)
         };
+    }
+
+    // Rótulo do separador de trimestre. Arquivo fora da convenção cai em "Outros materiais".
+    function periodoLabel(info) {
+        return info.ano ? `${info.tri}º trimestre ${info.ano}` : 'Outros materiais';
     }
 
     // Só material com tipo "quiz" grava pontuação. Folhas de impressão (impressao_,
@@ -252,11 +279,17 @@
         return info.tipo === 'quiz' && info.extensao === 'html';
     }
 
+    // Ordem curricular fixa — não depende de o quiz já ter sido feito, para a lista
+    // não se reorganizar embaixo do aluno a cada tentativa concluída.
     function sortKey(exercicio) {
         const info = parseFilename(exercicio.arquivo);
-        // Material de impressão nunca tem histórico, então conta sempre como "não feito".
-        const done = ehQuiz(info) && getScores(exercicio.arquivo).length > 0 ? 1 : 0;
-        return [done, -info.ano, -info.tri, -info.versao];
+        return [
+            -info.ano,                                  // ano mais recente primeiro
+            -info.tri,                                  // trimestre mais recente primeiro
+            info.completude === 'completa' ? 0 : 1,     // prova completa antes da parcial
+            ehQuiz(info) ? 0 : 1,                       // quiz antes do material impresso
+            -info.versao                                // versão mais nova primeiro
+        ];
     }
 
     function compareSortKeys(a, b) {
@@ -359,8 +392,16 @@
 
     function renderMateria(key, materia) {
         const sorted = [...materia.exercicios].sort(compareSortKeys);
+        let periodoAtual = null;
         const exerciciosHtml = sorted.length
-            ? sorted.map(renderExercicio).join('')
+            ? sorted.map(ex => {
+                const periodo = periodoLabel(parseFilename(ex.arquivo));
+                const sep = periodo !== periodoAtual
+                    ? `<div class="trimestre-sep"><span>${periodo}</span></div>`
+                    : '';
+                periodoAtual = periodo;
+                return sep + renderExercicio(ex);
+            }).join('')
             : '<p class="empty-msg">Nenhum exercício ainda.</p>';
         return `
             <div class="materia-section" id="materia-${key}">
