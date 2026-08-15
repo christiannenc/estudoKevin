@@ -170,7 +170,7 @@ O estímulo textual deve ser curto — 40 a 70 palavras bastam. Ele não é o co
 
 ### Repertório de formatos
 
-Escolha o que couber na matéria e no conteúdo. Os quatro que o projeto já usa:
+Escolha o que couber na matéria e no conteúdo:
 
 | Formato | Como funciona |
 | --- | --- |
@@ -205,7 +205,52 @@ Papel branco, texto preto, fonte com serifa ou Arial em ~12px, `line-height` ape
 
 ## 🎯 Parte 3 — Regras para a banca de questões (método e template)
 
-**A matéria e a essência da leitura:** o conteúdo pode variar para qualquer matéria ou assunto solicitado no chat. Independentemente da disciplina, a **interpretação de texto e a leitura crítica são fundamentais** e devem permear a prova. Quando fizer sentido ou ficar mais lúdico, algumas perguntas podem ter imagens.
+**A matéria e a essência da leitura:** o conteúdo pode variar para qualquer matéria ou assunto solicitado no chat. Independentemente da disciplina, a **interpretação de texto e a leitura crítica são fundamentais** e devem permear a prova.
+
+### O material da escola é base, não fonte de cópia
+
+Quando o usuário fornecer roteiro, apostila, prova anterior ou atividade da escola, esse material define **três coisas**: quais conteúdos caem, em que profundidade, e qual o estilo de pergunta. Ele **não** define os exemplos.
+
+**Reaproveite o mecanismo da questão; troque a situação, os personagens e o desfecho.** Se o exercício repete o mesmo exemplo que o aluno já fez em aula, ele responde pela lembrança daquele caso específico, e não aplicando a regra — o treino deixa de medir aprendizado e passa a medir memória.
+
+Na prática, para cada questão do material identifique **o que ela testa** e reescreva tudo em volta:
+
+| Manter | Trocar |
+| --- | --- |
+| A habilidade cobrada e o mecanismo da questão (o que produz o humor, o erro, a contradição, a inferência) | A cena, os personagens, os objetos e o desfecho |
+| O gênero e o tema do texto de apoio | O texto em si — escreva um novo |
+| O nível de dificuldade e o tipo de distrator | Os números, os nomes e o contexto |
+
+> **Teste rápido:** se um aluno que decorou o material da aula consegue acertar sem raciocinar, a questão precisa ser recontextualizada.
+
+> **Teste rápido:** se um aluno que decorou o material da aula consegue acertar sem raciocinar, a questão precisa ser recontextualizada.
+
+### Imagem citada é imagem desenhada
+
+Se a questão depende de uma imagem — tirinha, cartum, gráfico, diagrama, mapa —, essa imagem **precisa estar no arquivo**, em SVG inline (sem `<img>`, sem CDN, sem link externo).
+
+**Nunca descreva em palavras uma imagem que o aluno não vê.** Um enunciado que começa com "Em uma tirinha, o personagem promete uma coisa e depois faz outra…" já entregou a resposta e transformou a questão em adivinhação, eliminando justamente a habilidade que se queria testar: ler a imagem. Se não for possível desenhar, troque por uma questão que funcione só com texto.
+
+Ao desenhar:
+
+- Desenho original, sem personagem ou marca de terceiros.
+- O enunciado vira "Observe a tirinha abaixo…", nunca a descrição do que ela mostra.
+- Fundo branco dentro do tema escuro, como uma tirinha de jornal.
+- `role="img"` e `aria-label` descrevendo a cena inteira, para leitor de tela.
+- Confira que nada estoura a moldura do quadrinho — texto cortado na borda é o erro mais comum.
+
+```css
+.comic-strip { background-color: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; margin-bottom: 15px; }
+.comic-strip svg { display: block; width: 100%; height: auto; }
+```
+
+```html
+<div class="comic-strip">
+    <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Descrição completa dos dois quadrinhos.">
+        <!-- um <rect> de moldura por quadrinho, balões como path único (retângulo + rabicho), figuras em formas simples -->
+    </svg>
+</div>
+```
 
 **Template de estrutura (padrão 20 questões):** ao gerar uma bateria completa, siga a proporção:
 
@@ -233,18 +278,18 @@ Ao concluir a estrutura de um material, recomende explicitamente ao usuário que
 
 O quiz é sempre `.html`. A folha de impressão pode ser `.html` ou `.pdf`, e usa `impressao_` ou `exercicio_` como tipo — é esse prefixo que distingue os dois materiais.
 
-Cada versão é um exercício **separado**, não substitui a anterior — por isso o `v{N}` sempre incrementa em vez de sobrescrever. Detalhes completos da convenção no `CLAUDE.md`.
+Cada versão é um exercício **separado**, não substitui a anterior — por isso o `v{N}` sempre incrementa em vez de sobrescrever.
 
 ---
 
 ## ⚙️ Parte 5 — Padrão de JavaScript
 
-O site é servido por HTTP (Vercel) e o quiz é sempre aberto a partir da home, então não há restrição de `file://` a contornar. Siga o padrão dos quizzes já existentes:
+O quiz é servido por HTTP e sempre aberto a partir da página inicial do site, então não há restrição de `file://` a contornar. Siga este padrão:
 
 - **Script no final do `<body>`, dentro de uma IIFE:** todo o código fica em `(function() { … })()`. Isso mantém o escopo global limpo e garante que o DOM já existe quando os listeners são registrados.
 - **Estado no topo da IIFE:** `let score = 0;`, `let answeredQuestions = {};`, `let wrongAnswers = [];` e `const totalQuestions = N;`.
 - **Event listeners, não handlers inline:** registre com `document.querySelectorAll('.option-clickable').forEach(el => el.addEventListener('click', …))`. O atributo `onclick=""` vazio permanece no HTML apenas como truque de compatibilidade com o Safari do iOS — ele não chama função nenhuma.
-- **Navegação pelo DOM via `data-*`:** identifique a questão e a alternativa com `element.closest('.question-block')`, `getAttribute('data-q')`, `data-correct` e `data-letter`. Não gere IDs por alternativa — o `index.html` e o CSS do projeto assumem o padrão de atributos.
+- **Navegação pelo DOM via `data-*`:** identifique a questão e a alternativa com `element.closest('.question-block')`, `getAttribute('data-q')`, `data-correct` e `data-letter`. Não gere IDs por alternativa — o CSS descrito acima depende desses atributos.
 - **Bloqueio de resposta dupla:** logo no início do handler, `if (answeredQuestions[qNum]) return;`.
 - **Estilização pós-clique por classes:** mude o estado visual injetando classes (`classList.add('correct')`, `'incorrect'`, `'hint-green'`) e revele a justificativa com `expBox.style.display = 'block'`. Ao errar, além de marcar a escolhida como `incorrect`, marque a correta com `hint-green`.
 - **Registro do erro:** ao errar, empilhe em `wrongAnswers` o objeto `{q, text, chosen, correct}` descrito na Parte 1.4 — é o que alimenta o modal de revisão da home.
