@@ -1,30 +1,48 @@
-<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-  <!-- Corpo -->
-  <ellipse cx="52" cy="68" rx="26" ry="34" fill="#fde047"/>
-  <!-- Camisa -->
-  <rect x="30" y="80" width="44" height="22" rx="6" fill="#1d4ed8"/>
-  <rect x="30" y="80" width="44" height="6" fill="#1e3a8a"/>
-  <!-- Pés -->
-  <rect x="26" y="96" width="14" height="10" rx="3" fill="#1f2937"/>
-  <rect x="64" y="96" width="14" height="10" rx="3" fill="#1f2937"/>
-  <!-- Cabeça -->
-  <circle cx="52" cy="36" r="18" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
-  <!-- Olho esquerdo -->
-  <circle cx="44" cy="33" r="5" fill="#ffffff" stroke="#374151" stroke-width="1"/>
-  <circle cx="45" cy="33" r="2.5" fill="#1f2937"/>
-  <!-- Olho direito -->
-  <circle cx="60" cy="33" r="5" fill="#ffffff" stroke="#374151" stroke-width="1"/>
-  <circle cx="61" cy="33" r="2.5" fill="#1f2937"/>
-  <!-- Sobrancelhas -->
-  <path d="M41 27 Q44 25 47 27" stroke="#a16207" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M57 27 Q60 25 63 27" stroke="#a16207" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <!-- Sorriso -->
-  <path d="M44 43 Q52 50 60 43" stroke="#a16207" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <!-- Braço direito (segurando banana) -->
-  <path d="M78 72 Q90 68 88 78" stroke="#fde047" stroke-width="7" fill="none" stroke-linecap="round"/>
-  <!-- Braço esquerdo -->
-  <path d="M26 72 Q18 66 20 78" stroke="#fde047" stroke-width="7" fill="none" stroke-linecap="round"/>
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mascote do site: personagem arredondado amarelo, de dois olhos grandes, usando capelo de formatura e segurando uma banana">
+  <!-- Pés (atrás de tudo) -->
+  <ellipse cx="42" cy="100" rx="10" ry="5.5" fill="#b45309"/>
+  <ellipse cx="67" cy="100" rx="10" ry="5.5" fill="#b45309"/>
+
   <!-- Banana -->
-  <path d="M86 62 Q102 55 108 68 Q102 72 90 72 Q84 66 86 62Z" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
-  <path d="M86 62 Q96 58 106 67" stroke="#a16207" stroke-width="1" fill="none"/>
+  <path d="M93 61.8 A46 46 0 0 0 114.6 33.1 L104 30.5 A35 35 0 0 1 87.5 52.3 Z"
+        fill="#fef08a" stroke="#a16207" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M110 30 L116 24" stroke="#78350f" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Braços: a mão direita fica por cima da banana, segurando -->
+  <path d="M34 72 Q18 76 17 87" stroke="#d97706" stroke-width="8.5" fill="none" stroke-linecap="round"/>
+  <path d="M74 66 Q86 62 94 56" stroke="#d97706" stroke-width="8.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Corpo: silhueta única em formato de pera -->
+  <path d="M54 26
+           C37 26 27 45 25 64
+           C23 85 34 99 54 99
+           C74 99 85 85 83 64
+           C81 45 71 26 54 26 Z"
+        fill="#fbbf24"/>
+  <!-- Sombra suave na base, para dar volume -->
+  <path d="M25.6 72 C31 81 41 87 54 87 C67 87 77 81 82.4 72
+           C83.4 81 78 99 54 99 C30 99 24.6 81 25.6 72 Z"
+        fill="#f59e0b" opacity="0.5"/>
+
+  <!-- Capelo de formatura -->
+  <path d="M43 33 Q43 24 54 24 Q65 24 65 33 Z" fill="#111827" stroke="#475569" stroke-width="1.4" stroke-linejoin="round"/>
+  <path d="M54 8 L82 19 L54 30 L26 19 Z" fill="#111827" stroke="#475569" stroke-width="1.4" stroke-linejoin="round"/>
+  <circle cx="54" cy="19" r="2.6" fill="#facc15"/>
+  <path d="M82 19 Q86 26 85 33" stroke="#facc15" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <path d="M85 33 L83 41 M85 33 L86 41 M85 33 L88 40" stroke="#facc15" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- Bochechas -->
+  <circle cx="32" cy="71" r="5.5" fill="#fb7185" opacity="0.45"/>
+  <circle cx="76" cy="71" r="5.5" fill="#fb7185" opacity="0.45"/>
+
+  <!-- Olhos -->
+  <circle cx="43" cy="56" r="10" fill="#ffffff"/>
+  <circle cx="65" cy="56" r="10" fill="#ffffff"/>
+  <circle cx="45" cy="58" r="4.6" fill="#0f172a"/>
+  <circle cx="67" cy="58" r="4.6" fill="#0f172a"/>
+  <circle cx="43" cy="56" r="1.9" fill="#ffffff"/>
+  <circle cx="65" cy="56" r="1.9" fill="#ffffff"/>
+
+  <!-- Sorriso -->
+  <path d="M47 74 Q54 81 61 74" stroke="#0f172a" stroke-width="3" fill="none" stroke-linecap="round"/>
 </svg>

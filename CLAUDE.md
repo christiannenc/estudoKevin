@@ -62,11 +62,14 @@ Os quizzes seguem o estilo do arquivo já existente em `materias/portugues/`: te
 
 As regras de **conteúdo pedagógico** (temática, distribuição das questões, tela de introdução, gabarito da versão de impressão, recomendações técnicas de JS) ficam em `DIRETRIZES_QUIZ.md` — é o prompt que o usuário cola na IA que gera o material. Consultar esse arquivo ao criar um quiz do zero.
 
-## Mascote (`assets/mascote.svg`)
+## Mascote (`assets/mascote.png`)
 
-- Desenho original, sem IP de terceiros
-- Design definido: boneco com **dois olhos** e **segurando uma banana**
-- Ao editar ou recriar o mascote, manter essas características
+- Imagem escolhida pelo usuário: menino de óculos escrevendo num caderno. Gerada por IA a pedido dele, recortada com o Vision do macOS e enquadrada do peito para cima.
+- PNG quadrado de 512×512 com fundo transparente. Exibido a 64px no cabeçalho e usado também como favicon — por isso precisa ser quadrado, senão a imagem achata.
+- `assets/mascote.svg` é um mascote desenhado à mão, da versão anterior. Fica como reserva e **não está em uso**.
+- **Não usar imagens ou personagens com direitos autorais de terceiros** (ex: Minions). O site é publicado na internet, o que descarta a hipótese de uso privado.
+
+Ao trocar a imagem: recortar o fundo, enquadrar do peito para cima (corpo inteiro fica ilegível a 64px), exportar PNG quadrado com transparência e conferir como fica a 32px, que é o tamanho do favicon.
 
 ## Histórico de pontuação dos quizzes
 

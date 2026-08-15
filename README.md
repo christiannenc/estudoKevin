@@ -11,7 +11,8 @@ index.html         → página inicial (lista as matérias em acordeão)
 manifest.json      → fonte de dados: lista de exercícios por matéria
 assets/
   style.css        → estilo compartilhado (tema escuro)
-  mascote.svg      → mascote original do site
+  mascote.png      → mascote do site (também usado como favicon)
+  mascote.svg      → mascote desenhado da versão anterior, fora de uso
 materias/
   {materia}/
     {arquivo}.html ou .pdf   → os exercícios em si
