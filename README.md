@@ -50,12 +50,19 @@ A extensão decide o badge e o comportamento do link:
 
 Cada card de quiz mostra o histórico das tentativas anteriores e um badge indicando se já foi feito. O histórico fica no `localStorage` do navegador (chave: nome do arquivo; valor: array de `{score, total, date}`) — este é o **único** uso de armazenamento local no projeto.
 
-Os cards dentro de cada matéria são ordenados assim:
+## Ordem dos cards
 
-1. Não feitos primeiro
-2. Depois, mais recentes primeiro (ano + trimestre + versão, do maior para o menor)
+Dentro de cada matéria, os exercícios seguem uma ordem **curricular e fixa**:
 
-PDFs não têm histórico, então contam sempre como "não feitos" na ordenação.
+1. Ano decrescente
+2. Trimestre decrescente
+3. Prova completa antes da parcial
+4. Quiz antes do material impresso
+5. Versão mais nova primeiro
+
+Sempre que o trimestre muda, entra um separador com o rótulo do período (ex: "2º trimestre 2026"). Arquivos fora da convenção de nome caem num bloco "Outros materiais" no fim.
+
+O histórico de pontuação **não** influencia a ordem: fazer um quiz não muda a posição dele na lista, para que o material fique sempre no mesmo lugar.
 
 ## Como adicionar um exercício novo
 

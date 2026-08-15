@@ -77,13 +77,19 @@ O `index.html` deve exibir, em cada card de quiz, o histórico de pontuação de
 - Card já feito: exibir a última pontuação e badge de "Feito" (ou similar)
 - O histórico detalhado pode ser exibido em tooltip ou expansão no card
 
-## Ordenação dos cards de exercício
+## Ordenação e agrupamento dos cards de exercício
 
-Dentro de cada matéria, os cards devem ser ordenados por:
-1. **Não feitos primeiro** (quizzes sem histórico no localStorage aparecem antes dos feitos)
-2. **Mais recentes primeiro** (desempate pelo ano + trimestre + versão, do maior para o menor)
+Dentro de cada matéria, a ordem é **curricular e fixa** — não depende de o quiz já ter sido feito. Critérios, nesta sequência (função `sortKey` no `index.html`):
 
-Material de impressão (sem histórico possível, seja `.pdf` ou `.html`) é sempre tratado como "não feito" para fins de ordenação.
+1. **Ano decrescente** — mais recente primeiro
+2. **Trimestre decrescente** — mais recente primeiro
+3. **Completa antes de parcial** — a prova abrangente é a mais recente do trimestre
+4. **Quiz antes do material impresso** — o aluno treina no quiz e depois faz a folha
+5. **Versão decrescente** — v3 antes de v2 antes de v1
+
+Os cards são agrupados por período: sempre que o ano/trimestre muda, o `renderMateria` insere um separador `.trimestre-sep` com o rótulo (ex: "2º trimestre 2026"). Arquivo fora da convenção de nome cai no bloco "Outros materiais", no fim da lista.
+
+**O histórico de pontuação não entra na ordenação.** O badge "Ainda não feito" e a lista de tentativas continuam no card, mas fazer um quiz não muda a posição dele — a lista precisa ser estável e previsível.
 
 ## O que NÃO fazer
 
