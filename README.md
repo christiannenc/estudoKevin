@@ -60,7 +60,7 @@ Dentro de cada matéria, os exercícios seguem uma ordem **curricular e fixa**:
 4. Quiz antes do material impresso
 5. Versão mais nova primeiro
 
-Sempre que o trimestre muda, entra um separador com o rótulo do período (ex: "2º trimestre 2026"). Arquivos fora da convenção de nome caem num bloco "Outros materiais" no fim.
+Os cards são agrupados em dois níveis: um separador por **trimestre** (ex: "2º trimestre 2026") e, dentro dele, um subtítulo separando **"Conteúdo completo"** de **"Conteúdo parcial"** — as duas etapas da avaliação. Arquivos fora da convenção de nome caem num bloco "Outros materiais" no fim.
 
 O histórico de pontuação **não** influencia a ordem: fazer um quiz não muda a posição dele na lista, para que o material fique sempre no mesmo lugar.
 

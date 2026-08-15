@@ -87,7 +87,10 @@ Dentro de cada matéria, a ordem é **curricular e fixa** — não depende de o 
 4. **Quiz antes do material impresso** — o aluno treina no quiz e depois faz a folha
 5. **Versão decrescente** — v3 antes de v2 antes de v1
 
-Os cards são agrupados por período: sempre que o ano/trimestre muda, o `renderMateria` insere um separador `.trimestre-sep` com o rótulo (ex: "2º trimestre 2026"). Arquivo fora da convenção de nome cai no bloco "Outros materiais", no fim da lista.
+Os cards são agrupados em **dois níveis** pelo `renderMateria`:
+
+- `.trimestre-sep` — quando o ano/trimestre muda (ex: "2º trimestre 2026"). Arquivo fora da convenção de nome cai no bloco "Outros materiais", no fim da lista.
+- `.completude-sep` — dentro do trimestre, quando muda de completa para parcial (rótulos "Conteúdo completo" e "Conteúdo parcial"). O rótulo se repete no início de cada trimestre novo; arquivo fora da convenção não recebe subtítulo.
 
 **O histórico de pontuação não entra na ordenação.** O badge "Ainda não feito" e a lista de tentativas continuam no card, mas fazer um quiz não muda a posição dele — a lista precisa ser estável e previsível.
 

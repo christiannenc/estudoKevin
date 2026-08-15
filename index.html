@@ -93,6 +93,26 @@
             background: #334155;
         }
 
+        /* Subseparador: parcial x completa, dentro do trimestre */
+        .completude-sep {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 16px 0 8px 2px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+        .completude-sep::before {
+            content: '';
+            width: 3px;
+            height: 13px;
+            border-radius: 2px;
+            background: #38bdf8;
+        }
+        /* Logo abaixo do separador de trimestre o espaço já é suficiente */
+        .trimestre-sep + .completude-sep { margin-top: 4px; }
+
         .not-done-row {
             padding: 8px 16px;
             font-size: 12px;
@@ -273,6 +293,14 @@
         return info.ano ? `${info.tri}º trimestre ${info.ano}` : 'Outros materiais';
     }
 
+    // Subseparador dentro do trimestre. Retorna null para arquivo fora da convenção,
+    // que então aparece sem subtítulo.
+    function completudeLabel(info) {
+        if (info.completude === 'completa') return 'Conteúdo completo';
+        if (info.completude === 'parcial') return 'Conteúdo parcial';
+        return null;
+    }
+
     // Só material com tipo "quiz" grava pontuação. Folhas de impressão (impressao_,
     // exercicio_) podem ser .html também, mas não têm placar nem histórico.
     function ehQuiz(info) {
@@ -392,14 +420,22 @@
 
     function renderMateria(key, materia) {
         const sorted = [...materia.exercicios].sort(compareSortKeys);
-        let periodoAtual = null;
+        let periodoAtual = null, completudeAtual = null;
         const exerciciosHtml = sorted.length
             ? sorted.map(ex => {
-                const periodo = periodoLabel(parseFilename(ex.arquivo));
-                const sep = periodo !== periodoAtual
-                    ? `<div class="trimestre-sep"><span>${periodo}</span></div>`
-                    : '';
-                periodoAtual = periodo;
+                const info = parseFilename(ex.arquivo);
+                const periodo = periodoLabel(info);
+                const completude = completudeLabel(info);
+                let sep = '';
+                if (periodo !== periodoAtual) {
+                    sep += `<div class="trimestre-sep"><span>${periodo}</span></div>`;
+                    periodoAtual = periodo;
+                    completudeAtual = null; // o rótulo se repete no início de cada trimestre
+                }
+                if (completude && completude !== completudeAtual) {
+                    sep += `<div class="completude-sep"><span>${completude}</span></div>`;
+                    completudeAtual = completude;
+                }
                 return sep + renderExercicio(ex);
             }).join('')
             : '<p class="empty-msg">Nenhum exercício ainda.</p>';
