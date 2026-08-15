@@ -74,6 +74,14 @@
     "icone": "map",
     "exercicios": [
       {
+        "arquivo": "materias/histgeo/quiz_histgeo_2026_tri2_abrangente_completa_v1.html",
+        "assunto": "Prova abrangente: linguagens e tecnologias de comunicação (tradição oral, arte rupestre, hieróglifos, sistemas de escrita) e tipos de energia na indústria, no campo e no extrativismo"
+      },
+      {
+        "arquivo": "materias/histgeo/impressao_histgeo_2026_tri2_abrangente_completa_v1.html",
+        "assunto": "Avaliação discursiva: comparação entre formas de registro ao longo do tempo, o trabalho do historiador com hipóteses, leitura de gráfico de fontes de energia e produção escrita sobre energia renovável"
+      },
+      {
         "arquivo": "materias/histgeo/quiz_histgeo_2026_tri2_prova_parcial_v3.html",
         "assunto": "Patrimônio histórico, cidadania, direitos humanos, mundo do trabalho, INSS, sindicatos, dupla jornada e trabalho infantil — questões objetivas e interpretação de texto"
       },

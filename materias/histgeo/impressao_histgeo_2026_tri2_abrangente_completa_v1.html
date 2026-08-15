@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Avaliação Discursiva — História e Geografia (5º Ano, 2ª Etapa)</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 12mm;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            color: #000;
+            line-height: 1.45;
+            background: #fff;
+            padding: 10px;
+        }
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+            margin-bottom: 12px;
+        }
+
+        .header-table td {
+            border: 1px solid #000;
+            padding: 5px 9px;
+            font-size: 10.5pt;
+        }
+
+        .school-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12.5pt;
+            background-color: #f1f5f9;
+            text-transform: uppercase;
+        }
+
+        .exam-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12pt;
+            margin: 10px 0 12px 0;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .skills-box {
+            border: 1px solid #000;
+            border-left: 4px solid #000;
+            padding: 7px 11px;
+            margin-bottom: 14px;
+            font-size: 9.5pt;
+        }
+
+        .module-header {
+            font-weight: bold;
+            font-size: 11pt;
+            border-bottom: 1.5px solid #000;
+            padding-bottom: 3px;
+            margin: 16px 0 8px 0;
+            text-transform: uppercase;
+        }
+
+        .source-text {
+            border: 1px solid #000;
+            background-color: #fcfcfc;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            font-size: 10pt;
+            text-align: justify;
+        }
+
+        .source-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 10pt;
+        }
+
+        .question-block {
+            margin-bottom: 16px;
+            page-break-inside: avoid;
+        }
+
+        .question-title { font-weight: bold; font-size: 10.5pt; margin-bottom: 5px; }
+        .sub-question { margin-top: 6px; font-size: 10pt; }
+
+        .answer-lines { margin-top: 5px; }
+        .line { border-bottom: 1px solid #000; height: 22px; width: 100%; }
+
+        .fill-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+        }
+
+        .fill-table th, .fill-table td {
+            border: 1px solid #000;
+            padding: 6px;
+            font-size: 9.5pt;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .fill-table th { background-color: #f1f5f9; }
+        .fill-table td.rotulo { text-align: left; font-weight: bold; }
+        .fill-table td.vazio { height: 34px; }
+
+        /* Gráfico */
+        .chart-box {
+            border: 1.5px solid #000;
+            border-radius: 4px;
+            padding: 8px;
+            margin: 8px 0 10px 0;
+            background: #fff;
+        }
+        .chart-box svg { display: block; width: 100%; height: auto; }
+        .chart-caption { font-size: 9pt; text-align: center; margin-top: 4px; font-style: italic; }
+
+        /* Gabarito */
+        .page-break { page-break-before: always; }
+
+        .teacher-section {
+            background-color: #f1f5f9;
+            border: 2px dashed #475569;
+            padding: 14px;
+        }
+
+        .answer-key-title {
+            text-align: center;
+            font-size: 13pt;
+            font-weight: bold;
+            border-bottom: 2px dashed #000;
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        .teacher-note {
+            font-size: 9.5pt;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .key-item {
+            margin-bottom: 11px;
+            font-size: 9.5pt;
+            border-bottom: 1px dashed #666;
+            padding-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <table class="header-table">
+        <tr>
+            <td colspan="2" class="school-title">Colégio Sagrado Coração de Maria</td>
+        </tr>
+        <tr>
+            <td><strong>DISCIPLINAS:</strong> História e Geografia</td>
+            <td><strong>ETAPA:</strong> 2ª Etapa / 2026</td>
+        </tr>
+        <tr>
+            <td><strong>ALUNO(A):</strong> ____________________________________________________</td>
+            <td><strong>TURMA:</strong> 5º Ano ____</td>
+        </tr>
+        <tr>
+            <td><strong>DATA:</strong> ____ / ____ / 2026</td>
+            <td><strong>VALOR:</strong> __________ | <strong>NOTA:</strong> __________</td>
+        </tr>
+    </table>
+
+    <div class="exam-title">Avaliação Discursiva: Linguagens da Comunicação e Fontes de Energia</div>
+
+    <div class="skills-box">
+        <strong>HABILIDADES AVALIADAS:</strong><br>
+        <strong>EF05H10</strong> — Comparar o uso de diferentes linguagens e tecnologias no processo de comunicação e avaliar os significados sociais, políticos e culturais atribuídos a elas.<br>
+        <strong>EF05GE07</strong> — Identificar os diferentes tipos de energia utilizados na produção industrial, agrícola e extrativa e no cotidiano das populações.
+    </div>
+
+    <!-- ============ MÓDULO 1 — HISTÓRIA ============ -->
+    <div class="module-header">Módulo 1 — História: mensagens que atravessaram o tempo</div>
+
+    <div class="source-text">
+        <span class="source-title">Texto I — Três vitrines, uma mesma necessidade</span>
+        Um museu montou uma exposição com três vitrines lado a lado. Na primeira, a fotografia de um paredão de pedra com figuras de caçadores e animais, pintadas com argila e carvão há milhares de anos. Na segunda, um pedaço de parede de um templo egípcio coberto de hieróglifos: pequenas aves, olhos e mãos esculpidos em fileiras. Na terceira, a tela de um celular com uma conversa cheia de emojis, fotos e áudios. Acima das três vitrines, uma única frase: <em>"Muda a tecnologia, permanece a vontade de contar."</em>
+    </div>
+
+    <div class="question-block">
+        <div class="question-title">1. (Comparação entre linguagens)</div>
+        <div class="sub-question">a) Explique o que as três vitrines têm em comum, mesmo tendo sido produzidas em épocas tão distantes umas das outras.</div>
+        <div class="answer-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+        <div class="sub-question">b) Um visitante disse que só a segunda vitrine mostra uma forma de <strong>escrita</strong>. Você concorda? Justifique explicando a diferença entre a pintura rupestre e os hieróglifos.</div>
+        <div class="answer-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </div>
+
+    <div class="question-block">
+        <div class="question-title">2. (Sistemas de registro) Complete o quadro abaixo com suas palavras:</div>
+        <table class="fill-table">
+            <thead>
+                <tr>
+                    <th style="width: 26%;">Forma de registro</th>
+                    <th style="width: 44%;">Como a mensagem é registrada?</th>
+                    <th style="width: 30%;">Ainda é usada hoje?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="rotulo">Tradição oral</td>
+                    <td class="vazio"></td>
+                    <td class="vazio"></td>
+                </tr>
+                <tr>
+                    <td class="rotulo">Pintura rupestre</td>
+                    <td class="vazio"></td>
+                    <td class="vazio"></td>
+                </tr>
+                <tr>
+                    <td class="rotulo">Alfabeto</td>
+                    <td class="vazio"></td>
+                    <td class="vazio"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="question-block">
+        <div class="question-title">3. (O trabalho do historiador) Ao estudar o paredão da primeira vitrine, os pesquisadores escreveram na placa: <em>"As figuras <u>provavelmente</u> representam uma caçada coletiva."</em></div>
+        <div class="sub-question">Por que eles usaram a palavra <strong>"provavelmente"</strong> em vez de afirmarem com certeza? O que esse cuidado revela sobre o modo como a História é construída?</div>
+        <div class="answer-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </div>
+
+    <!-- ============ MÓDULO 2 — GEOGRAFIA ============ -->
+    <div class="page-break"></div>
+    <div class="module-header">Módulo 2 — Geografia: a energia que move a produção</div>
+
+    <div class="source-text" style="margin-bottom: 6px;">
+        <span class="source-title">Texto II — O caderno de registros da Fazenda Boa Vista</span>
+        Desde que foi fundada, a Fazenda Boa Vista anota de onde vem a energia que usa no dia a dia: para cozinhar, aquecer água, mover as máquinas da lavoura e ligar os equipamentos do curral. O gráfico abaixo compara esses registros em três momentos diferentes da história da propriedade.
+    </div>
+
+    <div class="chart-box">
+        <svg viewBox="0 0 640 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gráfico de barras da Fazenda Boa Vista comparando a participação de cada fonte de energia em 1975, 1995 e 2025. Em 1975: lenha 65 por cento, óleo diesel 25 por cento, energia elétrica 10 por cento e energia solar zero. Em 1995: lenha 30 por cento, óleo diesel 45 por cento, energia elétrica 25 por cento e energia solar zero. Em 2025: lenha 5 por cento, óleo diesel 40 por cento, energia elétrica 35 por cento e energia solar 20 por cento.">
+            <text x="320" y="18" text-anchor="middle" font-family="Times New Roman, serif" font-size="14" font-weight="bold" fill="#000">Fazenda Boa Vista — participação de cada fonte de energia (%)</text>
+
+            <path d="M 60 30 V 260 H 618" fill="none" stroke="#000" stroke-width="2"/>
+            <text x="22" y="34" font-family="Times New Roman, serif" font-size="11" fill="#000">%</text>
+
+            <path d="M 60 260 H 618" stroke="#000" stroke-width="1"/>
+            <path d="M 60 227.1 H 618" stroke="#ccc" stroke-width="1"/>
+            <path d="M 60 194.3 H 618" stroke="#ccc" stroke-width="1"/>
+            <path d="M 60 161.4 H 618" stroke="#ccc" stroke-width="1"/>
+            <path d="M 60 128.6 H 618" stroke="#ccc" stroke-width="1"/>
+            <path d="M 60 95.7 H 618" stroke="#ccc" stroke-width="1"/>
+            <path d="M 60 62.9 H 618" stroke="#ccc" stroke-width="1"/>
+            <path d="M 60 30 H 618" stroke="#ccc" stroke-width="1"/>
+            <text x="52" y="264" text-anchor="end" font-family="Times New Roman, serif" font-size="11" fill="#000">0</text>
+            <text x="52" y="231" text-anchor="end" font-family="Times New Roman, serif" font-size="11" fill="#000">10</text>
+            <text x="52" y="198" text-anchor="end" font-family="Times New Roman, serif" font-size="11" fill="#000">20</text>
+            <text x="52" y="165" text-anchor="end" font-family="Times New Roman, serif" font-size="11" fill="#000">30</text>
+            <text x="52" y="133" text-anchor="end" font-family="Times New Roman, serif" font-size="11" fill="#000">40</text>
+            <text x="52" y="100" text-anchor="end" font-family="Times New Roman, serif" font-size="11" fill="#000">50</text>
+            <text x="52" y="67" text-anchor="end" font-family="Times New Roman, serif" font-size="11" fill="#000">60</text>
+            <text x="52" y="34" text-anchor="end" font-family="Times New Roman, serif" font-size="11" fill="#000">70</text>
+
+            <!-- 1975 -->
+            <rect x="98" y="46.4" width="24" height="213.6" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+            <text x="110" y="42" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">65</text>
+            <rect x="124" y="177.9" width="24" height="82.1" fill="#222222" stroke="#000" stroke-width="1.5"/>
+            <text x="136" y="174" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">25</text>
+            <rect x="150" y="227.1" width="24" height="32.9" fill="#777777" stroke="#000" stroke-width="1.5"/>
+            <text x="162" y="223" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">10</text>
+            <text x="188" y="256" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">0</text>
+            <text x="150" y="278" text-anchor="middle" font-family="Times New Roman, serif" font-size="12" font-weight="bold" fill="#000">1975</text>
+
+            <!-- 1995 -->
+            <rect x="268" y="161.4" width="24" height="98.6" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+            <text x="280" y="157" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">30</text>
+            <rect x="294" y="112.1" width="24" height="147.9" fill="#222222" stroke="#000" stroke-width="1.5"/>
+            <text x="306" y="108" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">45</text>
+            <rect x="320" y="177.9" width="24" height="82.1" fill="#777777" stroke="#000" stroke-width="1.5"/>
+            <text x="332" y="174" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">25</text>
+            <text x="358" y="256" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">0</text>
+            <text x="320" y="278" text-anchor="middle" font-family="Times New Roman, serif" font-size="12" font-weight="bold" fill="#000">1995</text>
+
+            <!-- 2025 -->
+            <rect x="438" y="243.6" width="24" height="16.4" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+            <text x="450" y="239" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">5</text>
+            <rect x="464" y="128.6" width="24" height="131.4" fill="#222222" stroke="#000" stroke-width="1.5"/>
+            <text x="476" y="124" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">40</text>
+            <rect x="490" y="145" width="24" height="115" fill="#777777" stroke="#000" stroke-width="1.5"/>
+            <text x="502" y="141" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">35</text>
+            <rect x="516" y="194.3" width="24" height="65.7" fill="#bbbbbb" stroke="#000" stroke-width="1.5"/>
+            <text x="528" y="190" text-anchor="middle" font-family="Times New Roman, serif" font-size="10" fill="#000">20</text>
+            <text x="490" y="278" text-anchor="middle" font-family="Times New Roman, serif" font-size="12" font-weight="bold" fill="#000">2025</text>
+
+            <!-- Legenda -->
+            <rect x="70" y="298" width="18" height="14" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+            <text x="94" y="310" font-family="Times New Roman, serif" font-size="11.5" fill="#000">Lenha</text>
+            <rect x="160" y="298" width="18" height="14" fill="#222222" stroke="#000" stroke-width="1.5"/>
+            <text x="184" y="310" font-family="Times New Roman, serif" font-size="11.5" fill="#000">Óleo diesel</text>
+            <rect x="285" y="298" width="18" height="14" fill="#777777" stroke="#000" stroke-width="1.5"/>
+            <text x="309" y="310" font-family="Times New Roman, serif" font-size="11.5" fill="#000">Energia elétrica</text>
+            <rect x="440" y="298" width="18" height="14" fill="#bbbbbb" stroke="#000" stroke-width="1.5"/>
+            <text x="464" y="310" font-family="Times New Roman, serif" font-size="11.5" fill="#000">Energia solar</text>
+        </svg>
+        <div class="chart-caption">Registros da própria propriedade, em porcentagem do total de energia usada em cada ano.</div>
+    </div>
+
+    <div class="question-block">
+        <div class="question-title">4. (Leitura de gráfico)</div>
+        <div class="sub-question">a) Descreva o que aconteceu com o uso da <strong>lenha</strong> entre 1975 e 2025. Explique um motivo possível para essa mudança.</div>
+        <div class="answer-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+        <div class="sub-question">b) Qual fonte de energia aparece <strong>apenas</strong> no registro de 2025? Ela é renovável ou não renovável? Justifique.</div>
+        <div class="answer-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+        <div class="sub-question">c) Em 2025, qual das fontes registradas é derivada do petróleo? Qual foi a sua porcentagem naquele ano?</div>
+        <div class="answer-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </div>
+
+    <div class="question-block">
+        <div class="question-title">5. (Antes e depois) Uma escola rural funcionava com um gerador a óleo diesel, ligado só das 17h às 21h porque o combustível era caro e vinha de caminhão da cidade. No ano passado, a escola instalou painéis solares no telhado. Complete o quadro comparando as duas situações:</div>
+        <table class="fill-table">
+            <thead>
+                <tr>
+                    <th style="width: 34%;"></th>
+                    <th style="width: 33%;">Antes (gerador a diesel)</th>
+                    <th style="width: 33%;">Depois (painéis solares)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="rotulo">A fonte é renovável?</td>
+                    <td class="vazio"></td>
+                    <td class="vazio"></td>
+                </tr>
+                <tr>
+                    <td class="rotulo">Impacto no meio ambiente</td>
+                    <td class="vazio"></td>
+                    <td class="vazio"></td>
+                </tr>
+                <tr>
+                    <td class="rotulo">Uma atividade que a escola passou a poder fazer</td>
+                    <td class="vazio"></td>
+                    <td class="vazio"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="question-block">
+        <div class="question-title">6. (Produção escrita) Uma cooperativa de pequenos agricultores gasta muito com óleo diesel e quer trocar parte dessa energia por uma fonte renovável.</div>
+        <div class="sub-question">Escreva um parágrafo de 4 a 6 linhas recomendando <strong>uma</strong> fonte renovável para a cooperativa. Diga qual você escolheu, para que ela serviria na propriedade e por que essa troca é boa para o meio ambiente.</div>
+        <div class="answer-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </div>
+
+    <!-- ============ GABARITO ============ -->
+    <div class="page-break"></div>
+    <div class="teacher-section">
+        <div class="answer-key-title">🔑 Gabarito Oficial e Critérios de Correção</div>
+        <div class="teacher-note">Uso exclusivo do professor ou responsável. Esta página traz o que se espera na resposta — não entregar junto com a avaliação.</div>
+
+        <div class="key-item">
+            <strong>Questão 1a:</strong> O aluno deve perceber que as três vitrines mostram <strong>formas de comunicação e registro</strong> criadas em épocas diferentes. Apesar da distância no tempo e da mudança de tecnologia (pigmento na pedra, entalhe no templo, tela digital), todas servem ao mesmo propósito: registrar informações e transmitir mensagens para outras pessoas — inclusive para quem viria depois.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 1b:</strong> Espera-se que o aluno <strong>concorde parcialmente e explique a diferença</strong>. Os hieróglifos são um sistema de escrita: seus símbolos foram combinados para representar sons e ideias, obedecendo a regras, e por isso registram frases completas. A pintura rupestre comunica por meio de imagens, mas não organiza símbolos com valor sonoro fixo. Aceitar respostas que reconheçam a pintura como forma de comunicação e registro, ainda que não seja escrita alfabética.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 2 (quadro):</strong><br>
+            • <em>Tradição oral</em> — a mensagem é registrada na memória e transmitida pela fala, de geração em geração; continua sendo usada hoje em histórias de família, cantigas, lendas e receitas.<br>
+            • <em>Pintura rupestre</em> — a mensagem é registrada por meio de desenhos feitos com pigmentos naturais nas rochas; não é mais usada como meio de comunicação, mas é preservada como fonte histórica e patrimônio.<br>
+            • <em>Alfabeto</em> — a mensagem é registrada por letras que representam sons e se combinam em palavras; é a forma mais usada atualmente, inclusive nos meios digitais.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 3:</strong> Os pesquisadores usaram "provavelmente" porque <strong>não existe ninguém que possa confirmar</strong> o significado das figuras: quem as pintou viveu há milhares de anos e não deixou explicação escrita. A conclusão é uma <strong>hipótese</strong>, construída a partir das evidências disponíveis, e pode ser revista se novas descobertas aparecerem. Isso mostra que a História é construída com base em fontes e interpretação, e não em adivinhação.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 4a:</strong> O uso da lenha <strong>caiu muito</strong>, de 65% em 1975 para apenas 5% em 2025. Motivos aceitáveis: a modernização do campo, a chegada de máquinas movidas a diesel e de equipamentos elétricos, a maior comodidade dessas fontes e a preocupação com o desmatamento e a poluição.<br>
+            <strong>Questão 4b:</strong> A <strong>energia solar</strong>, que aparece só em 2025 com 20%. É <strong>renovável</strong>, porque vem da luz do sol, uma fonte que não se esgota e não precisa ser queimada.<br>
+            <strong>Questão 4c:</strong> O <strong>óleo diesel</strong>, que é derivado do petróleo. Em 2025 representava <strong>40%</strong> da energia usada na propriedade.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 5 (quadro antes e depois):</strong><br>
+            • <em>A fonte é renovável?</em> Antes: não — o óleo diesel vem do petróleo, recurso não renovável. Depois: sim — a energia solar é renovável.<br>
+            • <em>Impacto no meio ambiente:</em> Antes: a queima do diesel libera gases poluentes; há ainda o transporte do combustível. Depois: quase não há emissão durante o funcionamento, impacto ambiental bem menor.<br>
+            • <em>Atividade que passou a ser possível:</em> Antes: apenas o que coubesse nas quatro horas de gerador (por exemplo, iluminar a sala no fim da tarde). Depois: aulas com computadores durante o dia, ventiladores, geladeira para a merenda — aceitar qualquer exemplo coerente com energia disponível o dia todo.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 6 (produção escrita) — critérios:</strong> O parágrafo deve (1) <strong>escolher uma fonte renovável</strong> (solar, eólica ou biomassa são as mais plausíveis para uma cooperativa agrícola); (2) <strong>indicar um uso concreto</strong> na propriedade, como bombear água para a irrigação, ligar a ordenha mecanizada, iluminar galpões ou conservar a produção em câmaras frias; e (3) <strong>justificar o ganho ambiental</strong>, relacionando a troca à redução da queima de combustível e da emissão de poluentes. Avaliar também a clareza, a organização das ideias e a correção da escrita.
+        </div>
+    </div>
+
+</body>
+</html>

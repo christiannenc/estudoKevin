@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Expedição Tempo e Energia — História e Geografia, 2º Trimestre</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-bg: #16a34a;
+            --incorrect-bg: #dc2626;
+            --border-color: #334155;
+            --tooltip-bg: #0f172a;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        h1 { color: var(--accent-color); text-align: center; font-size: 26px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; user-select: none; }
+        h1:hover { opacity: 0.9; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        .intro-box { background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .theme-badge { display: inline-block; background-color: rgba(56, 189, 248, 0.15); color: var(--accent-color); border: 1px solid var(--accent-color); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+        .intro-title { font-size: 18px; color: var(--accent-color); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h3 { font-size: 16px; margin: 0 0 5px 0; color: #ffffff; }
+        .topic-group p { font-size: 14px; color: var(--text-muted); margin: 0; }
+        .intro-note { font-size: 13px; color: var(--text-muted); font-style: italic; margin-top: 20px; }
+        .phase-title { background-color: var(--border-color); padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid var(--accent-color); }
+        .phase-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+        .question-block { background-color: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .question-tag { display: inline-block; background-color: var(--border-color); color: var(--accent-color); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
+        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.5; }
+        .text-box-analysis { background-color: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-clickable { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-color); padding: 14px 16px; border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; box-sizing: border-box; cursor: pointer !important; user-select: none; }
+        .option-clickable * { pointer-events: none !important; }
+        .feedback-badge { display: none; font-size: 16px; flex-shrink: 0; }
+        .explanation-box { display: none; margin-top: 8px; padding: 11px 15px; background-color: var(--tooltip-bg); border-left: 3px solid var(--accent-color); border-radius: 4px; font-size: 13px; line-height: 1.45; }
+        .option-clickable.correct { background-color: var(--correct-bg) !important; border-color: var(--correct-bg) !important; color: #ffffff !important; }
+        .option-clickable.correct .badge-correct { display: inline-block !important; }
+        .option-clickable.incorrect { background-color: var(--incorrect-bg) !important; border-color: var(--incorrect-bg) !important; color: #ffffff !important; }
+        .option-clickable.incorrect .badge-incorrect { display: inline-block !important; }
+        .option-clickable.hint-green { border: 2px dashed #16a34a !important; background-color: rgba(22, 163, 74, 0.1) !important; }
+        .option-clickable.hint-green .badge-hint { display: inline-block !important; }
+        .score-banner { margin-top: 30px; padding: 20px; background-color: rgba(56, 189, 248, 0.1); border: 2px dashed var(--accent-color); border-radius: 12px; text-align: center; }
+        .score-text { font-size: 20px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; }
+        .action-btn { background-color: var(--accent-color); color: var(--bg-color); border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer !important; display: inline-block; text-align: center; user-select: none; }
+        .center-btn-wrapper { display: flex; justify-content: center; width: 100%; }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <h1 id="main-title">🧭 EXPEDIÇÃO TEMPO E ENERGIA</h1>
+    <div class="subtitle">5º Ano • 2º Trimestre • Prova Abrangente de História e Geografia</div>
+
+    <div id="screen-intro" class="screen active">
+        <div class="intro-box">
+            <span class="theme-badge">🔦 Missão: decifrar o passado e ligar o futuro</span>
+            <h2 class="intro-title">📋 Conteúdos Mapeados na Missão:</h2>
+            <div class="topic-group">
+                <h3>🏛️ História — Linguagens e tecnologias de comunicação</h3>
+                <p><b>Tópicos:</b> comunicação sem palavras, tradição oral, arte rupestre, hieróglifos egípcios, diferentes sistemas de escrita e a importância da escrita para preservar a memória. <b>Habilidade EF05H10.</b></p>
+            </div>
+            <div class="topic-group">
+                <h3>🌎 Geografia — Tipos de energia</h3>
+                <p><b>Tópicos:</b> fontes renováveis e não renováveis, energia na indústria, no campo e no extrativismo, e o acesso à energia elétrica nas comunidades distantes. <b>Habilidade EF05GE07.</b></p>
+            </div>
+            <div class="intro-note">⚡ Estrutura da banca: 15 questões diretas + 5 questões de leitura e análise extensa. Ao responder, a explicação de <b>cada</b> alternativa aparece — inclusive das que você não escolheu.</div>
+        </div>
+        <div class="center-btn-wrapper">
+            <div class="action-btn" id="btn-start-quiz" onclick="">Iniciar Missão</div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+
+        <div class="phase-title">🔺 FASE 1: LINGUAGENS SEM PALAVRAS</div>
+        <div class="phase-desc">História — nem toda mensagem precisa de letras.</div>
+
+        <div class="question-block" data-q="1" data-correct="C">
+            <span class="question-tag">Linguagem não verbal</span>
+            <div class="question-text">1. Numa viagem, você vê na estrada uma placa vermelha de oito lados. Mesmo alguém que ainda não sabe ler consegue entender que ali o carro deve parar. Isso acontece porque:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Só a palavra escrita na placa comunica a ordem.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Se dependesse só da palavra, quem ainda não sabe ler não entenderia a placa — e o enunciado diz que entende.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) A placa não comunica nada sem alguém explicando.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A placa comunica sozinha justamente porque a cor e o formato já foram combinados entre as pessoas e são aprendidos desde cedo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) A cor e o formato também são uma linguagem, combinada entre as pessoas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Isso é linguagem não verbal: o vermelho e o octógono significam "pare" por acordo social, sem precisar de leitura.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Placas de trânsito servem apenas para enfeitar a estrada.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Sinais de trânsito têm função social clara: organizam a circulação e evitam acidentes.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="2" data-correct="B">
+            <span class="question-tag">Tecnologias de comunicação</span>
+            <div class="question-text">2. Imagine que, daqui a 200 anos, pesquisadores encontrem um celular antigo cheio de mensagens com emojis. Para descobrir o que aquelas imagens queriam dizer, eles precisarão:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Apenas olhar os desenhos, porque uma imagem significa sempre a mesma coisa em qualquer época.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O sentido de uma imagem muda conforme a cultura e a época. Nada garante que um emoji signifique daqui a 200 anos o que significa hoje.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Pesquisar os costumes e o contexto da época em que aqueles emojis eram usados.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! É exatamente o trabalho do historiador: entender o símbolo a partir do contexto de quem o usou.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Trocar cada emoji por uma letra, como se fosse um alfabeto secreto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Emoji não é alfabeto: ele não representa sons, e sim ideias, emoções e objetos inteiros.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Concluir que naquele tempo as pessoas não sabiam escrever.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os emojis acompanham a escrita nas conversas, não a substituem — o próprio celular estaria cheio de texto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="3" data-correct="A">
+            <span class="question-tag">Tradição oral</span>
+            <div class="question-text">3. Antes da invenção da escrita, como as histórias, as tradições e os conhecimentos eram transmitidos de uma geração para outra?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Pela tradição oral: os mais velhos contavam aos mais novos, de boca em boca.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! A tradição oral guardou histórias, receitas, técnicas e crenças por milhares de anos — e continua viva hoje.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Por jornais impressos distribuídos nas aldeias.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O jornal impresso depende da escrita e da imprensa, inventadas muito depois.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Por documentos guardados em arquivos e cartórios.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Documento é registro escrito: não poderia existir antes da escrita.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Não eram transmitidos: cada geração começava tudo do zero.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Se fosse assim, não haveria cultura acumulada nem técnicas passadas adiante, como fazer fogo ou plantar.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="4" data-correct="D">
+            <span class="question-tag">Formas de linguagem</span>
+            <div class="question-text">4. Uma partitura musical, uma placa de trânsito e um emoji têm uma coisa em comum. Qual?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Todos usam as letras do nosso alfabeto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A partitura usa notas, a placa usa formas e cores, o emoji usa desenhos. Nenhum depende do alfabeto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Todos foram inventados no mesmo século.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. São de épocas muito distantes: a notação musical é antiga e o emoji nasceu na era digital.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Nenhum deles precisa ser aprendido para ser entendido.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Toda linguagem precisa ser aprendida — ninguém lê uma partitura sem estudar música.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Todos são linguagens que transmitem uma mensagem sem depender de palavras escritas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! São três linguagens diferentes com a mesma função: comunicar sem precisar de palavras escritas.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">🪨 FASE 2: DA PEDRA AO TECLADO</div>
+        <div class="phase-desc">História — como a humanidade aprendeu a registrar o que viveu.</div>
+
+        <div class="question-block" data-q="5" data-correct="B">
+            <span class="question-tag">Arte rupestre</span>
+            <div class="question-text">5. As pinturas rupestres encontradas no Parque Nacional da Serra da Capivara foram feitas há milhares de anos. Por que elas são importantes para o estudo da História?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Porque contam o que aconteceu no Brasil depois de 1500.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Elas são muito anteriores a 1500 e falam dos primeiros grupos humanos, não do período colonial.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Porque são fontes históricas que ajudam a entender como viviam os primeiros grupos humanos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Fonte histórica é todo vestígio que ajuda a reconstruir o passado: as pinturas revelam caça, alimentação, rituais e o ambiente daquele grupo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Porque foram feitas para decorar as casas de hoje.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Foram feitas há milhares de anos, com finalidades do próprio grupo que as pintou.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Porque foram assinadas pelos artistas que as pintaram.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Não há assinaturas nem nomes. É justamente por isso que os pesquisadores precisam trabalhar com hipóteses.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="6" data-correct="C">
+            <span class="question-tag">Como se faz História</span>
+            <div class="question-text">6. Nem sempre os pesquisadores têm certeza do que cada desenho rupestre queria dizer. Diante dessa dúvida, o que eles fazem?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Inventam qualquer explicação, já que ninguém pode conferir.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. História não é invenção: toda afirmação precisa se apoiar em evidências e pode ser questionada por outros pesquisadores.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Desistem de estudar o assunto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A dúvida não encerra a pesquisa: ela é justamente o ponto de partida do trabalho científico.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Elaboram hipóteses a partir das evidências que encontraram.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Hipótese é uma explicação possível construída com base em provas, que pode ser confirmada ou corrigida com novas descobertas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Perguntam diretamente às pessoas que fizeram as pinturas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Não há a quem perguntar: quem pintou viveu há milhares de anos.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="7" data-correct="A">
+            <span class="question-tag">Pigmentos naturais</span>
+            <div class="question-text">7. As pinturas rupestres foram produzidas com pigmentos naturais. Isso quer dizer que a tinta era obtida:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) De elementos da natureza, como argila, minerais coloridos e carvão.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Terras coloridas, óxido de ferro e carvão vegetal eram misturados a água, gordura ou resina para virar tinta.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Em fábricas de tinta instaladas perto das cavernas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Não existiam fábricas: tudo era preparado com o que havia no próprio ambiente.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) De canetas e lápis de cor comprados em lojas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Lápis e canetas são invenções recentes, de milhares de anos depois dessas pinturas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) De restos de plástico derretido.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O plástico só foi criado no século XX.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="8" data-correct="D">
+            <span class="question-tag">Hieróglifos</span>
+            <div class="question-text">8. Os hieróglifos usados no Antigo Egito são considerados uma forma de escrita porque:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) São apenas desenhos decorativos, sem nenhum significado.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Cada sinal tem significado definido, e juntos eles formam frases inteiras.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Usam exatamente as mesmas letras que usamos hoje.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os hieróglifos usam sinais próprios, com figuras de aves, olhos e mãos, bem diferentes do nosso alfabeto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Qualquer pessoa entende o que está escrito só de olhar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É preciso conhecer o valor de cada sinal. Decifrar os hieróglifos levou séculos de estudo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Seus símbolos representam sons e ideias, registrando informações de forma organizada.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Registrar informação com símbolos combinados segundo regras é exatamente o que define um sistema de escrita.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">⚡ FASE 3: A ENERGIA QUE MOVE TUDO</div>
+        <div class="phase-desc">Geografia — o que faz a fábrica, a fazenda e a sua casa funcionarem.</div>
+
+        <div class="question-block" data-q="9" data-correct="C">
+            <span class="question-tag">Renovável x não renovável</span>
+            <div class="question-text">9. Qual das alternativas apresenta <strong>apenas</strong> fontes de energia renováveis?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Petróleo, carvão mineral e gás natural.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os três são combustíveis fósseis: levaram milhões de anos para se formar e não se repõem.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Energia solar, óleo diesel e carvão mineral.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A solar é renovável, mas o óleo diesel e o carvão mineral não são. Basta uma fonte fóssil na lista para a alternativa cair.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Energia solar, eólica, hídrica e biomassa.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Sol, vento, água dos rios e biomassa se renovam na escala da nossa vida.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Energia eólica, gás natural e petróleo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Só a eólica é renovável; gás natural e petróleo são fósseis.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="10" data-correct="A">
+            <span class="question-tag">Energia no campo</span>
+            <div class="question-text">10. Numa fazenda, o trator usado na lavoura funciona com óleo diesel. Sobre essa fonte de energia, é correto afirmar que ela é:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Não renovável, pois é derivada do petróleo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O diesel vem do petróleo, recurso não renovável, e sua queima libera gases poluentes.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Renovável, pois pode ser produzida a qualquer momento.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O petróleo levou milhões de anos para se formar no subsolo; não é possível produzi-lo quando se quer.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Uma forma de energia solar armazenada em tanques.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Diesel é combustível fóssil extraído do subsolo, não energia do sol guardada em tanque.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) A fonte mais limpa que existe no meio rural.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É o oposto: está entre as fontes mais poluentes usadas no campo. A mais limpa ali seria a solar.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="11" data-correct="B">
+            <span class="question-tag">Tecnologia no meio rural</span>
+            <div class="question-text">11. Numa fazenda leiteira moderna, a ordenha mecanizada e o sistema de irrigação dependem principalmente de qual tipo de energia para funcionar?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Da força dos animais que puxam os equipamentos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A tração animal foi justamente o que essas máquinas vieram substituir.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Da energia elétrica.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Ordenhadeiras e bombas de irrigação funcionam com motores elétricos — por isso a energia elétrica cresceu tanto no campo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Da lenha queimada no fogão da casa.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A lenha gera calor para cozinhar e aquecer, mas não move equipamentos como esses.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) De nenhuma: são equipamentos movidos apenas à mão.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. "Mecanizada" significa exatamente que a máquina faz o trabalho que antes era feito à mão.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="12" data-correct="D">
+            <span class="question-tag">Energia na indústria</span>
+            <div class="question-text">12. O setor industrial é o maior consumidor de energia do Brasil. Isso se explica porque a indústria:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Funciona somente durante a noite, quando a energia é mais cara.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Muitas fábricas funcionam 24 horas por dia. O horário não explica o volume de energia consumida.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Usa energia apenas para iluminar os galpões.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A iluminação é uma parte pequena: o grande gasto está nas máquinas que transformam a matéria-prima.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Produz a própria energia e por isso não gasta nada.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Algumas indústrias geram parte da própria energia, mas continuam sendo grandes consumidoras.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Depende de máquinas e processos que funcionam sem parar para transformar matéria-prima em produtos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Fornos, prensas, esteiras e motores ligados por longos períodos fazem a indústria responder por cerca de um terço de toda a energia consumida no país.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="13" data-correct="A">
+            <span class="question-tag">Mudanças no campo</span>
+            <div class="question-text">13. Em meados do século XX, a lenha era a principal fonte de energia nas fazendas brasileiras: servia para cozinhar, aquecer a água e esquentar a casa. Comparando com hoje, o que mudou?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) O uso da lenha diminuiu bastante e cresceu o uso do óleo diesel e da energia elétrica.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! A mecanização trouxe máquinas a diesel e equipamentos elétricos; mais recentemente, também painéis solares.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) A lenha passou a ser a única fonte de energia do campo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Aconteceu o contrário: a lenha perdeu espaço para outras fontes.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) As fazendas deixaram de usar qualquer tipo de energia.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O campo moderno consome mais energia que antes, e não menos, por causa das máquinas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Nada mudou: o campo funciona hoje exatamente como no passado.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A mecanização transformou profundamente o trabalho rural, do plantio à ordenha.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="14" data-correct="C">
+            <span class="question-tag">Energia solar</span>
+            <div class="question-text">14. Uma fazenda instalou painéis solares para gerar a própria eletricidade. Essa fonte de energia é classificada como:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Não renovável, porque acaba quando o sol se põe.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A fonte não se esgota: o sol volta todo dia. À noite usa-se a energia armazenada em baterias ou a da rede elétrica.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Não renovável, porque depende de combustível para funcionar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O painel solar não queima nada: ele converte a luz do sol diretamente em eletricidade.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Renovável e limpa, porque usa a luz do sol e não queima combustível.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! É inesgotável na escala humana e praticamente não emite poluentes durante o funcionamento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Renovável, mas mais poluente que o óleo diesel.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É bem menos poluente que o diesel, que libera gases na queima.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="15" data-correct="B">
+            <span class="question-tag">Setor extrativo</span>
+            <div class="question-text">15. Atividades como a mineração retiram da natureza recursos que serão usados por outros setores. Essas atividades fazem parte do setor:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Industrial, porque montam automóveis e eletrodomésticos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A indústria transforma a matéria-prima em produto; a mineração apenas a retira do solo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Extrativo, porque retiram matéria-prima diretamente da natureza.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O extrativismo retira o que a natureza oferece: minérios, petróleo, madeira e pesca. A mineração consome muita energia.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Agrícola, porque plantam e colhem alimentos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O setor agrícola cultiva o que planta; a mineração não planta nada, apenas extrai.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) De transportes, porque levam mercadorias de um lugar a outro.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O transporte entra depois, levando o que já foi extraído ou produzido.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">👑 BOSS BATTLE: LEITURA E ANÁLISE EXTENSA</div>
+        <div class="phase-desc">Leia cada texto com calma antes de responder.</div>
+
+        <div class="text-box-analysis">
+            📖 <strong>TEXTO DE APOIO I — A PAREDE QUE GUARDAVA RECADOS:</strong> Numa expedição a uma serra do interior, pesquisadores encontraram um paredão de pedra coberto de figuras vermelhas: pessoas de mãos dadas em roda, animais de chifres compridos e várias linhas onduladas descendo até uma mancha larga. As tintas foram feitas com argila e carvão. Não havia nenhuma letra no paredão. A equipe começou a levantar explicações possíveis: talvez as linhas onduladas representassem um rio próximo, e a roda de pessoas, uma festa ou um ritual do grupo. "Ainda não podemos afirmar com certeza o que cada figura significa", explicou a coordenadora da pesquisa. "Mas cada detalhe nos ajuda a imaginar como aquelas pessoas viviam, do que se alimentavam e no que acreditavam."
+        </div>
+
+        <div class="question-block" data-q="16" data-correct="C">
+            <span class="question-tag">Interpretação extensa</span>
+            <div class="question-text">16. Segundo o Texto I, por que a coordenadora diz que "ainda não podemos afirmar com certeza o que cada figura significa"?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Porque as pinturas estavam apagadas demais para serem vistas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O texto descreve as figuras em detalhe — pessoas em roda, animais, linhas onduladas —, o que mostra que estavam bem visíveis.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Porque os pesquisadores não tinham interesse em estudar o paredão.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O texto diz que a equipe estava justamente levantando explicações possíveis, ou seja, pesquisando.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Porque não existe quem explique os desenhos, e as conclusões são hipóteses construídas a partir das evidências.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Quem pintou viveu há milhares de anos e não deixou explicação. Resta a hipótese, que pode mudar diante de novas descobertas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Porque as figuras estavam escritas em uma língua estrangeira conhecida.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O texto afirma que não havia nenhuma letra no paredão — não se trata de língua escrita.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="17" data-correct="A">
+            <span class="question-tag">Análise extensa</span>
+            <div class="question-text">17. O Texto I afirma que não havia nenhuma letra no paredão. Mesmo assim, aquelas figuras são consideradas uma forma de comunicação porque:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Transmitem informações sobre a vida do grupo por meio de imagens, sem precisar de escrita alfabética.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Comunicação não depende do alfabeto: imagens e símbolos registraram mensagens durante a maior parte da história humana.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Foram feitas com tinta industrial, o que prova que havia comércio.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O texto diz que as tintas eram feitas com argila e carvão, materiais do próprio ambiente.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Só têm valor depois de traduzidas para o português.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Tradução serve para línguas escritas. As figuras já comunicam por si, sem precisar virar texto.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Servem apenas como enfeite, sem função de comunicar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O próprio texto mostra que elas informam sobre alimentação, crenças e modo de vida do grupo.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-box-analysis">
+            📖 <strong>TEXTO DE APOIO II — A VILA QUE TROCOU O BARULHO PELA LUZ:</strong> Na comunidade ribeirinha de Boa Esperança, às margens de um rio da Amazônia, a energia elétrica chegava de um gerador movido a óleo diesel. Como o combustível era caro e precisava ser trazido de barco da cidade mais próxima, o gerador só era ligado das 18h às 22h. Depois disso, tudo apagava. Em 2025, a comunidade instalou painéis solares. Hoje a energia dura o dia inteiro: a escola usa computadores à tarde, o posto de saúde conserva vacinas na geladeira e as famílias guardam o peixe em freezers. Segundo o Ministério de Minas e Energia, cerca de 500 mil brasileiros ainda vivem sem energia elétrica constante — a maioria em áreas rurais e ribeirinhas distantes da rede.
+        </div>
+
+        <div class="question-block" data-q="18" data-correct="D">
+            <span class="question-tag">Análise de mudança</span>
+            <div class="question-text">18. De acordo com o Texto II, qual foi a principal <strong>vantagem ambiental</strong> da troca do gerador a diesel pelos painéis solares?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) A comunidade passou a receber mais visitantes.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O texto não fala em visitantes — e isso não seria uma vantagem ambiental, que é o que a pergunta pede.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) As casas ficaram maiores e mais confortáveis.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O texto não menciona mudança no tamanho das casas, e conforto não é ganho ambiental.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) O rio passou a ter mais peixes para a pesca.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O texto cita o peixe guardado em freezer, não um aumento da quantidade de peixes no rio.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Deixou-se de queimar um combustível poluente, trocando-o por uma fonte renovável e limpa.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O gerador queimava diesel, derivado de petróleo, liberando gases. O painel solar gera eletricidade sem queima e sem emissão.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="19" data-correct="B">
+            <span class="question-tag">Energia e qualidade de vida</span>
+            <div class="question-text">19. O Texto II cita o posto de saúde guardando vacinas na geladeira e a escola usando computadores à tarde. Esses exemplos servem para mostrar que:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) A comunidade não precisava de energia elétrica antes.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ela já usava um gerador: precisava de energia, mas só dispunha dela por quatro horas por dia.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) O acesso constante à energia permite atividades de saúde, educação e trabalho que antes eram impossíveis.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Conservar vacina, estudar com computador e guardar alimento são exemplos de energia mudando diretamente a qualidade de vida.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Os moradores passaram a usar energia apenas para lazer.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os exemplos citados são de saúde, educação e conservação de alimentos — serviços essenciais, não lazer.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) A energia solar só funciona em escolas e postos de saúde.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O próprio texto diz que as famílias também passaram a usar freezers em casa.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="20" data-correct="C">
+            <span class="question-tag">Fato e dado numérico</span>
+            <div class="question-text">20. Qual trecho do Texto II apresenta um <strong>dado numérico</strong> que pode ser conferido em uma fonte oficial?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) "A energia elétrica chegava de um gerador movido a óleo diesel."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Descreve a situação daquela vila, mas não traz número nem indica fonte que permita conferir.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) "Depois disso, tudo apagava."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É a descrição do que acontecia na comunidade, sem nenhum dado numérico.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) "Cerca de 500 mil brasileiros ainda vivem sem energia elétrica constante."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Traz um número e indica o órgão responsável pelo levantamento (Ministério de Minas e Energia), o que permite verificação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) "Hoje a energia dura o dia inteiro."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Informa uma mudança real na vila, mas sem número que possa ser conferido numa fonte oficial.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-banner">
+            <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
+            <div class="action-btn" id="btn-finish-quiz" onclick="">Terminar Missão</div>
+        </div>
+    </div>
+</div>
+<script>
+    (function() {
+        let score = 0;
+        let answeredQuestions = {};
+        let wrongAnswers = [];
+        const totalQuestions = 20;
+        const STORAGE_KEY = 'estudoKevin:scores:materias/histgeo/quiz_histgeo_2026_tri2_abrangente_completa_v1.html';
+        const screenIntro = document.getElementById('screen-intro');
+        const screenQuiz = document.getElementById('screen-quiz');
+        const btnStart = document.getElementById('btn-start-quiz');
+        const btnFinish = document.getElementById('btn-finish-quiz');
+        const mainTitle = document.getElementById('main-title');
+
+        function showScreen(screenToShow) {
+            screenIntro.classList.remove('active');
+            screenQuiz.classList.remove('active');
+            screenToShow.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        if (btnStart) {
+            btnStart.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenQuiz);
+            });
+        }
+
+        if (mainTitle) {
+            mainTitle.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenIntro);
+            });
+        }
+
+        function handleResponse(element) {
+            const block = element.closest('.question-block');
+            if (!block) return;
+            const qNum = block.getAttribute('data-q');
+            const correctAnswer = block.getAttribute('data-correct');
+            const selectedLetter = element.getAttribute('data-letter');
+            if (answeredQuestions[qNum]) return;
+            answeredQuestions[qNum] = selectedLetter;
+            const parentContainer = block.querySelector('.options-container');
+            const wrappers = parentContainer.children;
+            for (let i = 0; i < wrappers.length; i++) {
+                const opt = wrappers[i].querySelector('.option-clickable');
+                const expBox = wrappers[i].querySelector('.explanation-box');
+                const optLetter = opt.getAttribute('data-letter');
+                if (selectedLetter === correctAnswer) {
+                    if (optLetter === correctAnswer) opt.classList.add('correct');
+                } else {
+                    if (opt === element) opt.classList.add('incorrect');
+                    else if (optLetter === correctAnswer) opt.classList.add('hint-green');
+                }
+                if (expBox) expBox.style.display = 'block';
+            }
+            if (selectedLetter === correctAnswer) {
+                score++;
+            } else {
+                const correctEl = block.querySelector(`.option-clickable[data-letter="${correctAnswer}"]`);
+                wrongAnswers.push({
+                    q: qNum,
+                    text: block.querySelector('.question-text').textContent.trim(),
+                    chosen: element.querySelector('span').textContent.trim(),
+                    correct: correctEl ? correctEl.querySelector('span').textContent.trim() : correctAnswer
+                });
+            }
+            document.getElementById('score-display').textContent = `Pontuação: ${score} / ${totalQuestions}`;
+            if (Object.keys(answeredQuestions).length === totalQuestions) {
+                try {
+                    const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    history.push({ score, total: totalQuestions, date: new Date().toISOString(), wrong: wrongAnswers });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                } catch(e) {}
+            }
+        }
+
+        document.querySelectorAll('.option-clickable').forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleResponse(this);
+            });
+        });
+
+        if (btnFinish) {
+            btnFinish.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = '/';
+            });
+        }
+    })();
+</script>
+</body>
+</html>
