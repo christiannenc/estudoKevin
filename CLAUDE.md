@@ -37,7 +37,7 @@ Exemplo: `quiz_portugues_2026_tri2_prova_parcial_v1.html`
 - `parcial` ou `completa`: indica se é uma versão reduzida ou completa do conteúdo
 - `v{N}`: número da versão
 
-**Regra de versão: cada versão é um exercício SEPARADO, não substitui a anterior.** v1 e v2 do mesmo trimestre/completude aparecem como dois cards distintos na lista. O título gerado sempre inclui a versão para diferenciá-los (ex: "2º trimestre 2026 · Parcial · v1").
+**Regra de versão: cada versão é um exercício SEPARADO, não substitui a anterior.** v1 e v2 do mesmo trimestre/completude aparecem como dois cards distintos na lista. O título gerado sempre inclui o tipo e a versão para diferenciá-los (ex: "Quiz · 2º trimestre 2026 · Parcial · v1"). O rótulo do tipo vem do mapa `TIPO_LABEL` no `index.html` — tipo novo que não estiver lá cai num fallback que só capitaliza a primeira letra, então vale acrescentar ao mapa.
 
 **O `tipo` decide o badge; a extensão decide como o link abre.** São duas regras separadas — folha de impressão também pode ser `.html`:
 

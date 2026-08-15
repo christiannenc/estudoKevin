@@ -211,6 +211,20 @@
         return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     }
 
+    // Rótulos legíveis por tipo. Tipo não mapeado cai no fallback (capitaliza a 1ª letra).
+    const TIPO_LABEL = {
+        quiz: 'Quiz',
+        impressao: 'Impressão',
+        exercicio: 'Exercício',
+        avaliacao: 'Avaliação',
+        prova: 'Prova',
+        redacao: 'Redação'
+    };
+
+    function tipoLabel(tipo) {
+        return TIPO_LABEL[tipo] || tipo.charAt(0).toUpperCase() + tipo.slice(1);
+    }
+
     function parseFilename(path) {
         const filename = path.split('/').pop();
         const match = filename.match(/^([a-z]+)_([a-z]+)_(\d{4})_tri(\d)_.+_(parcial|completa)_v(\d+)\.(html|pdf)$/i);
@@ -223,7 +237,7 @@
         const [, tipo, , ano, tri, completude, versao, extensao] = match;
         const completudeLabel = completude.charAt(0).toUpperCase() + completude.slice(1);
         return {
-            titulo: `${tri}º trimestre ${ano} · ${completudeLabel} · v${versao}`,
+            titulo: `${tipoLabel(tipo.toLowerCase())} · ${tri}º trimestre ${ano} · ${completudeLabel} · v${versao}`,
             tipo: tipo.toLowerCase(),
             extensao: extensao.toLowerCase(),
             versao: parseInt(versao, 10),

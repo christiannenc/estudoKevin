@@ -44,7 +44,7 @@ A extensão decide o badge e o comportamento do link:
 - `.html` → badge **Quiz**, abre em nova aba
 - `.pdf` → badge **Imprimir**, abre na mesma aba
 
-**Cada versão é um exercício separado, não substitui a anterior.** A v1 e a v2 do mesmo trimestre aparecem como dois cards distintos, e o título gerado sempre inclui a versão para diferenciá-los (ex: "2º trimestre 2026 · Parcial · v1").
+**Cada versão é um exercício separado, não substitui a anterior.** A v1 e a v2 do mesmo trimestre aparecem como dois cards distintos, e o título gerado sempre inclui o tipo e a versão para diferenciá-los (ex: "Quiz · 2º trimestre 2026 · Parcial · v1").
 
 ## Histórico de pontuação
 

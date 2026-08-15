@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quiz Gamer de Português — 2º Trimestre (Abrangente v2)</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-bg: #16a34a;
+            --incorrect-bg: #dc2626;
+            --border-color: #334155;
+            --tooltip-bg: #0f172a;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        h1 { color: var(--accent-color); text-align: center; font-size: 26px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; user-select: none; }
+        h1:hover { opacity: 0.9; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        .intro-box { background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .theme-badge { display: inline-block; background-color: rgba(56, 189, 248, 0.15); color: var(--accent-color); border: 1px solid var(--accent-color); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+        .intro-title { font-size: 18px; color: var(--accent-color); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h3 { font-size: 16px; margin: 0 0 5px 0; color: #ffffff; }
+        .topic-group p { font-size: 14px; color: var(--text-muted); margin: 0; }
+        .intro-note { font-size: 13px; color: var(--text-muted); font-style: italic; margin-top: 20px; }
+        .phase-title { background-color: var(--border-color); padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid var(--accent-color); }
+        .phase-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+        .question-block { background-color: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .question-tag { display: inline-block; background-color: var(--border-color); color: var(--accent-color); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
+        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.5; }
+        .text-box-analysis { background-color: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-clickable { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-color); padding: 14px 16px; border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; box-sizing: border-box; cursor: pointer !important; user-select: none; }
+        .option-clickable * { pointer-events: none !important; }
+        .feedback-badge { display: none; font-size: 16px; flex-shrink: 0; }
+        .explanation-box { display: none; margin-top: 12px; padding: 12px 16px; background-color: var(--tooltip-bg); border-left: 3px solid var(--accent-color); border-radius: 4px; font-size: 13px; line-height: 1.5; }
+        .option-clickable.correct { background-color: var(--correct-bg) !important; border-color: var(--correct-bg) !important; color: #ffffff !important; }
+        .option-clickable.correct .badge-correct { display: inline-block !important; }
+        .option-clickable.incorrect { background-color: var(--incorrect-bg) !important; border-color: var(--incorrect-bg) !important; color: #ffffff !important; }
+        .option-clickable.incorrect .badge-incorrect { display: inline-block !important; }
+        .option-clickable.hint-green { border: 2px dashed #16a34a !important; background-color: rgba(22, 163, 74, 0.1) !important; }
+        .option-clickable.hint-green .badge-hint { display: inline-block !important; }
+        .score-banner { margin-top: 30px; padding: 20px; background-color: rgba(56, 189, 248, 0.1); border: 2px dashed var(--accent-color); border-radius: 12px; text-align: center; }
+        .score-text { font-size: 20px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; }
+        .action-btn { background-color: var(--accent-color); color: var(--bg-color); border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer !important; display: inline-block; text-align: center; user-select: none; }
+        .center-btn-wrapper { display: flex; justify-content: center; width: 100%; }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <h1 id="main-title">🎮 QUIZ GAMER DE PORTUGUÊS</h1>
+    <div class="subtitle">5º Ano • 2º Trimestre • Prova Abrangente v2</div>
+
+    <div id="screen-intro" class="screen active">
+        <div class="intro-box">
+            <span class="theme-badge">🕹️ Tema: Minecraft, Games e Criação Digital</span>
+            <h2 class="intro-title">📋 Conteúdos Mapeados na Missão:</h2>
+            <div class="topic-group">
+                <h3>🛠️ Morfologia</h3>
+                <p><b>Tópico:</b> Pronomes demonstrativos (este/esse/aquele), flexão verbal (-am / -ão), interjeições e concordância de "obrigado/obrigada".</p>
+            </div>
+            <div class="topic-group">
+                <h3>✒️ Ortografia e Homófonas</h3>
+                <p><b>Tópico:</b> Emprego de "a" x "há" e "sessão" x "seção".</p>
+            </div>
+            <div class="topic-group">
+                <h3>📖 Leitura e Análise</h3>
+                <p><b>Tópico:</b> Artigos de divulgação científica sobre tecnologia, coesão textual anafórica e distinção entre fato e opinião.</p>
+            </div>
+            <div class="intro-note">⚡ Estrutura da banca: 15 questões conceituais e diretas + 5 questões de leitura e análise extensa. Todo o programa da prova abrangente, agora em cenários de games, transmissões ao vivo e tecnologia.</div>
+        </div>
+        <div class="center-btn-wrapper">
+            <div class="action-btn" id="btn-start-quiz" onclick="">Iniciar Missão Gamer</div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+
+        <div class="phase-title">⚡ FASE 1: MORFOLOGIA E ORTOGRAFIA</div>
+        <div class="phase-desc">Selecione a alternativa correta.</div>
+
+        <div class="question-block" data-q="1" data-correct="B">
+            <span class="question-tag">Pronomes demonstrativos</span>
+            <div class="question-text">1. Em uma partida online de Minecraft, Pedro está segurando uma picareta de diamante no jogo e diz para o amigo no fone: "____ picareta aqui na minha mão tem poder máximo, mas ____ espada que está com você precisa ser reparada." Qual alternativa preenche as lacunas?</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Essa / esta</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Esta / essa</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Aquela / esta</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Esta / aquela</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> Usa-se <em>esta</em> para o item em posse do falante (1ª pessoa: "na minha mão") e <em>essa</em> para o item que está com o interlocutor (2ª pessoa: "com você").</div>
+        </div>
+
+        <div class="question-block" data-q="2" data-correct="C">
+            <span class="question-tag">Verbos (-am x -ão)</span>
+            <div class="question-text">2. "Ontem os jogadores ____ um novo servidor no Minecraft, e amanhã eles ____ uma transmissão ao vivo para mostrar a construção." A sequência correta é:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) criarão / farão</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) criaram / fizeram</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) criaram / farão</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) criarão / fizeram</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> A terminação <em>-am</em> indica passado ("Ontem criaram"), enquanto <em>-ão</em> indica futuro ("Amanhã farão").</div>
+        </div>
+
+        <div class="question-block" data-q="3" data-correct="A">
+            <span class="question-tag">Ortografia (a x há)</span>
+            <div class="question-text">3. Assinale a opção em que o uso das palavras <strong>há</strong> e <strong>a</strong> está inteiramente CORRETO no contexto gamer:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Há dois meses que a equipe não atualiza o jogo, mas daqui a três dias lançarão a nova versão.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) A dois meses que a equipe não atualiza o jogo, mas daqui há três dias lançarão a nova versão.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Há dois meses que a equipe não atualiza o jogo, mas daqui há três dias lançarão a nova versão.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) A dois meses que a equipe não atualiza o jogo, mas daqui a três dias lançarão a nova versão.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> "Há" (verbo haver) indica tempo decorrido no passado ("faz dois meses"). "A" indica tempo futuro aproximado ("daqui a três dias").</div>
+        </div>
+
+        <div class="question-block" data-q="4" data-correct="D">
+            <span class="question-tag">Homófonas (sessão x seção)</span>
+            <div class="question-text">4. "Na loja de eletrônicos, fomos até a ____ de consoles de videogame e depois garantimos ingressos para uma ____ de cinema sobre o filme do Mario." As palavras corretas são:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) sessão / sessão</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) seção / seção</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) sessão / seção</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) seção / sessão</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> <em>Seção</em> significa setor ou repartição comercial. <em>Sessão</em> significa tempo reservado para uma apresentação ou filme.</div>
+        </div>
+
+        <div class="question-block" data-q="5" data-correct="B">
+            <span class="question-tag">Interjeições</span>
+            <div class="question-text">5. Ao conseguir vencer a fase final de um campeonato de games no último segundo, o streamer gritou: "<strong>Ufa!</strong> Consegui passar de fase antes de o tempo esgotar!" A interjeição destaca:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Decepção e tristeza</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Alívio e descanso</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Raiva e irritação</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Dúvida e incerteza</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> "Ufa!" é a interjeição clássica para demonstrar alívio após superar um grande esforço ou desafio.</div>
+        </div>
+
+        <div class="question-block" data-q="6" data-correct="B">
+            <span class="question-tag">Concordância (obrigado / obrigada)</span>
+            <div class="question-text">6. A gamer Luiza terminou a transmissão ao vivo e agradeceu aos seus seguidores dizendo: "____ a todos que enviaram comentários hoje!" A forma correta segundo a norma-padrão é:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Obrigado, pois concorda com os seguidores do sexo masculino.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Obrigada, pois a pessoa que agradece é do gênero feminino.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Obrigado, pois é uma palavra invariável para streamers.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Obrigados, pois refere-se a vários comentários.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> A concordância exige que a palavra concorde com o gênero de quem fala (Luiza é do gênero feminino, portanto diz "obrigada").</div>
+        </div>
+
+        <div class="phase-title">🗲 FASE 2: LEITURA, COESÃO E GÊNEROS</div>
+        <div class="phase-desc">Atenção ao que o texto realmente diz.</div>
+
+        <div class="question-block" data-q="7" data-correct="C">
+            <span class="question-tag">Fato x opinião</span>
+            <div class="question-text">7. Assinale a alternativa que apresenta um enunciado de pura <strong>OPINIÃO</strong> sobre o universo dos jogos eletrônicos:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) "Minecraft foi lançado oficialmente no ano de 2011."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) "O jogo obteve mais de 300 milhões de cópias vendidas no mundo."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) "Os jogos de construção em blocos são os mais incríveis da história."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) "Diversas escolas utilizam edições educativas do jogo em salas de aula."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> O adjetivo "incríveis" atribui um julgamento de valor e preferência pessoal (opinião), e não um fato comprovável.</div>
+        </div>
+
+        <div class="question-block" data-q="8" data-correct="A">
+            <span class="question-tag">Coesão textual (anáfora)</span>
+            <div class="question-text">8. Na frase: "A empresa lançou um novo processador para computadores de jogos. <strong>Esse componente</strong> aumenta a velocidade das imagens." A expressão destacada serve para:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Retomar o termo "processador", evitando a repetição da palavra no texto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Iniciar um assunto que não tem relação com o computador.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Mostrar uma dúvida dos criadores do jogo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Substituir o nome da própria empresa de games.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> É um recurso de coesão anafórica, que retoma "processador" sem precisar repetir o termo.</div>
+        </div>
+
+        <div class="question-block" data-q="9" data-correct="C">
+            <span class="question-tag">Divulgação científica</span>
+            <div class="question-text">9. Um artigo de <strong>Divulgação Científica</strong> que fala sobre "Como o cérebro desenvolve raciocínio lógico ao jogar videogames" tem como objetivo principal:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Narrar a história de um herói de ficção dentro de um jogo de aventura.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Vender computadores e placas de vídeo com desconto comercial.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Explicar descobertas e estudos da neurociência para o público geral de forma acessível.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Ensinar códigos e manhas para passar de fase mais rápido.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> A divulgação científica traduz estudos complexos (como os da neurociência) para a linguagem acessível do leitor comum.</div>
+        </div>
+
+        <div class="phase-title">🧪 FASE 3: SCANNER DE REVISÃO GERAL</div>
+        <div class="phase-desc">Os mesmos conteúdos, agora em outros contextos.</div>
+
+        <div class="question-block" data-q="10" data-correct="A">
+            <span class="question-tag">Pronomes demonstrativos (tempo)</span>
+            <div class="question-text">10. Para se referir ao ano presente em que estamos vivendo e jogando (2026), a norma gramatical exige o pronome demonstrativo:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Este ano de 2026 trouxe grandes campeonatos de e-sports.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Esse ano de 2026 trouxe grandes campeonatos de e-sports.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Aquele ano de 2026 trouxe grandes campeonatos de e-sports.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Aquilo ano de 2026 trouxe grandes campeonatos de e-sports.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> Usa-se <em>este/esta</em> para indicar o tempo presente em curso no momento do enunciado.</div>
+        </div>
+
+        <div class="question-block" data-q="11" data-correct="B">
+            <span class="question-tag">Verbos (-am x -ão)</span>
+            <div class="question-text">11. Qual das frases apresenta um ERRO de terminação verbal quanto à linha do tempo?</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Ano passado, os desenvolvedores criaram um novo personagem.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Mês que vem, os gamers jogaram no torneio internacional.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Amanhã, as equipes testarão o mapa inédito.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Ontem, os participantes receberam os prêmios do evento.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> "Mês que vem" projeta o fato para o futuro, exigindo a terminação <em>jogarão</em> (com -ão), e não o passado "jogaram".</div>
+        </div>
+
+        <div class="question-block" data-q="12" data-correct="C">
+            <span class="question-tag">Ortografia (distância x tempo)</span>
+            <div class="question-text">12. "A arena de e-sports fica ____ poucos quilômetros daqui, mas ____ meses não assistimos a uma partida presencial." O preenchimento correto é:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) há / a</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) a / a</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) a / há</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) há / há</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> A preposição "a" marca distância física ("a poucos quilômetros"). O verbo "há" indica tempo passado decorrido ("há meses").</div>
+        </div>
+
+        <div class="question-block" data-q="13" data-correct="B">
+            <span class="question-tag">Análise de tirinhas</span>
+            <div class="question-text">13. Em uma tirinha gamer, o personagem promete que vai desligar o computador para ir dormir cedo, mas no quadrinho seguinte o relógio marca 4 horas da manhã e ele continua jogando. O humor ocorre devido a:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Um erro na cor dos fios do computador.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Uma contradição bem-humorada entre a promessa feita e a atitude real do jogador.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) A falta de luz na casa do personagem durante a noite.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Uma briga entre o personagem e seu animal de estimação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> A quebra de expectativa e o contraste entre a promessa de dormir e o ato de continuar jogando madrugada adentro produzem o humor.</div>
+        </div>
+
+        <div class="question-block" data-q="14" data-correct="A">
+            <span class="question-tag">Homófonas no cotidiano</span>
+            <div class="question-text">14. Assinale a opção em que a palavra <strong>seção</strong> foi empregada adequadamente:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Comprei um teclado novo na seção de acessórios para computadores.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) A seção de jogos na TV começou pontualmente às 20h.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Tivemos uma longa seção de treinamento para o campeonato.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) O filme do Sonic teve uma seção esgotada no cinema.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> <em>Seção</em> é sinônimo de setor de loja. Reuniões, treinos e exibições utilizam <em>sessão</em>.</div>
+        </div>
+
+        <div class="question-block" data-q="15" data-correct="C">
+            <span class="question-tag">Pronomes demonstrativos (retomada)</span>
+            <div class="question-text">15. "Gosto de jogar no computador e no videogame portátil. ____ me acompanha em viagens e ____ me permite usar gráficos mais avançados." Para referir-se a "videogame portátil" (último citado) e "computador" (primeiro citado), usa-se:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Aquele / este</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Esse / aquele</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Este / aquele</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Isto / aquilo</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> Em textos escritos, <em>este</em> retoma o elemento mais recente ("videogame portátil") e <em>aquele</em>, o elemento citado em primeiro lugar ("computador").</div>
+        </div>
+
+        <div class="phase-title">👑 BOSS BATTLE: LEITURA E ANÁLISE EXTENSA</div>
+        <div class="phase-desc">Leia cada texto com calma antes de responder.</div>
+
+        <div class="text-box-analysis">
+            📖 <strong>TEXTO DE APOIO I — BIOCOMBUSTÍVEIS E BACTÉRIAS GAMERS:</strong> Há anos cientistas buscam fontes de energia renováveis para diminuir o impacto no meio ambiente. Recentemente, pesquisadores de biotecnologia desenvolveram um projeto inovador usando bactérias modificadas para produzir combustível limpo a partir de resíduos agrícolas. Para explicar o funcionamento às crianças, a equipe criou um minijogo no estilo Minecraft, onde os jogadores precisam cultivar esses micro-organismos virtuais e abastecer veículos ecológicos. O estudo comprovou que crianças que jogaram o simulador entenderam 40% mais rápido os conceitos de biologia em comparação com aulas exclusivamente teóricas. A tecnologia provou que os games podem ser grandes aliados da ciência moderna!
+        </div>
+
+        <div class="question-block" data-q="16" data-correct="C">
+            <span class="question-tag">Interpretação extensa</span>
+            <div class="question-text">16. De acordo com o Texto I, qual estratégia inovadora os cientistas utilizaram para facilitar a compreensão do processo biológico pelas crianças?</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) A leitura obrigatória de manuais universitários de química.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) O cancelamento das aulas teóricas de ciências nas escolas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) A criação de um minijogo em estilo de blocos para simular o cultivo de micro-organismos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) A doação de veículos elétricos reais para os alunos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> O texto afirma que a equipe desenvolveu um minijogo no estilo Minecraft para simular o cultivo das bactérias.</div>
+        </div>
+
+        <div class="question-block" data-q="17" data-correct="B">
+            <span class="question-tag">Análise linguística extensa</span>
+            <div class="question-text">17. No trecho "<strong>Há</strong> anos cientistas buscam fontes…", o termo em destaque foi empregado com a função gramatical de:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Indicar uma distância física entre os laboratórios.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Expressar tempo decorrido no passado, podendo ser substituído por "Faz".</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Mostrar uma previsão para o próximo ano.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Fazer um chamado de atenção aos jogadores.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> O verbo <em>haver</em> impessoal expressa tempo transcorrido no passado ("Faz anos").</div>
+        </div>
+
+        <div class="text-box-analysis">
+            📖 <strong>TEXTO DE APOIO II — O LIMITE DE TEMPO NOS VIDEOGAMES:</strong> Com o aumento do tempo diante das telas, especialistas debatem o impacto dos jogos digitais no desenvolvimento infantil. A Organização Mundial da Saúde (OMS) recomenda que crianças de 5 a 12 anos não ultrapassem 2 horas diárias de telas. A psicóloga dra. Camila destaca: "O videogame traz benefícios comprovados para o raciocínio rápido e a coordenação motora, mas o excesso compromete a qualidade do sono e a convivência familiar." Já o desenvolvedor de jogos Roberto aponta que "os jogos multiplayer modernos ensinam trabalho em equipe e resolução de problemas complexos que a escola tradicional muitas vezes não consegue simular."
+        </div>
+
+        <div class="question-block" data-q="18" data-correct="A">
+            <span class="question-tag">Análise de argumentos</span>
+            <div class="question-text">18. Ao analisar as opiniões dos dois especialistas citados no Texto II, conclui-se que ambos concordam que:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Os jogos eletrônicos possuem aspectos positivos para o aprendizado e as habilidades das crianças.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) O uso de telas deve ser totalmente proibido para menores de 12 anos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) As escolas deveriam substituir todas as aulas por videogames.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) O sono das crianças não sofre interferência dos aparelhos eletrônicos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> Camila cita benefícios no raciocínio e na coordenação, e Roberto cita trabalho em equipe — os dois convergem sobre os ganhos de aprendizagem.</div>
+        </div>
+
+        <div class="question-block" data-q="19" data-correct="C">
+            <span class="question-tag">Análise de flexão verbal</span>
+            <div class="question-text">19. Se o trecho "crianças… <strong>entenderam</strong> 40% mais rápido" fosse alterado para <strong>entenderão</strong>, o sentido gramatical passaria a indicar:</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) Uma ação finalizada no passado durante o estudo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) Uma impossibilidade de medir os resultados.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) Uma previsão ou evento futuro que ainda irá ocorrer.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) Uma dúvida da equipe de cientistas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> A grafia <em>-ão</em> flexiona o verbo no tempo futuro, modificando a linha do tempo da pesquisa.</div>
+        </div>
+
+        <div class="question-block" data-q="20" data-correct="B">
+            <span class="question-tag">Fato comprovado</span>
+            <div class="question-text">20. Qual das afirmações extraídas do Texto II configura um <strong>FATO OBJETIVO</strong> baseado em diretrizes oficiais?</div>
+            <div class="options-container">
+                <div><div class="option-clickable" data-letter="A" onclick=""><span>(A) "Jogar videogame é a melhor atividade para o fim de semana."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="B" onclick=""><span>(B) "A OMS recomenda que crianças de 5 a 12 anos não ultrapassem 2 horas diárias de telas."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="C" onclick=""><span>(C) "Os jogos multiplayer são mais divertidos que brincar no parque."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+                <div><div class="option-clickable" data-letter="D" onclick=""><span>(D) "A escola tradicional é ultrapassada em todos os sentidos."</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div></div>
+            </div>
+            <div class="explanation-box">📌 <strong>Justificativa:</strong> A recomendação oficial da Organização Mundial da Saúde (2 horas diárias) é um fato normativo documentalmente comprovado.</div>
+        </div>
+
+        <div class="score-banner">
+            <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
+            <div class="action-btn" id="btn-finish-quiz" onclick="">Terminar Missão</div>
+        </div>
+    </div>
+</div>
+<script>
+    (function() {
+        let score = 0;
+        let answeredQuestions = {};
+        let wrongAnswers = [];
+        const totalQuestions = 20;
+        const STORAGE_KEY = 'estudoKevin:scores:materias/portugues/quiz_portugues_2026_tri2_abrangente_completa_v2.html';
+        const screenIntro = document.getElementById('screen-intro');
+        const screenQuiz = document.getElementById('screen-quiz');
+        const btnStart = document.getElementById('btn-start-quiz');
+        const btnFinish = document.getElementById('btn-finish-quiz');
+        const mainTitle = document.getElementById('main-title');
+
+        function showScreen(screenToShow) {
+            screenIntro.classList.remove('active');
+            screenQuiz.classList.remove('active');
+            screenToShow.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        if (btnStart) {
+            btnStart.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenQuiz);
+            });
+        }
+
+        if (mainTitle) {
+            mainTitle.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenIntro);
+            });
+        }
+
+        function handleResponse(element) {
+            const block = element.closest('.question-block');
+            if (!block) return;
+            const qNum = block.getAttribute('data-q');
+            const correctAnswer = block.getAttribute('data-correct');
+            const selectedLetter = element.getAttribute('data-letter');
+            if (answeredQuestions[qNum]) return;
+            answeredQuestions[qNum] = selectedLetter;
+            const parentContainer = block.querySelector('.options-container');
+            const wrappers = parentContainer.children;
+            for (let i = 0; i < wrappers.length; i++) {
+                const opt = wrappers[i].querySelector('.option-clickable');
+                const optLetter = opt.getAttribute('data-letter');
+                if (selectedLetter === correctAnswer) {
+                    if (optLetter === correctAnswer) opt.classList.add('correct');
+                } else {
+                    if (opt === element) opt.classList.add('incorrect');
+                    else if (optLetter === correctAnswer) opt.classList.add('hint-green');
+                }
+            }
+            const expBox = block.querySelector('.explanation-box');
+            if (expBox) expBox.style.display = 'block';
+            if (selectedLetter === correctAnswer) {
+                score++;
+            } else {
+                const correctEl = block.querySelector(`.option-clickable[data-letter="${correctAnswer}"]`);
+                wrongAnswers.push({
+                    q: qNum,
+                    text: block.querySelector('.question-text').textContent.trim(),
+                    chosen: element.querySelector('span').textContent.trim(),
+                    correct: correctEl ? correctEl.querySelector('span').textContent.trim() : correctAnswer
+                });
+            }
+            document.getElementById('score-display').textContent = `Pontuação: ${score} / ${totalQuestions}`;
+            if (Object.keys(answeredQuestions).length === totalQuestions) {
+                try {
+                    const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    history.push({ score, total: totalQuestions, date: new Date().toISOString(), wrong: wrongAnswers });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                } catch(e) {}
+            }
+        }
+
+        document.querySelectorAll('.option-clickable').forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleResponse(this);
+            });
+        });
+
+        if (btnFinish) {
+            btnFinish.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = '/';
+            });
+        }
+    })();
+</script>
+</body>
+</html>

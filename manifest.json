@@ -4,6 +4,18 @@
     "icone": "book-2",
     "exercicios": [
       {
+        "arquivo": "materias/portugues/quiz_portugues_2026_tri2_abrangente_completa_v2.html",
+        "assunto": "Prova abrangente com tema de games e Minecraft: pronomes demonstrativos, verbos -am/-ão, a x há, sessão x seção, interjeições, obrigado/obrigada, coesão anafórica, fato x opinião e divulgação científica"
+      },
+      {
+        "arquivo": "materias/portugues/quiz_portugues_2026_tri2_abrangente_completa_v1.html",
+        "assunto": "Prova abrangente: pronomes demonstrativos, verbos -am/-ão, a x há, sessão x seção, interjeições, obrigado/obrigada, coesão, fato x opinião e divulgação científica"
+      },
+      {
+        "arquivo": "materias/portugues/impressao_portugues_2026_tri2_abrangente_completa_v1.html",
+        "assunto": "Avaliação discursiva sobre dois textos: coesão anafórica, a x há, -am/-ão, interjeição, concordância de obrigada, fato x opinião e produção de parágrafo com homófonas"
+      },
+      {
         "arquivo": "materias/portugues/quiz_portugues_2026_tri2_prova_parcial_v1.html",
         "assunto": "Variáveis dos porquês, concordância verbal, conectivos, ortografia e interpretação de textos"
       },
