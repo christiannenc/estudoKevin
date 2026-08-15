@@ -214,11 +214,17 @@
     function parseFilename(path) {
         const filename = path.split('/').pop();
         const match = filename.match(/^([a-z]+)_([a-z]+)_(\d{4})_tri(\d)_.+_(parcial|completa)_v(\d+)\.(html|pdf)$/i);
-        if (!match) return { titulo: filename, extensao: filename.split('.').pop(), versao: 1, ano: 0, tri: 0 };
-        const [, , , ano, tri, completude, versao, extensao] = match;
+        if (!match) return {
+            titulo: filename,
+            tipo: filename.split('_')[0].toLowerCase(),
+            extensao: filename.split('.').pop(),
+            versao: 1, ano: 0, tri: 0
+        };
+        const [, tipo, , ano, tri, completude, versao, extensao] = match;
         const completudeLabel = completude.charAt(0).toUpperCase() + completude.slice(1);
         return {
             titulo: `${tri}º trimestre ${ano} · ${completudeLabel} · v${versao}`,
+            tipo: tipo.toLowerCase(),
             extensao: extensao.toLowerCase(),
             versao: parseInt(versao, 10),
             ano: parseInt(ano, 10),
@@ -226,10 +232,16 @@
         };
     }
 
+    // Só material com tipo "quiz" grava pontuação. Folhas de impressão (impressao_,
+    // exercicio_) podem ser .html também, mas não têm placar nem histórico.
+    function ehQuiz(info) {
+        return info.tipo === 'quiz' && info.extensao === 'html';
+    }
+
     function sortKey(exercicio) {
-        const scores = getScores(exercicio.arquivo);
         const info = parseFilename(exercicio.arquivo);
-        const done = scores.length > 0 ? 1 : 0;
+        // Material de impressão nunca tem histórico, então conta sempre como "não feito".
+        const done = ehQuiz(info) && getScores(exercicio.arquivo).length > 0 ? 1 : 0;
         return [done, -info.ano, -info.tri, -info.versao];
     }
 
@@ -294,10 +306,11 @@
 
     function renderExercicio(exercicio) {
         const info = parseFilename(exercicio.arquivo);
-        const isQuiz = info.extensao === 'html';
+        const isQuiz = ehQuiz(info);
         const badgeClass = isQuiz ? 'badge-quiz' : 'badge-imprimir';
         const badgeLabel = isQuiz ? 'Quiz' : 'Imprimir';
-        const target = isQuiz ? ' target="_blank" rel="noopener"' : '';
+        // Qualquer .html abre em aba nova (inclusive folha de impressão); .pdf abre na mesma aba.
+        const target = info.extensao === 'html' ? ' target="_blank" rel="noopener"' : '';
         const scores = isQuiz ? getScores(exercicio.arquivo) : [];
 
         const attemptsHtml = isQuiz

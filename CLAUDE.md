@@ -29,7 +29,7 @@ Todo exercício segue este padrão, e o `index.html` faz parsing automático do 
 
 Exemplo: `quiz_portugues_2026_tri2_prova_parcial_v1.html`
 
-- `tipo`: livre (quiz, prova, redacao, etc.) — não é usado no parsing, só organizacional
+- `tipo`: **usado no parsing.** `quiz` = quiz interativo com pontuação; qualquer outro valor (`impressao`, `exercicio`, `redacao`, etc.) = material de impressão
 - `materia`: bate com a chave da matéria no manifest.json
 - `ano`: ano letivo
 - `tri{N}`: trimestre (tri1, tri2, tri3)
@@ -39,9 +39,13 @@ Exemplo: `quiz_portugues_2026_tri2_prova_parcial_v1.html`
 
 **Regra de versão: cada versão é um exercício SEPARADO, não substitui a anterior.** v1 e v2 do mesmo trimestre/completude aparecem como dois cards distintos na lista. O título gerado sempre inclui a versão para diferenciá-los (ex: "2º trimestre 2026 · Parcial · v1").
 
-A extensão do arquivo decide o badge e o comportamento do link:
-- `.html` → badge "Quiz", abre em nova aba (`target="_blank"`)
-- `.pdf` → badge "Imprimir", abre na mesma aba
+**O `tipo` decide o badge; a extensão decide como o link abre.** São duas regras separadas — folha de impressão também pode ser `.html`:
+
+- `tipo` = `quiz` (e extensão `.html`) → badge "Quiz", grava pontuação, mostra histórico
+- qualquer outro `tipo` → badge "Imprimir", sem placar e sem a linha "Ainda não feito"
+- extensão `.html` → abre em nova aba (`target="_blank"`); `.pdf` → abre na mesma aba
+
+A função `ehQuiz(info)` no `index.html` centraliza essa decisão — usar sempre ela em vez de testar a extensão.
 
 ## Fluxo normal de trabalho (toda vez que o usuário pedir para adicionar um exercício novo)
 
@@ -55,6 +59,8 @@ A extensão do arquivo decide o badge e o comportamento do link:
 ## Quizzes HTML — padrão de implementação
 
 Os quizzes seguem o estilo do arquivo já existente em `materias/portugues/`: tema escuro, perguntas em `.question-block` com `data-q` e `data-correct`, opções clicáveis com feedback visual (verde = correto, vermelho = incorreto, dica em verde tracejado na opção certa quando o usuário erra), explicação que expande abaixo da opção respondida, e placar no final com botão de reiniciar. Ao criar um quiz novo, reaproveitar essa estrutura/CSS para manter consistência visual entre os exercícios.
+
+As regras de **conteúdo pedagógico** (temática, distribuição das questões, tela de introdução, gabarito da versão de impressão, recomendações técnicas de JS) ficam em `DIRETRIZES_QUIZ.md` — é o prompt que o usuário cola na IA que gera o material. Consultar esse arquivo ao criar um quiz do zero.
 
 ## Mascote (`assets/mascote.svg`)
 
@@ -77,7 +83,7 @@ Dentro de cada matéria, os cards devem ser ordenados por:
 1. **Não feitos primeiro** (quizzes sem histórico no localStorage aparecem antes dos feitos)
 2. **Mais recentes primeiro** (desempate pelo ano + trimestre + versão, do maior para o menor)
 
-PDFs (sem histórico possível) são sempre tratados como "não feitos" para fins de ordenação.
+Material de impressão (sem histórico possível, seja `.pdf` ou `.html`) é sempre tratado como "não feito" para fins de ordenação.
 
 ## O que NÃO fazer
 

@@ -76,15 +76,21 @@ Ver `CLAUDE.md` para as regras completas do projeto.
 
 ## Rodar localmente
 
-Abra `index.html` com um servidor local — não funciona com `file://` direto por causa do `fetch('manifest.json')`:
+O site precisa de um servidor — abrir `index.html` com `file://` direto não funciona, porque o `fetch('manifest.json')` é bloqueado.
+
+```bash
+python3 -m http.server 8123
+```
 
 ```bash
 npx serve .
 ```
 
-```bash
-python3 -m http.server 8000
-```
+Depois abra `http://localhost:8123` (ou a porta que o comando indicar).
+
+### Pelo Claude Code
+
+O repositório traz um `.claude/launch.json` já configurado com um servidor chamado **`site`** na porta 8123. Basta pedir ao Claude Code para rodar o preview do projeto — ele sobe esse servidor e abre o site no painel do navegador, sem precisar do comando manual.
 
 ## Deploy
 
