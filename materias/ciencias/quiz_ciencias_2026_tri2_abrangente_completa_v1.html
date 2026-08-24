@@ -51,6 +51,7 @@
         .question-block { background-color: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color); }
         .question-tag { display: inline-block; background-color: var(--border-color); color: var(--accent-color); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
         .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.5; }
+        .text-box-analysis { background-color: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
         .options-container { display: flex; flex-direction: column; gap: 12px; }
         .option-clickable { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-color); padding: 14px 16px; border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; box-sizing: border-box; cursor: pointer !important; user-select: none; }
         .option-clickable * { pointer-events: none !important; }
@@ -93,7 +94,7 @@
                 <h3>🌱 Reprodução e vida adulta</h3>
                 <p><b>Tópicos:</b> sistema reprodutor masculino e feminino, fecundação, zigoto e alimentação saudável.</p>
             </div>
-            <div class="intro-note">⚡ 20 questões em quatro fases. Ao responder, aparece a explicação de <b>cada</b> alternativa — inclusive das que você não escolheu.</div>
+            <div class="intro-note">⚡ 20 questões em cinco fases: 18 diretas e 2 de leitura e análise de texto. Ao responder, aparece a explicação de <b>cada</b> alternativa — inclusive das que você não escolheu.</div>
         </div>
         <div class="center-btn-wrapper">
             <div class="action-btn" id="btn-start-quiz" onclick="">Iniciar Missão</div>
@@ -327,36 +328,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="9" data-correct="E">
-            <span class="question-tag">Benefícios do esporte</span>
-            <div class="question-text">9. Além de fortalecer músculos e pulmões, os esportes trazem benefícios cognitivos e psicológicos importantes para crianças e adolescentes. Qual das alternativas representa um desses benefícios?</div>
-            <div class="options-container">
-                <div>
-                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Reduz drasticamente a capacidade de memória.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. O exercício ajuda a memória e o aprendizado, em vez de prejudicar.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Dificulta o trabalho da circulação sanguínea.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. Ao contrário: deixa a circulação mais eficiente.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Aumenta a sensação diária de estresse.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. A atividade física reduz o estresse.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Provoca irritabilidade e insônia constantes.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. Costuma melhorar o humor e a qualidade do sono.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Melhora a concentração e o humor.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">✅ Correto! O exercício melhora concentração, humor e disposição para estudar.</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="question-block" data-q="10" data-correct="D">
+        <div class="question-block" data-q="9" data-correct="D">
             <span class="question-tag">Fases da vida</span>
-            <div class="question-text">10. O desenvolvimento humano segue uma progressão natural através do tempo. Qual alternativa indica a ordem cronológica correta das fases da vida?</div>
+            <div class="question-text">9. O desenvolvimento humano segue uma progressão natural através do tempo. Qual alternativa indica a ordem cronológica correta das fases da vida?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Infância, adolescência, velhice e vida adulta.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -381,9 +355,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="11" data-correct="A">
+        <div class="question-block" data-q="10" data-correct="A">
             <span class="question-tag">O que é puberdade</span>
-            <div class="question-text">11. O período chamado de puberdade é muito importante para a transição do corpo humano. O que marca exatamente o que é a puberdade?</div>
+            <div class="question-text">10. O período chamado de puberdade é muito importante para a transição do corpo humano. O que marca exatamente o que é a puberdade?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) A transição onde ocorrem as mudanças físicas hormonais.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -408,9 +382,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="12" data-correct="A">
+        <div class="question-block" data-q="11" data-correct="A">
             <span class="question-tag">Mudanças em comum</span>
-            <div class="question-text">12. Durante a puberdade, sob a ação de hormônios, ocorrem muitas mudanças no corpo de meninos e meninas. Qual dessas alterações ocorre de maneira igual em ambos os gêneros?</div>
+            <div class="question-text">11. Durante a puberdade, sob a ação de hormônios, ocorrem muitas mudanças no corpo de meninos e meninas. Qual dessas alterações ocorre de maneira igual em ambos os gêneros?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) O surgimento de pelos nas axilas e aumento de suor.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -435,9 +409,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="13" data-correct="A">
+        <div class="question-block" data-q="12" data-correct="A">
             <span class="question-tag">Puberdade masculina</span>
-            <div class="question-text">13. Apesar das semelhanças, meninos e meninas passam por mudanças exclusivas de seus corpos durante a puberdade. Qual destas é uma transformação específica do corpo masculino?</div>
+            <div class="question-text">12. Apesar das semelhanças, meninos e meninas passam por mudanças exclusivas de seus corpos durante a puberdade. Qual destas é uma transformação específica do corpo masculino?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) A mudança de voz para tons mais graves.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -462,9 +436,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="14" data-correct="A">
+        <div class="question-block" data-q="13" data-correct="A">
             <span class="question-tag">Puberdade feminina</span>
-            <div class="question-text">14. Nas meninas, a puberdade também traz acontecimentos específicos para o amadurecimento do corpo. Qual é um dos principais marcos do sistema reprodutor feminino nessa fase?</div>
+            <div class="question-text">13. Nas meninas, a puberdade também traz acontecimentos específicos para o amadurecimento do corpo. Qual é um dos principais marcos do sistema reprodutor feminino nessa fase?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) O início do ciclo e da menstruação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -492,9 +466,9 @@
         <div class="phase-title">🌱 FASE 4: A ORIGEM DA VIDA</div>
         <div class="phase-desc">Sistema reprodutor, fecundação e alimentação.</div>
 
-        <div class="question-block" data-q="15" data-correct="E">
+        <div class="question-block" data-q="14" data-correct="E">
             <span class="question-tag">Reprodutor masculino</span>
-            <div class="question-text">15. Para entendermos a biologia do corpo, estudamos o sistema reprodutor. Nos homens, quais são os órgãos responsáveis por produzir os espermatozoides?</div>
+            <div class="question-text">14. Para entendermos a biologia do corpo, estudamos o sistema reprodutor. Nos homens, quais são os órgãos responsáveis por produzir os espermatozoides?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) A bexiga.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -519,9 +493,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="16" data-correct="C">
+        <div class="question-block" data-q="15" data-correct="C">
             <span class="question-tag">Reprodutor feminino</span>
-            <div class="question-text">16. O sistema reprodutor feminino tem órgãos internos fascinantes. Em quais estruturas desse sistema ocorre a produção das células conhecidas como óvulos?</div>
+            <div class="question-text">15. O sistema reprodutor feminino tem órgãos internos fascinantes. Em quais estruturas desse sistema ocorre a produção das células conhecidas como óvulos?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Nos testículos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -546,36 +520,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="17" data-correct="B">
-            <span class="question-tag">Fecundação</span>
-            <div class="question-text">17. A reprodução humana envolve o encontro das células reprodutoras, unindo o material genético de origem paterna e materna. Biologicamente, como se chama o evento exato da união do gameta masculino com o feminino?</div>
-            <div class="options-container">
-                <div>
-                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Circulação sistêmica.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. É o trajeto do sangue do coração para o corpo e de volta.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Fecundação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">✅ Correto! É o encontro do espermatozoide com o óvulo, unindo o material genético.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Filtração renal.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. É o trabalho dos rins ao limpar o sangue.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Digestão biológica.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. É a quebra dos alimentos no sistema digestório.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Respiração celular.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. É o processo pelo qual a célula obtém energia.</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="question-block" data-q="18" data-correct="D">
+        <div class="question-block" data-q="16" data-correct="D">
             <span class="question-tag">As células reprodutoras</span>
-            <div class="question-text">18. Para que a fecundação aconteça na biologia humana, duas células muito específicas e minúsculas precisam se encontrar. Quais são as duas células envolvidas na formação de um novo ser?</div>
+            <div class="question-text">16. Para que a fecundação aconteça na biologia humana, duas células muito específicas e minúsculas precisam se encontrar. Quais são as duas células envolvidas na formação de um novo ser?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Os capilares e os alvéolos pulmonares.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -600,9 +547,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="19" data-correct="A">
+        <div class="question-block" data-q="17" data-correct="A">
             <span class="question-tag">A primeira célula</span>
-            <div class="question-text">19. Imediatamente após a fecundação, ou seja, no momento em que o espermatozoide e o óvulo unem seus materiais genéticos, forma-se a primeira célula do novo ser. Qual é o nome biológico dessa célula única inicial?</div>
+            <div class="question-text">17. Imediatamente após a fecundação, ou seja, no momento em que o espermatozoide e o óvulo unem seus materiais genéticos, forma-se a primeira célula do novo ser. Qual é o nome biológico dessa célula única inicial?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Zigoto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -627,9 +574,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="20" data-correct="D">
+        <div class="question-block" data-q="18" data-correct="D">
             <span class="question-tag">Alimentação saudável</span>
-            <div class="question-text">20. Após passar pelas fases da vida, na fase adulta as pessoas frequentemente estão maduras e mais responsáveis, buscando hábitos saudáveis. Qual é a função dos alimentos reguladores que aprendemos na pirâmide alimentar?</div>
+            <div class="question-text">18. Após passar pelas fases da vida, na fase adulta as pessoas frequentemente estão maduras e mais responsáveis, buscando hábitos saudáveis. Qual é a função dos alimentos reguladores que aprendemos na pirâmide alimentar?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Aumentar a oleosidade e o suor da pele.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -650,6 +597,65 @@
                 <div>
                     <div class="option-clickable" data-letter="E" onclick=""><span>(E) Fortalecer os ossos evitando o crescimento na puberdade.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
                     <div class="explanation-box">❌ Incorreto. Os alimentos não impedem o crescimento; os ossos precisam de cálcio para crescer.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">👑 BOSS BATTLE: LEITURA E ANÁLISE</div>
+        <div class="phase-desc">Leia o texto com calma antes de responder às duas questões.</div>
+
+        <div class="text-box-analysis">📖 <strong>O TREINO DE SÁBADO:</strong> Beto jogou uma partida de futebol no sábado de manhã. Nos primeiros minutos já sentia o coração batendo forte e a respiração ficando curta e rápida. No fim do jogo, a camiseta estava encharcada de suor e ele bebeu quase um litro de água de uma vez. À tarde, notou que havia ido ao banheiro poucas vezes e que a urina estava bem mais escura do que de manhã. O professor explicou: “Seu corpo trabalhou em conjunto. Cada sistema fez a sua parte para você aguentar o jogo e para não perder água demais.”</div>
+
+        <div class="question-block" data-q="19" data-correct="B">
+            <span class="question-tag">Interpretação extensa</span>
+            <div class="question-text">19. Segundo o Texto de Apoio, por que o coração de Beto passou a bater mais forte e a respiração ficou mais rápida no início do jogo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Porque o corpo estava economizando energia para o fim da partida.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É o contrário: no esforço o corpo gasta mais energia, e não a poupa.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Porque os músculos passaram a precisar de mais oxigênio e nutrientes.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Coração e pulmões aceleram juntos para entregar mais oxigênio aos músculos em esforço.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Porque os rins pararam de filtrar o sangue durante o exercício.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os rins continuam filtrando durante o exercício, e isso não alteraria a respiração.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Porque a digestão do café da manhã ainda não havia terminado.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O texto liga a mudança ao início do jogo, não à digestão.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Porque ele bebeu muita água antes de começar a partida.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O texto diz que ele bebeu a água no fim do jogo, não antes.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="20" data-correct="A">
+            <span class="question-tag">Inferência a partir do texto</span>
+            <div class="question-text">20. O texto conta que a urina de Beto estava mais escura à tarde. Qual explicação combina com o que ele viveu durante o jogo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Os rins pouparam água por causa do suor, e a urina saiu mais concentrada.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Perdendo muita água pelo suor, os rins reabsorvem o máximo possível e a urina fica escura.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) A urina escureceu porque ele bebeu água demais de uma só vez.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Beber bastante água deixa a urina mais clara, não mais escura.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Os rins deixaram de produzir urina enquanto ele jogava.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O próprio texto diz que ele foi ao banheiro, então houve produção de urina.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) O suor entrou de volta no sangue e mudou a cor da urina.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O suor sai pela pele e evapora; ele não retorna para o sangue.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) A cor da urina depende apenas do alimento, e não da água.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O alimento pode influenciar, mas aqui a causa é a perda de água pelo suor.</div>
                 </div>
             </div>
         </div>

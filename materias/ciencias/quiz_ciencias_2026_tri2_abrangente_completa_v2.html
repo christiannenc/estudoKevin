@@ -51,6 +51,7 @@
         .question-block { background-color: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color); }
         .question-tag { display: inline-block; background-color: var(--border-color); color: var(--accent-color); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
         .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.5; }
+        .text-box-analysis { background-color: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
         .options-container { display: flex; flex-direction: column; gap: 12px; }
         .option-clickable { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-color); padding: 14px 16px; border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; box-sizing: border-box; cursor: pointer !important; user-select: none; }
         .option-clickable * { pointer-events: none !important; }
@@ -93,7 +94,7 @@
                 <h3>🌱 Reprodução e sistemas integrados</h3>
                 <p><b>Tópicos:</b> testículos e útero, o espermatozoide e o óvulo, fecundação nas tubas uterinas, zigoto, absorção no intestino delgado e a uretra compartilhada.</p>
             </div>
-            <div class="intro-note">⚡ 20 questões em quatro fases, cobrando o vocabulário exato: ureia, menarca, zigoto, capilares. Ao responder, aparece a explicação de <b>cada</b> alternativa.</div>
+            <div class="intro-note">⚡ 20 questões em cinco fases: 18 diretas e 2 de leitura e análise de texto. O foco segue no vocabulário exato — ureia, menarca, zigoto, capilares.</div>
         </div>
         <div class="center-btn-wrapper">
             <div class="action-btn" id="btn-start-quiz" onclick="">Iniciar Missão</div>
@@ -246,32 +247,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="7" data-correct="C">
-            <span class="question-tag">Exercício intenso</span>
-            <div class="question-text">7. Durante a prática de um esporte muito intenso, as células musculares passam a exigir uma quantidade muito maior de energia e oxigênio. Como o sistema circulatório responde a essa necessidade imediata?</div>
-            <div class="options-container">
-                <div>
-                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Diminuindo a pressão arterial.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. Durante o esforço a pressão sobe, não desce.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Paralisando totalmente a digestão.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. O fluxo de sangue no digestório diminui, mas isso não é a resposta à demanda dos músculos.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Aumentando os batimentos cardíacos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">✅ Correto! O coração acelera para entregar mais sangue oxigenado aos músculos.</div>
-                </div>
-                <div>
-                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Reduzindo a temperatura do corpo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. O corpo esquenta com o exercício; por isso precisa se resfriar.</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="question-block" data-q="8" data-correct="B">
+        <div class="question-block" data-q="7" data-correct="B">
             <span class="question-tag">Resfriamento do corpo</span>
-            <div class="question-text">8. Ao realizar atividades físicas, nosso corpo gera muito calor devido ao trabalho dos músculos. Qual mecanismo, envolvendo o sangue e a pele, atua para resfriar o organismo?</div>
+            <div class="question-text">7. Ao realizar atividades físicas, nosso corpo gera muito calor devido ao trabalho dos músculos. Qual mecanismo, envolvendo o sangue e a pele, atua para resfriar o organismo?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) O acúmulo de gordura debaixo da pele.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -295,9 +273,9 @@
         <div class="phase-title">🌡️ FASE 3: OS MENSAGEIROS DO CORPO</div>
         <div class="phase-desc">Hormônios e as mudanças da puberdade.</div>
 
-        <div class="question-block" data-q="9" data-correct="C">
+        <div class="question-block" data-q="8" data-correct="C">
             <span class="question-tag">Hormônios</span>
-            <div class="question-text">9. A puberdade é desencadeada pela ação de substâncias químicas específicas que viajam pela corrente sanguínea e enviam sinais para o corpo se transformar. Como são chamadas essas substâncias mensageiras?</div>
+            <div class="question-text">8. A puberdade é desencadeada pela ação de substâncias químicas específicas que viajam pela corrente sanguínea e enviam sinais para o corpo se transformar. Como são chamadas essas substâncias mensageiras?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Nutrientes.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -318,9 +296,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="10" data-correct="A">
+        <div class="question-block" data-q="9" data-correct="A">
             <span class="question-tag">Mudança da voz</span>
-            <div class="question-text">10. Durante a puberdade masculina, as cordas vocais aumentam de tamanho e ficam mais espessas devido à ação hormonal. Qual é o resultado auditivo direto dessa mudança estrutural?</div>
+            <div class="question-text">9. Durante a puberdade masculina, as cordas vocais aumentam de tamanho e ficam mais espessas devido à ação hormonal. Qual é o resultado auditivo direto dessa mudança estrutural?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) O tom de voz fica mais grave.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -341,9 +319,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="11" data-correct="A">
+        <div class="question-block" data-q="10" data-correct="A">
             <span class="question-tag">Menarca</span>
-            <div class="question-text">11. Na puberdade feminina, ocorre um evento marcante que indica que o corpo da menina iniciou seus ciclos reprodutivos. Qual é o nome dado cientificamente ao primeiro desses eventos cíclicos?</div>
+            <div class="question-text">10. Na puberdade feminina, ocorre um evento marcante que indica que o corpo da menina iniciou seus ciclos reprodutivos. Qual é o nome dado cientificamente ao primeiro desses eventos cíclicos?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Menarca.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -367,9 +345,9 @@
         <div class="phase-title">🌱 FASE 4: ORIGEM DA VIDA E SISTEMAS INTEGRADOS</div>
         <div class="phase-desc">Reprodução e como os sistemas trabalham juntos.</div>
 
-        <div class="question-block" data-q="12" data-correct="B">
+        <div class="question-block" data-q="11" data-correct="B">
             <span class="question-tag">Reprodutor masculino</span>
-            <div class="question-text">12. O sistema reprodutor masculino é responsável pela produção das células reprodutoras chamadas espermatozoides. Em qual estrutura anatômica essa produção acontece de forma contínua a partir da adolescência?</div>
+            <div class="question-text">11. O sistema reprodutor masculino é responsável pela produção das células reprodutoras chamadas espermatozoides. Em qual estrutura anatômica essa produção acontece de forma contínua a partir da adolescência?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Na bexiga.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -390,9 +368,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="13" data-correct="C">
+        <div class="question-block" data-q="12" data-correct="C">
             <span class="question-tag">O útero</span>
-            <div class="question-text">13. O sistema reprodutor feminino possui órgãos muito especializados. Qual é o órgão muscular, com formato semelhante a uma pera invertida, que tem a função de abrigar e proteger o bebê durante toda a gravidez?</div>
+            <div class="question-text">12. O sistema reprodutor feminino possui órgãos muito especializados. Qual é o órgão muscular, com formato semelhante a uma pera invertida, que tem a função de abrigar e proteger o bebê durante toda a gravidez?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Tuba uterina.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -413,9 +391,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="14" data-correct="A">
+        <div class="question-block" data-q="13" data-correct="A">
             <span class="question-tag">O espermatozoide</span>
-            <div class="question-text">14. Na reprodução humana celular, o espermatozoide e o óvulo possuem diferenças físicas marcantes para cumprirem suas funções. Qual é a principal característica do espermatozoide se comparado ao óvulo?</div>
+            <div class="question-text">13. Na reprodução humana celular, o espermatozoide e o óvulo possuem diferenças físicas marcantes para cumprirem suas funções. Qual é a principal característica do espermatozoide se comparado ao óvulo?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Possui uma cauda que lhe confere mobilidade.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -436,9 +414,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="15" data-correct="B">
+        <div class="question-block" data-q="14" data-correct="B">
             <span class="question-tag">Onde ocorre a fecundação</span>
-            <div class="question-text">15. A fecundação é o momento biológico exato em que o material genético do pai e da mãe se unem. Em qual estrutura anatômica interna da mulher esse encontro celular normalmente acontece?</div>
+            <div class="question-text">14. A fecundação é o momento biológico exato em que o material genético do pai e da mãe se unem. Em qual estrutura anatômica interna da mulher esse encontro celular normalmente acontece?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) No centro do útero.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -459,9 +437,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="16" data-correct="C">
+        <div class="question-block" data-q="15" data-correct="C">
             <span class="question-tag">Zigoto</span>
-            <div class="question-text">16. Imediatamente após o espermatozoide penetrar no óvulo, as duas células se fundem combinando suas informações. Qual é o nome da nova e única célula formada por essa união vital?</div>
+            <div class="question-text">15. Imediatamente após o espermatozoide penetrar no óvulo, as duas células se fundem combinando suas informações. Qual é o nome da nova e única célula formada por essa união vital?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Embrião.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -482,9 +460,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="17" data-correct="C">
+        <div class="question-block" data-q="16" data-correct="C">
             <span class="question-tag">Fase adulta</span>
-            <div class="question-text">17. Após a infância e a adolescência, o ser humano atinge a fase adulta. Do ponto de vista biológico e de desenvolvimento físico, o que caracteriza primordialmente o início desta fase?</div>
+            <div class="question-text">16. Após a infância e a adolescência, o ser humano atinge a fase adulta. Do ponto de vista biológico e de desenvolvimento físico, o que caracteriza primordialmente o início desta fase?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) Atrofia natural e rápida dos músculos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -505,9 +483,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="18" data-correct="C">
+        <div class="question-block" data-q="17" data-correct="C">
             <span class="question-tag">Absorção de nutrientes</span>
-            <div class="question-text">18. Para que o corpo funcione, precisamos da integração dos sistemas. O sangue transporta os nutrientes necessários para o corpo inteiro. Em qual órgão do sistema digestório o sangue recolhe a maior parte desses nutrientes?</div>
+            <div class="question-text">17. Para que o corpo funcione, precisamos da integração dos sistemas. O sangue transporta os nutrientes necessários para o corpo inteiro. Em qual órgão do sistema digestório o sangue recolhe a maior parte desses nutrientes?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) No estômago.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -528,9 +506,9 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="19" data-correct="D">
+        <div class="question-block" data-q="18" data-correct="D">
             <span class="question-tag">Canal compartilhado</span>
-            <div class="question-text">19. Existe uma curiosidade anatômica no corpo masculino em que um canal é compartilhado por dois sistemas diferentes. Que canal é esse, que serve para a passagem da urina e também dos espermatozoides?</div>
+            <div class="question-text">18. Existe uma curiosidade anatômica no corpo masculino em que um canal é compartilhado por dois sistemas diferentes. Que canal é esse, que serve para a passagem da urina e também dos espermatozoides?</div>
             <div class="options-container">
                 <div>
                     <div class="option-clickable" data-letter="A" onclick=""><span>(A) A tuba uterina.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
@@ -551,25 +529,53 @@
             </div>
         </div>
 
-        <div class="question-block" data-q="20" data-correct="C">
-            <span class="question-tag">Captação de oxigênio</span>
-            <div class="question-text">20. Todas as células do nosso corpo realizam processos para obter energia que consomem oxigênio e produzem gás carbônico. Qual sistema trabalha em conjunto com o sangue para captar o oxigênio do ar?</div>
+        <div class="phase-title">👑 BOSS BATTLE: LEITURA E ANÁLISE</div>
+        <div class="phase-desc">Leia o texto com calma antes de responder às duas questões.</div>
+
+        <div class="text-box-analysis">📖 <strong>RODA DE CONVERSA NA ESCOLA:</strong> Na aula de Ciências, a enfermeira da escola conversou com o 5º ano sobre a puberdade. Explicou que, nessa fase, glândulas do corpo passam a liberar substâncias que viajam pelo sangue e avisam cada parte do corpo que chegou a hora de mudar. Contou também que o corpo produz mais suor e que a pele fica mais oleosa, e que por isso o banho e a higiene passam a ser ainda mais importantes. No fim, avisou: “Não existe idade certa para essas mudanças começarem. Cada corpo tem o seu próprio ritmo, e ficar se comparando com os colegas só gera preocupação sem motivo.”</div>
+
+        <div class="question-block" data-q="19" data-correct="B">
+            <span class="question-tag">Interpretação extensa</span>
+            <div class="question-text">19. De acordo com o Texto de Apoio, qual é o papel das substâncias que as glândulas passam a liberar no sangue?</div>
             <div class="options-container">
                 <div>
-                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) O sistema urinário.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. Ele elimina os resíduos líquidos do corpo.</div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Aumentar a quantidade de urina produzida pelos rins.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O texto não fala em urina: essas substâncias avisam o corpo sobre as mudanças.</div>
                 </div>
                 <div>
-                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) O sistema reprodutor.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. Sua função é a geração de novos indivíduos.</div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Levar o aviso de que chegou a hora do corpo se transformar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! São os hormônios, mensageiros que viajam pelo sangue e disparam as mudanças da puberdade.</div>
                 </div>
                 <div>
-                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) O sistema respiratório.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">✅ Correto! Capta o oxigênio do ar nos alvéolos e elimina o gás carbônico.</div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Digerir o alimento com mais rapidez durante a puberdade.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Quem acelera a digestão são as enzimas, do sistema digestório.</div>
                 </div>
                 <div>
-                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) O sistema digestório.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
-                    <div class="explanation-box">❌ Incorreto. Fornece nutrientes ao sangue, não oxigênio.</div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Defender o corpo contra vírus e bactérias.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A defesa do corpo é feita pelos glóbulos brancos e pelos anticorpos.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="20" data-correct="C">
+            <span class="question-tag">Intenção de uma fala</span>
+            <div class="question-text">20. A enfermeira encerra dizendo que “não existe idade certa para essas mudanças começarem”. Qual é a intenção dessa frase?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Avisar que quem muda mais tarde terá algum problema de saúde.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A frase diz o oposto: ritmos diferentes são normais, não sinal de problema.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Explicar que a puberdade acontece no mesmo mês para toda a turma.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ela afirma justamente que cada corpo tem o seu próprio ritmo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Tranquilizar os alunos, mostrando que ritmos diferentes são normais.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! É o sentido da fala: evitar que o aluno se preocupe por comparação com os colegas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Convencer a turma de que a higiene deixa de ser necessária.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ela reforça o contrário: com mais suor e oleosidade, a higiene fica ainda mais importante.</div>
                 </div>
             </div>
         </div>
