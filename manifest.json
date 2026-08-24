@@ -52,6 +52,14 @@
     "icone": "flask",
     "exercicios": [
       {
+        "arquivo": "materias/ciencias/quiz_ciencias_2026_tri2_abrangente_completa_v2.html",
+        "assunto": "Prova abrangente com foco no vocabulário: ureia e ureteres, artérias e plaquetas, suor e temperatura, hormônios, menarca, útero e testículos, tubas uterinas, zigoto e absorção no intestino delgado"
+      },
+      {
+        "arquivo": "materias/ciencias/quiz_ciencias_2026_tri2_abrangente_completa_v1.html",
+        "assunto": "Prova abrangente: sistema urinário, circulatório e o sangue, efeitos do exercício físico, fases da vida, puberdade, sistema reprodutor, fecundação e alimentação saudável"
+      },
+      {
         "arquivo": "materias/ciencias/quiz_ciencias_2026_tri2_prova_parcial_v1.html",
         "assunto": "Sistemas digestório, respiratório, circulatório e urinário — quiz temático com cenários de gamer, laboratório, crônica e cinema"
       },

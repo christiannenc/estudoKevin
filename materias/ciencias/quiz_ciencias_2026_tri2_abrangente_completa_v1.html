@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Missão Corpo Humano — Ciências, 2º Trimestre</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-bg: #16a34a;
+            --incorrect-bg: #dc2626;
+            --border-color: #334155;
+            --tooltip-bg: #0f172a;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        h1 { color: var(--accent-color); text-align: center; font-size: 26px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; user-select: none; }
+        h1:hover { opacity: 0.9; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        .intro-box { background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .theme-badge { display: inline-block; background-color: rgba(56, 189, 248, 0.15); color: var(--accent-color); border: 1px solid var(--accent-color); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+        .intro-title { font-size: 18px; color: var(--accent-color); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h3 { font-size: 16px; margin: 0 0 5px 0; color: #ffffff; }
+        .topic-group p { font-size: 14px; color: var(--text-muted); margin: 0; }
+        .intro-note { font-size: 13px; color: var(--text-muted); font-style: italic; margin-top: 20px; }
+        .phase-title { background-color: var(--border-color); padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid var(--accent-color); }
+        .phase-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+        .question-block { background-color: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .question-tag { display: inline-block; background-color: var(--border-color); color: var(--accent-color); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
+        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.5; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-clickable { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-color); padding: 14px 16px; border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; box-sizing: border-box; cursor: pointer !important; user-select: none; }
+        .option-clickable * { pointer-events: none !important; }
+        .feedback-badge { display: none; font-size: 16px; flex-shrink: 0; }
+        .explanation-box { display: none; margin-top: 8px; padding: 11px 15px; background-color: var(--tooltip-bg); border-left: 3px solid var(--accent-color); border-radius: 4px; font-size: 13px; line-height: 1.45; }
+        .option-clickable.correct { background-color: var(--correct-bg) !important; border-color: var(--correct-bg) !important; color: #ffffff !important; }
+        .option-clickable.correct .badge-correct { display: inline-block !important; }
+        .option-clickable.incorrect { background-color: var(--incorrect-bg) !important; border-color: var(--incorrect-bg) !important; color: #ffffff !important; }
+        .option-clickable.incorrect .badge-incorrect { display: inline-block !important; }
+        .option-clickable.hint-green { border: 2px dashed #16a34a !important; background-color: rgba(22, 163, 74, 0.1) !important; }
+        .option-clickable.hint-green .badge-hint { display: inline-block !important; }
+        .score-banner { margin-top: 30px; padding: 20px; background-color: rgba(56, 189, 248, 0.1); border: 2px dashed var(--accent-color); border-radius: 12px; text-align: center; }
+        .score-text { font-size: 20px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; }
+        .action-btn { background-color: var(--accent-color); color: var(--bg-color); border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer !important; display: inline-block; text-align: center; user-select: none; }
+        .center-btn-wrapper { display: flex; justify-content: center; width: 100%; }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <h1 id="main-title">🧬 MISSÃO CORPO HUMANO</h1>
+    <div class="subtitle">5º Ano • 2º Trimestre • Prova Abrangente de Ciências</div>
+
+    <div id="screen-intro" class="screen active">
+        <div class="intro-box">
+            <span class="theme-badge">🔬 Missão: entender a máquina em que você mora</span>
+            <h2 class="intro-title">📋 Conteúdos Mapeados na Missão:</h2>
+            <div class="topic-group">
+                <h3>💧 Sistema urinário</h3>
+                <p><b>Tópicos:</b> função dos rins, caminho da urina (rins, ureteres, bexiga e uretra) e hábitos que protegem os rins.</p>
+            </div>
+            <div class="topic-group">
+                <h3>❤️ Sistema circulatório e o sangue</h3>
+                <p><b>Tópicos:</b> função do coração, tipos de vasos, capilares e a integração com os sistemas digestório e respiratório.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🏃 Corpo em ação e fases da vida</h3>
+                <p><b>Tópicos:</b> efeitos do exercício no coração e na respiração, benefícios da atividade física, fases da vida e puberdade.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🌱 Reprodução e vida adulta</h3>
+                <p><b>Tópicos:</b> sistema reprodutor masculino e feminino, fecundação, zigoto e alimentação saudável.</p>
+            </div>
+            <div class="intro-note">⚡ 20 questões em quatro fases. Ao responder, aparece a explicação de <b>cada</b> alternativa — inclusive das que você não escolheu.</div>
+        </div>
+        <div class="center-btn-wrapper">
+            <div class="action-btn" id="btn-start-quiz" onclick="">Iniciar Missão</div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+
+        <div class="phase-title">💧 FASE 1: OS FILTROS DO CORPO</div>
+        <div class="phase-desc">Sistema urinário — como o corpo se livra do que não serve.</div>
+
+        <div class="question-block" data-q="1" data-correct="A">
+            <span class="question-tag">Função dos rins</span>
+            <div class="question-text">1. O sistema urinário tem a função de garantir que substâncias desnecessárias sejam retiradas do nosso corpo. Qual é a principal função dos rins nesse sistema?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Filtrar impurezas do sangue.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Os rins filtram o sangue e retiram a ureia, o excesso de água e de sais, formando a urina.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Bombear sangue para as veias.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Bombear sangue é função do coração, no sistema circulatório.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Produzir o suco gástrico.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O suco gástrico é produzido pelo estômago, no sistema digestório.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Transportar oxigênio pelo corpo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Quem transporta oxigênio são as hemácias, células do sangue.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Armazenar a urina produzida.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Quem armazena a urina é a bexiga. O rim produz, não guarda.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="2" data-correct="A">
+            <span class="question-tag">Caminho da urina</span>
+            <div class="question-text">2. Após a urina ser produzida para eliminar resíduos do metabolismo, ela precisa sair do corpo. Qual é o caminho correto que a urina percorre no sistema urinário?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Rins, ureteres, bexiga e uretra.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Os rins produzem, os ureteres levam até a bexiga, que armazena, e a uretra elimina.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Rins, uretra, bexiga e ureteres.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Troca a uretra pelos ureteres: a uretra é o último trecho do caminho, não o primeiro.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Uretra, bexiga, ureteres e rins.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Está de trás para frente — começa pela saída e termina no órgão que produz.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Bexiga, rins, ureteres e uretra.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A bexiga não vem antes do rim: ela recebe a urina já pronta.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Ureteres, rins, uretra e bexiga.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os ureteres saem dos rins, então não podem vir antes deles.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="3" data-correct="E">
+            <span class="question-tag">Saúde dos rins</span>
+            <div class="question-text">3. Manter o sistema urinário saudável é muito importante para o bem-estar do nosso corpo. Qual dos hábitos abaixo é essencial para a boa saúde dos rins?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Evitar a prática de exercícios físicos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O exercício faz bem à saúde geral; evitá-lo não protege os rins.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Consumir muito sal diariamente.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O excesso de sal sobrecarrega os rins e aumenta a pressão.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Segurar a urina por longos períodos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Segurar a urina favorece infecção urinária.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Substituir a água por refrigerantes.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O refrigerante tem muito açúcar e não hidrata como a água.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Beber bastante água todos os dias.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! A água ajuda os rins a filtrar o sangue e a eliminar os resíduos.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">❤️ FASE 2: A REDE DE ENTREGAS</div>
+        <div class="phase-desc">Sistema circulatório — o coração, os vasos e o sangue.</div>
+
+        <div class="question-block" data-q="4" data-correct="E">
+            <span class="question-tag">O coração</span>
+            <div class="question-text">4. O coração é um órgão muscular muito importante do sistema circulatório. Qual é a sua principal função no nosso organismo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Digerir os nutrientes dos alimentos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Digerir é trabalho do sistema digestório.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Absorver o gás oxigênio do ar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Absorver oxigênio é função dos pulmões.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Produzir os hormônios do crescimento.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Hormônios são produzidos por glândulas, não pelo coração.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Filtrar os resíduos líquidos do corpo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Filtrar resíduos líquidos é função dos rins.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Bombear o sangue pelos vasos sanguíneos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O coração é a bomba que impulsiona o sangue por todo o corpo.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="5" data-correct="E">
+            <span class="question-tag">Integração dos sistemas</span>
+            <div class="question-text">5. O sangue funciona como uma rede de entregas, transportando elementos vitais para todas as células do corpo. De onde vêm, respectivamente, os nutrientes e o gás oxigênio que o sangue distribui?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Do sistema respiratório e do sistema circulatório.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O circulatório transporta, mas não é a origem dos nutrientes.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Do sistema respiratório e do sistema urinário.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O urinário elimina resíduos; não fornece nutrientes nem oxigênio.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Do sistema urinário e do sistema reprodutor.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Nenhum dos dois fornece nutrientes ou oxigênio ao sangue.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Do sistema circulatório e do sistema digestório.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A ordem está trocada, e o circulatório é quem transporta.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Do sistema digestório e do sistema respiratório.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Os nutrientes vêm da digestão e o oxigênio, da respiração.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="6" data-correct="C">
+            <span class="question-tag">Tipos de vaso</span>
+            <div class="question-text">6. Os vasos sanguíneos possuem diferentes tamanhos. Como são chamados os vasos extremamente finos que permitem a troca de nutrientes e oxigênio diretamente com as células do corpo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Alvéolos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Alvéolos ficam nos pulmões e trocam gases com o ar, não com as células do corpo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Ureteres.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ureteres conduzem urina, não sangue.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Capilares.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! São finíssimos e fazem a troca direta de nutrientes e gases com as células.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Brônquios.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Brônquios conduzem ar dentro dos pulmões.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Ventrículos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ventrículos são câmaras do coração, não vasos.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="7" data-correct="C">
+            <span class="question-tag">Recolhimento de resíduos</span>
+            <div class="question-text">7. As células produzem resíduos (o "lixo" celular) depois de usarem os nutrientes. Qual sistema recolhe esses resíduos pelo corpo para que sejam depois filtrados e eliminados?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) O esqueleto humano.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O esqueleto sustenta o corpo e protege órgãos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) O sistema reprodutor.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O reprodutor cuida da geração de novos indivíduos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) O sistema circulatório.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O sangue recolhe os resíduos das células e os leva aos rins e aos pulmões.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) O sistema muscular.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O muscular movimenta o corpo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) O sistema digestório.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O digestório quebra o alimento; não recolhe o resíduo das células.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">🏃 FASE 3: CORPO EM AÇÃO</div>
+        <div class="phase-desc">Exercício físico, fases da vida e puberdade.</div>
+
+        <div class="question-block" data-q="8" data-correct="B">
+            <span class="question-tag">Efeitos do exercício</span>
+            <div class="question-text">8. A prática de atividades físicas gera vários efeitos fisiológicos benéficos. O que acontece com a frequência do coração e com a respiração quando fazemos um exercício intenso, como correr?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Ambas diminuem para poupar as energias do corpo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É o contrário: o corpo precisa de mais oxigênio, não de menos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) A frequência cardíaca e a respiratória aumentam.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! As duas aceleram para levar mais oxigênio aos músculos em esforço.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) A frequência cardíaca aumenta e a respiração pausa.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A respiração não pausa durante o esforço; ela acelera.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) A frequência cardíaca diminui e a respiração acelera.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A frequência cardíaca aumenta junto com a respiração.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Apenas a frequência respiratória se altera.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. As duas se alteram juntas, porque trabalham em conjunto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="9" data-correct="E">
+            <span class="question-tag">Benefícios do esporte</span>
+            <div class="question-text">9. Além de fortalecer músculos e pulmões, os esportes trazem benefícios cognitivos e psicológicos importantes para crianças e adolescentes. Qual das alternativas representa um desses benefícios?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Reduz drasticamente a capacidade de memória.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O exercício ajuda a memória e o aprendizado, em vez de prejudicar.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Dificulta o trabalho da circulação sanguínea.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ao contrário: deixa a circulação mais eficiente.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Aumenta a sensação diária de estresse.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A atividade física reduz o estresse.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Provoca irritabilidade e insônia constantes.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Costuma melhorar o humor e a qualidade do sono.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Melhora a concentração e o humor.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O exercício melhora concentração, humor e disposição para estudar.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="10" data-correct="D">
+            <span class="question-tag">Fases da vida</span>
+            <div class="question-text">10. O desenvolvimento humano segue uma progressão natural através do tempo. Qual alternativa indica a ordem cronológica correta das fases da vida?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Infância, adolescência, velhice e vida adulta.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Coloca a velhice antes da vida adulta.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Vida adulta, adolescência, infância e velhice.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Começa pela vida adulta, invertendo a ordem.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Infância, vida adulta, adolescência e velhice.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Põe a vida adulta antes da adolescência.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Infância, adolescência, vida adulta e velhice.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Essa é a sequência natural do desenvolvimento humano.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Adolescência, infância, vida adulta e velhice.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A infância vem antes da adolescência, não depois.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="11" data-correct="A">
+            <span class="question-tag">O que é puberdade</span>
+            <div class="question-text">11. O período chamado de puberdade é muito importante para a transição do corpo humano. O que marca exatamente o que é a puberdade?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) A transição onde ocorrem as mudanças físicas hormonais.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! É a fase em que os hormônios provocam as transformações do corpo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) O momento em que os dentes de leite começam a cair.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A troca dos dentes de leite acontece na infância.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) O processo de envelhecimento natural do corpo humano.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Envelhecer é característica da velhice.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) A etapa da infância onde a criança começa a andar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Aprender a andar é da primeira infância.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) A fase da vida adulta focada em construir a carreira.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Carreira é assunto da vida adulta, bem depois da puberdade.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="12" data-correct="A">
+            <span class="question-tag">Mudanças em comum</span>
+            <div class="question-text">12. Durante a puberdade, sob a ação de hormônios, ocorrem muitas mudanças no corpo de meninos e meninas. Qual dessas alterações ocorre de maneira igual em ambos os gêneros?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) O surgimento de pelos nas axilas e aumento de suor.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Pelos nas axilas, mais suor e pele oleosa acontecem nos dois.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) O crescimento acelerado de barba no rosto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A barba é uma característica masculina.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) O alargamento natural dos quadris.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O alargamento dos quadris é característico do corpo feminino.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) O engrossamento acentuado e definitivo da voz.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A voz muda nos dois, mas engrossa de forma marcante nos meninos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) O desenvolvimento inicial das glândulas mamárias.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O desenvolvimento das mamas é característico das meninas.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="13" data-correct="A">
+            <span class="question-tag">Puberdade masculina</span>
+            <div class="question-text">13. Apesar das semelhanças, meninos e meninas passam por mudanças exclusivas de seus corpos durante a puberdade. Qual destas é uma transformação específica do corpo masculino?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) A mudança de voz para tons mais graves.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! A laringe cresce e as pregas vocais engrossam, deixando a voz grave.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) O aparecimento de dentes do siso.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O siso nasce em meninos e meninas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) O crescimento intenso de seios.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É uma mudança do corpo feminino.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) O alargamento da bacia pélvica.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É uma mudança do corpo feminino, ligada a uma futura gestação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) O início da primeira menstruação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A menstruação é exclusiva do corpo feminino.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="14" data-correct="A">
+            <span class="question-tag">Puberdade feminina</span>
+            <div class="question-text">14. Nas meninas, a puberdade também traz acontecimentos específicos para o amadurecimento do corpo. Qual é um dos principais marcos do sistema reprodutor feminino nessa fase?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) O início do ciclo e da menstruação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! A primeira menstruação, chamada menarca, marca o início dos ciclos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) A perda acelerada dos dentes de leite.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Acontece na infância, em meninos e meninas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) O ganho muito rápido de colágeno nos ossos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Não é um marco do sistema reprodutor.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) O surgimento natural da barba no rosto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A barba é característica masculina.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) O engrossamento definitivo das pregas vocais.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ocorre de forma bem mais marcante nos meninos.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">🌱 FASE 4: A ORIGEM DA VIDA</div>
+        <div class="phase-desc">Sistema reprodutor, fecundação e alimentação.</div>
+
+        <div class="question-block" data-q="15" data-correct="E">
+            <span class="question-tag">Reprodutor masculino</span>
+            <div class="question-text">15. Para entendermos a biologia do corpo, estudamos o sistema reprodutor. Nos homens, quais são os órgãos responsáveis por produzir os espermatozoides?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) A bexiga.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A bexiga armazena urina.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) As tubas uterinas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. As tubas uterinas fazem parte do sistema reprodutor feminino.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) A próstata.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A próstata produz parte do líquido do esperma, mas não os espermatozoides.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Os ovários.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os ovários são femininos e produzem óvulos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Os testículos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! É nos testículos que os espermatozoides são produzidos.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="16" data-correct="C">
+            <span class="question-tag">Reprodutor feminino</span>
+            <div class="question-text">16. O sistema reprodutor feminino tem órgãos internos fascinantes. Em quais estruturas desse sistema ocorre a produção das células conhecidas como óvulos?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Nos testículos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os testículos são masculinos e produzem espermatozoides.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Na uretra.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A uretra é o canal de saída da urina.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Nos ovários.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Os ovários produzem e liberam os óvulos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Na bexiga.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A bexiga armazena urina.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) No útero.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O útero abriga o bebê durante a gestação, mas não produz óvulos.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="17" data-correct="B">
+            <span class="question-tag">Fecundação</span>
+            <div class="question-text">17. A reprodução humana envolve o encontro das células reprodutoras, unindo o material genético de origem paterna e materna. Biologicamente, como se chama o evento exato da união do gameta masculino com o feminino?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Circulação sistêmica.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É o trajeto do sangue do coração para o corpo e de volta.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Fecundação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! É o encontro do espermatozoide com o óvulo, unindo o material genético.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Filtração renal.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É o trabalho dos rins ao limpar o sangue.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Digestão biológica.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É a quebra dos alimentos no sistema digestório.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Respiração celular.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É o processo pelo qual a célula obtém energia.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="18" data-correct="D">
+            <span class="question-tag">As células reprodutoras</span>
+            <div class="question-text">18. Para que a fecundação aconteça na biologia humana, duas células muito específicas e minúsculas precisam se encontrar. Quais são as duas células envolvidas na formação de um novo ser?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Os capilares e os alvéolos pulmonares.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. São estruturas dos sistemas circulatório e respiratório, não células reprodutoras.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) O espermatozoide e a célula epitelial.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A célula epitelial forma revestimentos do corpo e não participa da fecundação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) As células ósseas e musculares.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Formam os tecidos do corpo, sem função reprodutiva.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) O óvulo e o espermatozoide.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! São os gametas: o óvulo, feminino, e o espermatozoide, masculino.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) O óvulo e a célula sanguínea branca.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O glóbulo branco faz parte da defesa do corpo.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="19" data-correct="A">
+            <span class="question-tag">A primeira célula</span>
+            <div class="question-text">19. Imediatamente após a fecundação, ou seja, no momento em que o espermatozoide e o óvulo unem seus materiais genéticos, forma-se a primeira célula do novo ser. Qual é o nome biológico dessa célula única inicial?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Zigoto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O zigoto é a primeira célula do novo ser, formada na fecundação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Glóbulo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Glóbulo é célula do sangue, vermelha ou branca.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Hormônio.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Hormônio é um mensageiro químico, não uma célula.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Bebê.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O bebê é o resultado de meses de desenvolvimento, não a primeira célula.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Feto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Feto é uma etapa posterior, quando o corpo já está formado.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="20" data-correct="D">
+            <span class="question-tag">Alimentação saudável</span>
+            <div class="question-text">20. Após passar pelas fases da vida, na fase adulta as pessoas frequentemente estão maduras e mais responsáveis, buscando hábitos saudáveis. Qual é a função dos alimentos reguladores que aprendemos na pirâmide alimentar?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Aumentar a oleosidade e o suor da pele.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Isso é efeito dos hormônios na puberdade, não da alimentação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Ajudar a absorver oxigênio pelo estômago.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O oxigênio entra pelos pulmões, não pelo estômago.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Dar grande quantidade de energia extra imediata.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Energia rápida vem dos alimentos energéticos, como pães e massas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Manter o equilíbrio e o bom funcionamento do corpo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Frutas, verduras e legumes trazem vitaminas e minerais que regulam o corpo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="E" onclick=""><span>(E) Fortalecer os ossos evitando o crescimento na puberdade.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os alimentos não impedem o crescimento; os ossos precisam de cálcio para crescer.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-banner">
+            <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
+            <div class="action-btn" id="btn-finish-quiz" onclick="">Terminar Missão</div>
+        </div>
+    </div>
+</div>
+<script>
+    (function() {
+        let score = 0;
+        let answeredQuestions = {};
+        let wrongAnswers = [];
+        const totalQuestions = 20;
+        const STORAGE_KEY = 'estudoKevin:scores:materias/ciencias/quiz_ciencias_2026_tri2_abrangente_completa_v1.html';
+        const screenIntro = document.getElementById('screen-intro');
+        const screenQuiz = document.getElementById('screen-quiz');
+        const btnStart = document.getElementById('btn-start-quiz');
+        const btnFinish = document.getElementById('btn-finish-quiz');
+        const mainTitle = document.getElementById('main-title');
+
+        function showScreen(screenToShow) {
+            screenIntro.classList.remove('active');
+            screenQuiz.classList.remove('active');
+            screenToShow.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        if (btnStart) {
+            btnStart.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenQuiz);
+            });
+        }
+
+        if (mainTitle) {
+            mainTitle.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenIntro);
+            });
+        }
+
+        function handleResponse(element) {
+            const block = element.closest('.question-block');
+            if (!block) return;
+            const qNum = block.getAttribute('data-q');
+            const correctAnswer = block.getAttribute('data-correct');
+            const selectedLetter = element.getAttribute('data-letter');
+            if (answeredQuestions[qNum]) return;
+            answeredQuestions[qNum] = selectedLetter;
+            const parentContainer = block.querySelector('.options-container');
+            const wrappers = parentContainer.children;
+            for (let i = 0; i < wrappers.length; i++) {
+                const opt = wrappers[i].querySelector('.option-clickable');
+                const expBox = wrappers[i].querySelector('.explanation-box');
+                const optLetter = opt.getAttribute('data-letter');
+                if (selectedLetter === correctAnswer) {
+                    if (optLetter === correctAnswer) opt.classList.add('correct');
+                } else {
+                    if (opt === element) opt.classList.add('incorrect');
+                    else if (optLetter === correctAnswer) opt.classList.add('hint-green');
+                }
+                if (expBox) expBox.style.display = 'block';
+            }
+            if (selectedLetter === correctAnswer) {
+                score++;
+            } else {
+                const correctEl = block.querySelector(`.option-clickable[data-letter="${correctAnswer}"]`);
+                wrongAnswers.push({
+                    q: qNum,
+                    text: block.querySelector('.question-text').textContent.trim(),
+                    chosen: element.querySelector('span').textContent.trim(),
+                    correct: correctEl ? correctEl.querySelector('span').textContent.trim() : correctAnswer
+                });
+            }
+            document.getElementById('score-display').textContent = `Pontuação: ${score} / ${totalQuestions}`;
+            if (Object.keys(answeredQuestions).length === totalQuestions) {
+                try {
+                    const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    history.push({ score, total: totalQuestions, date: new Date().toISOString(), wrong: wrongAnswers });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                } catch(e) {}
+            }
+        }
+
+        document.querySelectorAll('.option-clickable').forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleResponse(this);
+            });
+        });
+
+        if (btnFinish) {
+            btnFinish.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = '/';
+            });
+        }
+    })();
+</script>
+</body>
+</html>

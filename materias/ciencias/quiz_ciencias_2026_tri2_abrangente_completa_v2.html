@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Missão Corpo Humano v2 — Ciências, 2º Trimestre</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-bg: #16a34a;
+            --incorrect-bg: #dc2626;
+            --border-color: #334155;
+            --tooltip-bg: #0f172a;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        h1 { color: var(--accent-color); text-align: center; font-size: 26px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; user-select: none; }
+        h1:hover { opacity: 0.9; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        .intro-box { background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .theme-badge { display: inline-block; background-color: rgba(56, 189, 248, 0.15); color: var(--accent-color); border: 1px solid var(--accent-color); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+        .intro-title { font-size: 18px; color: var(--accent-color); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h3 { font-size: 16px; margin: 0 0 5px 0; color: #ffffff; }
+        .topic-group p { font-size: 14px; color: var(--text-muted); margin: 0; }
+        .intro-note { font-size: 13px; color: var(--text-muted); font-style: italic; margin-top: 20px; }
+        .phase-title { background-color: var(--border-color); padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid var(--accent-color); }
+        .phase-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+        .question-block { background-color: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .question-tag { display: inline-block; background-color: var(--border-color); color: var(--accent-color); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
+        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.5; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-clickable { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-color); padding: 14px 16px; border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; box-sizing: border-box; cursor: pointer !important; user-select: none; }
+        .option-clickable * { pointer-events: none !important; }
+        .feedback-badge { display: none; font-size: 16px; flex-shrink: 0; }
+        .explanation-box { display: none; margin-top: 8px; padding: 11px 15px; background-color: var(--tooltip-bg); border-left: 3px solid var(--accent-color); border-radius: 4px; font-size: 13px; line-height: 1.45; }
+        .option-clickable.correct { background-color: var(--correct-bg) !important; border-color: var(--correct-bg) !important; color: #ffffff !important; }
+        .option-clickable.correct .badge-correct { display: inline-block !important; }
+        .option-clickable.incorrect { background-color: var(--incorrect-bg) !important; border-color: var(--incorrect-bg) !important; color: #ffffff !important; }
+        .option-clickable.incorrect .badge-incorrect { display: inline-block !important; }
+        .option-clickable.hint-green { border: 2px dashed #16a34a !important; background-color: rgba(22, 163, 74, 0.1) !important; }
+        .option-clickable.hint-green .badge-hint { display: inline-block !important; }
+        .score-banner { margin-top: 30px; padding: 20px; background-color: rgba(56, 189, 248, 0.1); border: 2px dashed var(--accent-color); border-radius: 12px; text-align: center; }
+        .score-text { font-size: 20px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; }
+        .action-btn { background-color: var(--accent-color); color: var(--bg-color); border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer !important; display: inline-block; text-align: center; user-select: none; }
+        .center-btn-wrapper { display: flex; justify-content: center; width: 100%; }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <h1 id="main-title">🔍 MISSÃO CORPO HUMANO v2</h1>
+    <div class="subtitle">5º Ano • 2º Trimestre • Prova Abrangente de Ciências</div>
+
+    <div id="screen-intro" class="screen active">
+        <div class="intro-box">
+            <span class="theme-badge">🧪 Missão: nomes certos, lugares certos</span>
+            <h2 class="intro-title">📋 Conteúdos Mapeados na Missão:</h2>
+            <div class="topic-group">
+                <h3>💧 Sistema urinário</h3>
+                <p><b>Tópicos:</b> a ureia como resíduo filtrado, os ureteres e o efeito da falta de água na urina.</p>
+            </div>
+            <div class="topic-group">
+                <h3>❤️ Sangue e circulação</h3>
+                <p><b>Tópicos:</b> artérias e veias, plaquetas, o caminho do sangue até os pulmões, exercício físico e o papel do suor.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🌡️ Hormônios e puberdade</h3>
+                <p><b>Tópicos:</b> hormônios como mensageiros, mudança da voz e a menarca.</p>
+            </div>
+            <div class="topic-group">
+                <h3>🌱 Reprodução e sistemas integrados</h3>
+                <p><b>Tópicos:</b> testículos e útero, o espermatozoide e o óvulo, fecundação nas tubas uterinas, zigoto, absorção no intestino delgado e a uretra compartilhada.</p>
+            </div>
+            <div class="intro-note">⚡ 20 questões em quatro fases, cobrando o vocabulário exato: ureia, menarca, zigoto, capilares. Ao responder, aparece a explicação de <b>cada</b> alternativa.</div>
+        </div>
+        <div class="center-btn-wrapper">
+            <div class="action-btn" id="btn-start-quiz" onclick="">Iniciar Missão</div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+
+        <div class="phase-title">💧 FASE 1: O QUE O CORPO DESCARTA</div>
+        <div class="phase-desc">Sistema urinário — nomes e caminhos exatos.</div>
+
+        <div class="question-block" data-q="1" data-correct="B">
+            <span class="question-tag">Resíduo filtrado</span>
+            <div class="question-text">1. Os rins funcionam como grandes filtros do nosso corpo. Qual substância tóxica, produzida pelo funcionamento diário das células, é o principal resíduo retirado do sangue por eles?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Oxigênio.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O oxigênio é essencial para as células, não um resíduo a ser eliminado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Ureia.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! A ureia sobra do uso das proteínas e é retirada do sangue pelos rins.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Gás carbônico.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É um resíduo, sim, mas eliminado pelos pulmões, na respiração.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Fezes.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. As fezes são restos de alimento não digerido, eliminadas pelo intestino.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="2" data-correct="D">
+            <span class="question-tag">Ureteres</span>
+            <div class="question-text">2. Após a filtragem do sangue, a urina precisa ser transportada e armazenada antes de ser eliminada. Qual é o nome correto dos tubos que ligam os rins até a bexiga?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Uretra.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A uretra é o canal final, que leva a urina da bexiga para fora do corpo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Intestino.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O intestino faz parte do sistema digestório.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Veia cava.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É um vaso sanguíneo, que traz sangue de volta ao coração.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Ureteres.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! São os dois tubos que ligam cada rim à bexiga.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="3" data-correct="C">
+            <span class="question-tag">Pouca água</span>
+            <div class="question-text">3. Quando uma pessoa bebe muito pouca água durante o dia, os rins precisam se adaptar para evitar a desidratação do organismo. Qual é a consequência visível dessa adaptação na urina?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Ela é eliminada como suor.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O suor é produzido por glândulas da pele; é outro processo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Ela fica mais clara e abundante.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Isso acontece justamente quando se bebe bastante água.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Ela fica mais concentrada e escura.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Os rins poupam água, então a urina sai em menor volume e mais escura.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Ela deixa de ser produzida.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os rins continuam filtrando o sangue; parar de produzir seria muito grave.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">❤️ FASE 2: SANGUE E CIRCULAÇÃO</div>
+        <div class="phase-desc">Vasos, células do sangue e o corpo em esforço.</div>
+
+        <div class="question-block" data-q="4" data-correct="C">
+            <span class="question-tag">Artérias</span>
+            <div class="question-text">4. O sistema circulatório possui diferentes tipos de vasos sanguíneos. Qual é a principal característica funcional das artérias no nosso corpo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Fazem a troca direta de gases dentro das células.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Essa troca é feita pelos capilares, os vasos mais finos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Transportam o sangue dos tecidos de volta para o coração.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Esse é o trabalho das veias.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Transportam o sangue do coração para o resto do corpo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! As artérias levam o sangue que sai do coração, sob pressão.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Conduzem a urina filtrada para a bexiga.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Isso são os ureteres, que não são vasos sanguíneos.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="5" data-correct="D">
+            <span class="question-tag">Coagulação</span>
+            <div class="question-text">5. O sangue é um tecido líquido composto por diferentes células com funções específicas. Se você sofre um pequeno corte, qual componente do sangue é ativado para formar um coágulo e parar o sangramento?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Glóbulos vermelhos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. São as hemácias, que transportam oxigênio.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Glóbulos brancos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. São os leucócitos, que defendem o corpo de invasores.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Plasma.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É a parte líquida do sangue, que carrega células e substâncias.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Plaquetas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! As plaquetas agem na coagulação e formam o coágulo que estanca o sangramento.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="6" data-correct="A">
+            <span class="question-tag">Caminho do sangue</span>
+            <div class="question-text">6. O sangue que chega ao coração, vindo de todo o corpo, está rico em gás carbônico e pobre em oxigênio. Para qual órgão o coração deve bombear esse sangue imediatamente a seguir?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Para os pulmões.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Nos pulmões o sangue libera o gás carbônico e recebe oxigênio novo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Para o cérebro.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O cérebro precisa receber sangue já oxigenado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Para o estômago.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O estômago recebe sangue, mas não é ele que renova o oxigênio.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Para os rins.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os rins filtram o sangue, mas não repõem o oxigênio.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="7" data-correct="C">
+            <span class="question-tag">Exercício intenso</span>
+            <div class="question-text">7. Durante a prática de um esporte muito intenso, as células musculares passam a exigir uma quantidade muito maior de energia e oxigênio. Como o sistema circulatório responde a essa necessidade imediata?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Diminuindo a pressão arterial.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Durante o esforço a pressão sobe, não desce.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Paralisando totalmente a digestão.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O fluxo de sangue no digestório diminui, mas isso não é a resposta à demanda dos músculos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Aumentando os batimentos cardíacos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O coração acelera para entregar mais sangue oxigenado aos músculos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Reduzindo a temperatura do corpo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O corpo esquenta com o exercício; por isso precisa se resfriar.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="8" data-correct="B">
+            <span class="question-tag">Resfriamento do corpo</span>
+            <div class="question-text">8. Ao realizar atividades físicas, nosso corpo gera muito calor devido ao trabalho dos músculos. Qual mecanismo, envolvendo o sangue e a pele, atua para resfriar o organismo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) O acúmulo de gordura debaixo da pele.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A gordura funciona como isolante e ajuda a manter o calor, não a perdê-lo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) A produção de suor pelas glândulas sudoríparas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Ao evaporar da pele, o suor retira calor do corpo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) A filtragem contínua de urina pelos rins.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É função de limpeza do sangue, não de resfriamento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) A diminuição da respiração pulmonar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. No exercício a respiração aumenta.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">🌡️ FASE 3: OS MENSAGEIROS DO CORPO</div>
+        <div class="phase-desc">Hormônios e as mudanças da puberdade.</div>
+
+        <div class="question-block" data-q="9" data-correct="C">
+            <span class="question-tag">Hormônios</span>
+            <div class="question-text">9. A puberdade é desencadeada pela ação de substâncias químicas específicas que viajam pela corrente sanguínea e enviam sinais para o corpo se transformar. Como são chamadas essas substâncias mensageiras?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Nutrientes.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Vêm dos alimentos e servem como matéria-prima e energia.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Enzimas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Aceleram reações químicas, como as da digestão.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Hormônios.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! São os mensageiros químicos que viajam no sangue e disparam as mudanças.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Anticorpos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Fazem parte da defesa do corpo contra doenças.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="10" data-correct="A">
+            <span class="question-tag">Mudança da voz</span>
+            <div class="question-text">10. Durante a puberdade masculina, as cordas vocais aumentam de tamanho e ficam mais espessas devido à ação hormonal. Qual é o resultado auditivo direto dessa mudança estrutural?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) O tom de voz fica mais grave.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Pregas vocais maiores e mais espessas vibram mais devagar, e o som fica grave.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) A capacidade auditiva diminui muito.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A audição não tem relação com o tamanho das cordas vocais.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) A respiração fica mais acelerada.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Não é efeito da mudança na laringe.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) O crescimento ósseo é interrompido.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Na puberdade o crescimento dos ossos acelera.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="11" data-correct="A">
+            <span class="question-tag">Menarca</span>
+            <div class="question-text">11. Na puberdade feminina, ocorre um evento marcante que indica que o corpo da menina iniciou seus ciclos reprodutivos. Qual é o nome dado cientificamente ao primeiro desses eventos cíclicos?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Menarca.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Menarca é o nome da primeira menstruação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Fecundação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É o encontro do óvulo com o espermatozoide.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Gestação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É o período de desenvolvimento do bebê no útero.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Puberdade.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É a fase inteira de transformações, não esse evento específico.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">🌱 FASE 4: ORIGEM DA VIDA E SISTEMAS INTEGRADOS</div>
+        <div class="phase-desc">Reprodução e como os sistemas trabalham juntos.</div>
+
+        <div class="question-block" data-q="12" data-correct="B">
+            <span class="question-tag">Reprodutor masculino</span>
+            <div class="question-text">12. O sistema reprodutor masculino é responsável pela produção das células reprodutoras chamadas espermatozoides. Em qual estrutura anatômica essa produção acontece de forma contínua a partir da adolescência?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Na bexiga.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A bexiga armazena urina.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Nos testículos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! É nos testículos que os espermatozoides são produzidos continuamente.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) No ureter.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O ureter conduz urina do rim até a bexiga.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Na uretra.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A uretra é canal de passagem, não de produção.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="13" data-correct="C">
+            <span class="question-tag">O útero</span>
+            <div class="question-text">13. O sistema reprodutor feminino possui órgãos muito especializados. Qual é o órgão muscular, com formato semelhante a uma pera invertida, que tem a função de abrigar e proteger o bebê durante toda a gravidez?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Tuba uterina.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Liga o ovário ao útero e é onde normalmente ocorre a fecundação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Vagina.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É o canal que liga o útero ao exterior do corpo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Útero.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Órgão muscular em forma de pera invertida que abriga o bebê na gestação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Ovário.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É onde os óvulos são produzidos e liberados.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="14" data-correct="A">
+            <span class="question-tag">O espermatozoide</span>
+            <div class="question-text">14. Na reprodução humana celular, o espermatozoide e o óvulo possuem diferenças físicas marcantes para cumprirem suas funções. Qual é a principal característica do espermatozoide se comparado ao óvulo?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Possui uma cauda que lhe confere mobilidade.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! A cauda funciona como um remo e permite que ele nade até o óvulo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Armazena os nutrientes para o bebê.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Guardar nutrientes é característica do óvulo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Carrega o dobro do material genético.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Cada gameta traz metade do material genético.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) É uma célula muito maior e pesada.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É o contrário: o óvulo é muito maior que o espermatozoide.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="15" data-correct="B">
+            <span class="question-tag">Onde ocorre a fecundação</span>
+            <div class="question-text">15. A fecundação é o momento biológico exato em que o material genético do pai e da mãe se unem. Em qual estrutura anatômica interna da mulher esse encontro celular normalmente acontece?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) No centro do útero.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. No útero o embrião se implanta, mas isso é depois da fecundação.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Nas tubas uterinas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! É lá que o espermatozoide costuma encontrar o óvulo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Na parede da bexiga.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A bexiga pertence ao sistema urinário.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) No interior dos ovários.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O óvulo é liberado do ovário antes de poder ser fecundado.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="16" data-correct="C">
+            <span class="question-tag">Zigoto</span>
+            <div class="question-text">16. Imediatamente após o espermatozoide penetrar no óvulo, as duas células se fundem combinando suas informações. Qual é o nome da nova e única célula formada por essa união vital?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Embrião.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É a etapa seguinte, quando o zigoto já começou a se dividir.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Gameta.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Gameta é o nome das células reprodutoras antes da união.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Zigoto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! É a primeira célula do novo ser, resultado da fusão do óvulo com o espermatozoide.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Feto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É uma etapa bem mais avançada da gestação.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="17" data-correct="C">
+            <span class="question-tag">Fase adulta</span>
+            <div class="question-text">17. Após a infância e a adolescência, o ser humano atinge a fase adulta. Do ponto de vista biológico e de desenvolvimento físico, o que caracteriza primordialmente o início desta fase?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Atrofia natural e rápida dos músculos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A perda de massa muscular é mais típica da velhice.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Início do crescimento acelerado dos ossos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Esse crescimento acelerado é característico da puberdade.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Estabilização do crescimento e maturação dos órgãos.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O corpo para de crescer e os órgãos já estão plenamente desenvolvidos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Aparecimento dos primeiros dentes permanentes.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Os dentes permanentes aparecem ainda na infância.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="18" data-correct="C">
+            <span class="question-tag">Absorção de nutrientes</span>
+            <div class="question-text">18. Para que o corpo funcione, precisamos da integração dos sistemas. O sangue transporta os nutrientes necessários para o corpo inteiro. Em qual órgão do sistema digestório o sangue recolhe a maior parte desses nutrientes?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) No estômago.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O estômago inicia a digestão, mas absorve muito pouco.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) No intestino grosso.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ele absorve principalmente água e sais.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) No intestino delgado.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Suas vilosidades absorvem a maior parte dos nutrientes para o sangue.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) No fígado.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O fígado processa o que já foi absorvido, mas não faz a absorção.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="19" data-correct="D">
+            <span class="question-tag">Canal compartilhado</span>
+            <div class="question-text">19. Existe uma curiosidade anatômica no corpo masculino em que um canal é compartilhado por dois sistemas diferentes. Que canal é esse, que serve para a passagem da urina e também dos espermatozoides?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) A tuba uterina.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Pertence ao sistema reprodutor feminino.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) O ureter.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Conduz apenas urina, do rim até a bexiga.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) O intestino.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Pertence ao sistema digestório.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) A uretra.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! No corpo masculino ela serve de canal tanto para a urina quanto para os espermatozoides.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="20" data-correct="C">
+            <span class="question-tag">Captação de oxigênio</span>
+            <div class="question-text">20. Todas as células do nosso corpo realizam processos para obter energia que consomem oxigênio e produzem gás carbônico. Qual sistema trabalha em conjunto com o sangue para captar o oxigênio do ar?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) O sistema urinário.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ele elimina os resíduos líquidos do corpo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) O sistema reprodutor.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Sua função é a geração de novos indivíduos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) O sistema respiratório.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Capta o oxigênio do ar nos alvéolos e elimina o gás carbônico.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) O sistema digestório.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Fornece nutrientes ao sangue, não oxigênio.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-banner">
+            <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
+            <div class="action-btn" id="btn-finish-quiz" onclick="">Terminar Missão</div>
+        </div>
+    </div>
+</div>
+<script>
+    (function() {
+        let score = 0;
+        let answeredQuestions = {};
+        let wrongAnswers = [];
+        const totalQuestions = 20;
+        const STORAGE_KEY = 'estudoKevin:scores:materias/ciencias/quiz_ciencias_2026_tri2_abrangente_completa_v2.html';
+        const screenIntro = document.getElementById('screen-intro');
+        const screenQuiz = document.getElementById('screen-quiz');
+        const btnStart = document.getElementById('btn-start-quiz');
+        const btnFinish = document.getElementById('btn-finish-quiz');
+        const mainTitle = document.getElementById('main-title');
+
+        function showScreen(screenToShow) {
+            screenIntro.classList.remove('active');
+            screenQuiz.classList.remove('active');
+            screenToShow.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        if (btnStart) {
+            btnStart.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenQuiz);
+            });
+        }
+
+        if (mainTitle) {
+            mainTitle.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenIntro);
+            });
+        }
+
+        function handleResponse(element) {
+            const block = element.closest('.question-block');
+            if (!block) return;
+            const qNum = block.getAttribute('data-q');
+            const correctAnswer = block.getAttribute('data-correct');
+            const selectedLetter = element.getAttribute('data-letter');
+            if (answeredQuestions[qNum]) return;
+            answeredQuestions[qNum] = selectedLetter;
+            const parentContainer = block.querySelector('.options-container');
+            const wrappers = parentContainer.children;
+            for (let i = 0; i < wrappers.length; i++) {
+                const opt = wrappers[i].querySelector('.option-clickable');
+                const expBox = wrappers[i].querySelector('.explanation-box');
+                const optLetter = opt.getAttribute('data-letter');
+                if (selectedLetter === correctAnswer) {
+                    if (optLetter === correctAnswer) opt.classList.add('correct');
+                } else {
+                    if (opt === element) opt.classList.add('incorrect');
+                    else if (optLetter === correctAnswer) opt.classList.add('hint-green');
+                }
+                if (expBox) expBox.style.display = 'block';
+            }
+            if (selectedLetter === correctAnswer) {
+                score++;
+            } else {
+                const correctEl = block.querySelector(`.option-clickable[data-letter="${correctAnswer}"]`);
+                wrongAnswers.push({
+                    q: qNum,
+                    text: block.querySelector('.question-text').textContent.trim(),
+                    chosen: element.querySelector('span').textContent.trim(),
+                    correct: correctEl ? correctEl.querySelector('span').textContent.trim() : correctAnswer
+                });
+            }
+            document.getElementById('score-display').textContent = `Pontuação: ${score} / ${totalQuestions}`;
+            if (Object.keys(answeredQuestions).length === totalQuestions) {
+                try {
+                    const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    history.push({ score, total: totalQuestions, date: new Date().toISOString(), wrong: wrongAnswers });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                } catch(e) {}
+            }
+        }
+
+        document.querySelectorAll('.option-clickable').forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleResponse(this);
+            });
+        });
+
+        if (btnFinish) {
+            btnFinish.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = '/';
+            });
+        }
+    })();
+</script>
+</body>
+</html>
