@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Avaliação Discursiva de Ciências — 5º Ano, 2ª Etapa</title>
+    <style>
+        @page { size: A4; margin: 12mm; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            color: #000;
+            line-height: 1.4;
+            background: #fff;
+            padding: 10px;
+        }
+
+        .header-table { width: 100%; border-collapse: collapse; border: 2px solid #000; margin-bottom: 12px; }
+        .header-table td { border: 1px solid #000; padding: 5px 9px; font-size: 10.5pt; }
+        .school-title { text-align: center; font-weight: bold; font-size: 12.5pt; background-color: #f1f5f9; text-transform: uppercase; }
+
+        .exam-title {
+            text-align: center; font-weight: bold; font-size: 12pt;
+            margin: 10px 0 12px 0; text-transform: uppercase;
+            border-bottom: 2px solid #000; padding-bottom: 5px;
+        }
+
+        .skills-box { border: 1px solid #000; border-left: 4px solid #000; padding: 7px 11px; margin-bottom: 14px; font-size: 9.5pt; }
+
+        .module-header {
+            font-weight: bold; font-size: 11pt;
+            border-bottom: 1.5px solid #000; padding-bottom: 3px;
+            margin: 16px 0 8px 0; text-transform: uppercase;
+        }
+
+        .source-text { border: 1px solid #000; background-color: #fcfcfc; padding: 10px 12px; margin-bottom: 10px; font-size: 10pt; text-align: justify; }
+        .source-title { font-weight: bold; display: block; margin-bottom: 4px; text-align: center; text-transform: uppercase; font-size: 10pt; }
+
+        .question-block { margin-bottom: 14px; page-break-inside: avoid; }
+        .question-title { font-weight: bold; font-size: 10.5pt; margin-bottom: 5px; }
+        .sub-question { margin-top: 7px; font-size: 10pt; }
+
+        .answer-lines { margin-top: 5px; }
+        .line { border-bottom: 1px solid #000; height: 22px; width: 100%; }
+
+        .preencher { display: inline-block; border-bottom: 1px solid #000; min-width: 130px; }
+        .preencher-curto { display: inline-block; border-bottom: 1px solid #000; min-width: 70px; }
+        .caixa { display: inline-block; border: 1px solid #000; width: 26px; height: 16px; vertical-align: middle; margin-right: 4px; }
+
+        .fill-table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+        .fill-table th, .fill-table td { border: 1px solid #000; padding: 6px; font-size: 9.5pt; text-align: center; vertical-align: middle; }
+        .fill-table th { background-color: #f1f5f9; }
+        .fill-table td.rotulo { text-align: left; font-weight: bold; }
+        .fill-table td.vazio { height: 30px; }
+
+        .lista-classificar { list-style: none; font-size: 10pt; margin-top: 6px; }
+        .lista-classificar li { margin-bottom: 7px; }
+
+        .flex-linha { display: flex; gap: 14px; align-items: flex-start; }
+        .diagram-box { border: 1.5px solid #000; border-radius: 4px; padding: 6px; background: #fff; flex: 0 0 50%; }
+        .diagram-box svg { display: block; width: 100%; height: auto; }
+
+        .page-break { page-break-before: always; }
+        .teacher-section { background-color: #f1f5f9; border: 2px dashed #475569; padding: 14px; }
+        .answer-key-title { text-align: center; font-size: 13pt; font-weight: bold; border-bottom: 2px dashed #000; padding-bottom: 5px; margin-bottom: 8px; }
+        .teacher-note { font-size: 9.5pt; font-style: italic; text-align: center; margin-bottom: 14px; }
+        .key-item { margin-bottom: 10px; font-size: 9.5pt; border-bottom: 1px dashed #666; padding-bottom: 6px; }
+    </style>
+</head>
+<body>
+
+    <table class="header-table">
+        <tr><td colspan="2" class="school-title">Colégio Sagrado Coração de Maria</td></tr>
+        <tr>
+            <td><strong>DISCIPLINA:</strong> Ciências</td>
+            <td><strong>ETAPA:</strong> 2ª Etapa / 2026</td>
+        </tr>
+        <tr>
+            <td><strong>ALUNO(A):</strong> ____________________________________________________</td>
+            <td><strong>TURMA:</strong> 5º Ano ____</td>
+        </tr>
+        <tr>
+            <td><strong>DATA:</strong> ____ / ____ / 2026</td>
+            <td><strong>VALOR:</strong> __________ | <strong>NOTA:</strong> __________</td>
+        </tr>
+    </table>
+
+    <div class="exam-title">Avaliação Discursiva: O Corpo Humano e seus Sistemas</div>
+
+    <div class="skills-box">
+        <strong>CONTEÚDOS AVALIADOS:</strong> sistema urinário; sistema circulatório e os componentes do sangue; integração com os sistemas digestório e respiratório; efeitos da atividade física no corpo; fases da vida; puberdade e a ação dos hormônios; sistema reprodutor e fecundação.
+    </div>
+
+    <!-- ===================== QUESTÃO 1 ===================== -->
+    <div class="module-header">Questão 1 — O corpo trabalhando em conjunto</div>
+
+    <div class="source-text">
+        <span class="source-title">Texto I — A ficha da aula de Educação Física</span>
+        Na aula de Educação Física, o professor pediu que a turma medisse alguns dados antes e depois de uma corrida de dez minutos. Júlia anotou os seus na ficha abaixo.
+        <table class="fill-table" style="margin-top:8px;">
+            <thead>
+                <tr><th style="width:44%;">Medida</th><th style="width:28%;">Antes da corrida</th><th style="width:28%;">Depois da corrida</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="rotulo">Batimentos do coração (por minuto)</td><td>78</td><td>142</td></tr>
+                <tr><td class="rotulo">Respirações (por minuto)</td><td>18</td><td>34</td></tr>
+                <tr><td class="rotulo">Pele</td><td>seca</td><td>quente e suada</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="question-block">
+        <div class="sub-question"><strong>a)</strong> Escreva o sistema do corpo responsável por cada dado medido:<br>
+            batimentos → <span class="preencher"></span> &nbsp;&nbsp; respirações → <span class="preencher"></span></div>
+
+        <div class="sub-question"><strong>b)</strong> Explique por que os dois aumentaram ao mesmo tempo durante a corrida.</div>
+        <div class="answer-lines"><div class="line"></div><div class="line"></div></div>
+
+        <div class="sub-question"><strong>c)</strong> Qual é a função do suor nesse momento?</div>
+        <div class="answer-lines"><div class="line"></div></div>
+
+        <div class="sub-question"><strong>d)</strong> Ao chegar em casa, Júlia não bebeu água. Complete, circulando a opção correta e preenchendo a lacuna:<br>
+            A urina dela sairá em <strong>maior / menor</strong> volume e com a cor <strong>mais clara / mais escura</strong>,<br>
+            porque os rins vão <span class="preencher" style="min-width:300px;"></span>.</div>
+    </div>
+
+    <!-- ===================== QUESTÃO 2 ===================== -->
+    <div class="module-header">Questão 2 — Sistema urinário</div>
+
+    <div class="flex-linha">
+        <div class="diagram-box">
+            <svg viewBox="0 0 420 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama do sistema urinário com quatro estruturas numeradas: o número 1 aponta para o rim, o 2 para o ureter, o 3 para a bexiga e o 4 para a uretra. Uma seta indica o sangue chegando ao rim.">
+                <path d="M 150 62 C 175 62 190 82 190 107 C 190 132 175 152 150 152 C 135 152 128 140 132 130 C 138 117 138 97 132 84 C 128 74 135 62 150 62 Z" fill="#ffffff" stroke="#000" stroke-width="2.5"/>
+                <path d="M 270 62 C 245 62 230 82 230 107 C 230 132 245 152 270 152 C 285 152 292 140 288 130 C 282 117 282 97 288 84 C 292 74 285 62 270 62 Z" fill="#ffffff" stroke="#000" stroke-width="2.5"/>
+                <path d="M 136 112 C 142 175 168 235 194 288" fill="none" stroke="#000" stroke-width="2.5"/>
+                <path d="M 284 112 C 278 175 252 235 226 288" fill="none" stroke="#000" stroke-width="2.5"/>
+                <path d="M 168 294 C 168 287 176 284 186 286 C 197 289 223 289 234 286 C 244 284 252 287 252 294 C 258 322 246 352 210 352 C 174 352 162 322 168 294 Z" fill="#ffffff" stroke="#000" stroke-width="2.5"/>
+                <path d="M 202 350 L 202 404" fill="none" stroke="#000" stroke-width="2.5"/>
+                <path d="M 218 350 L 218 404" fill="none" stroke="#000" stroke-width="2.5"/>
+                <path d="M 330 100 L 298 108" fill="none" stroke="#000" stroke-width="2" marker-end="url(#pt)"/>
+                <defs><marker id="pt" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M 0 0 L 9 4.5 L 0 9 Z" fill="#000"/></marker></defs>
+                <text x="334" y="96" font-family="Times New Roman, serif" font-size="15">sangue</text>
+                <circle cx="88" cy="105" r="15" fill="#fff" stroke="#000" stroke-width="2"/>
+                <text x="88" y="111" text-anchor="middle" font-family="Times New Roman, serif" font-size="16" font-weight="bold">1</text>
+                <path d="M 103 105 L 128 107" fill="none" stroke="#000" stroke-width="1.5"/>
+                <circle cx="88" cy="215" r="15" fill="#fff" stroke="#000" stroke-width="2"/>
+                <text x="88" y="221" text-anchor="middle" font-family="Times New Roman, serif" font-size="16" font-weight="bold">2</text>
+                <path d="M 103 215 L 152 213" fill="none" stroke="#000" stroke-width="1.5"/>
+                <circle cx="330" cy="318" r="15" fill="#fff" stroke="#000" stroke-width="2"/>
+                <text x="330" y="324" text-anchor="middle" font-family="Times New Roman, serif" font-size="16" font-weight="bold">3</text>
+                <path d="M 315 318 L 256 318" fill="none" stroke="#000" stroke-width="1.5"/>
+                <circle cx="310" cy="392" r="15" fill="#fff" stroke="#000" stroke-width="2"/>
+                <text x="310" y="398" text-anchor="middle" font-family="Times New Roman, serif" font-size="16" font-weight="bold">4</text>
+                <path d="M 295 392 L 222 390" fill="none" stroke="#000" stroke-width="1.5"/>
+            </svg>
+        </div>
+
+        <div style="flex:1;">
+            <div class="sub-question"><strong>a)</strong> Nomeie as estruturas numeradas no diagrama:</div>
+            <div class="sub-question" style="margin-top:8px;">
+                1. <span class="preencher"></span><br><br>
+                2. <span class="preencher"></span><br><br>
+                3. <span class="preencher"></span><br><br>
+                4. <span class="preencher"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="question-block" style="margin-top:10px;">
+        <div class="sub-question"><strong>b)</strong> Complete o caminho percorrido pela urina, do começo ao fim:</div>
+        <div class="sub-question" style="margin-top:8px;">
+            <span class="preencher"></span> → <span class="preencher"></span> → <span class="preencher"></span> → <span class="preencher"></span>
+        </div>
+    </div>
+
+    <!-- ===================== QUESTÃO 3 ===================== -->
+    <div class="page-break"></div>
+    <div class="module-header">Questão 3 — O sangue e os vasos</div>
+
+    <div class="source-text">
+        <span class="source-title">Texto II</span>
+        O sangue não é um líquido simples: é um tecido formado por uma parte líquida e por células com funções bem diferentes umas das outras.
+    </div>
+
+    <div class="question-block">
+        <div class="sub-question"><strong>a)</strong> Complete o quadro com a função de cada componente do sangue:</div>
+        <table class="fill-table">
+            <thead><tr><th style="width:34%;">Componente</th><th style="width:66%;">O que faz no corpo</th></tr></thead>
+            <tbody>
+                <tr><td class="rotulo">Hemácia (glóbulo vermelho)</td><td class="vazio"></td></tr>
+                <tr><td class="rotulo">Leucócito (glóbulo branco)</td><td class="vazio"></td></tr>
+                <tr><td class="rotulo">Plaqueta</td><td class="vazio"></td></tr>
+                <tr><td class="rotulo">Plasma</td><td class="vazio"></td></tr>
+            </tbody>
+        </table>
+
+        <div class="sub-question"><strong>b)</strong> Complete: os vasos que levam o sangue para fora do coração são as
+            <span class="preencher"></span>; os que trazem o sangue de volta são as
+            <span class="preencher"></span>; e os mais finos de todos, onde acontecem as trocas com as células, são os
+            <span class="preencher"></span>.</div>
+    </div>
+
+    <!-- ===================== QUESTÃO 4 ===================== -->
+    <div class="module-header">Questão 4 — Fases da vida e puberdade</div>
+
+    <div class="question-block">
+        <div class="sub-question"><strong>a)</strong> Numere de 1 a 4, colocando as fases da vida na ordem em que acontecem:</div>
+        <div class="sub-question" style="margin-top:8px;">
+            <span class="caixa"></span> vida adulta &nbsp;&nbsp;
+            <span class="caixa"></span> infância &nbsp;&nbsp;
+            <span class="caixa"></span> velhice &nbsp;&nbsp;
+            <span class="caixa"></span> adolescência
+        </div>
+
+        <div class="sub-question" style="margin-top:12px;"><strong>b)</strong> Classifique cada mudança da puberdade escrevendo
+            <strong>M</strong> (só nos meninos), <strong>F</strong> (só nas meninas) ou <strong>A</strong> (em ambos):</div>
+        <ul class="lista-classificar">
+            <li><span class="caixa"></span> Surgimento de pelos nas axilas e aumento do suor</li>
+            <li><span class="caixa"></span> Primeira menstruação</li>
+            <li><span class="caixa"></span> Voz mais grave</li>
+            <li><span class="caixa"></span> Pele mais oleosa</li>
+            <li><span class="caixa"></span> Alargamento dos quadris</li>
+        </ul>
+
+        <div class="sub-question"><strong>c)</strong> O que são hormônios e qual é o papel deles na puberdade?</div>
+        <div class="answer-lines"><div class="line"></div><div class="line"></div></div>
+    </div>
+
+    <!-- ===================== QUESTÃO 5 ===================== -->
+    <div class="module-header">Questão 5 — Reprodução</div>
+
+    <div class="question-block">
+        <div class="sub-question"><strong>a)</strong> Complete a sequência:</div>
+        <div class="sub-question" style="margin-top:8px; line-height:2.1;">
+            O óvulo é produzido no <span class="preencher"></span> e o espermatozoide, no <span class="preencher"></span>.
+            Os dois normalmente se encontram nas <span class="preencher"></span>, e desse encontro forma-se o
+            <span class="preencher"></span>.
+        </div>
+
+        <div class="sub-question" style="margin-top:10px;"><strong>b)</strong> Explique, com suas palavras, o que é o zigoto.</div>
+        <div class="answer-lines"><div class="line"></div></div>
+    </div>
+
+    <!-- ===================== GABARITO ===================== -->
+    <div class="page-break"></div>
+    <div class="teacher-section">
+        <div class="answer-key-title">🔑 Gabarito Oficial e Critérios de Correção</div>
+        <div class="teacher-note">Uso exclusivo do professor ou responsável. Esta página traz o que se espera na resposta — não entregar junto com a avaliação.</div>
+
+        <div class="key-item">
+            <strong>Questão 1a:</strong> batimentos → <strong>sistema circulatório</strong>; respirações → <strong>sistema respiratório</strong>.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 1b:</strong> Espera-se que o aluno relacione os dois sistemas. Durante a corrida os músculos precisam de mais oxigênio e nutrientes para produzir energia. A respiração acelera para captar mais oxigênio do ar, e o coração acelera para bombear esse sangue oxigenado até os músculos com mais rapidez. Aceitar respostas que expliquem a ligação, mesmo sem usar os nomes técnicos dos sistemas.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 1c:</strong> O suor <strong>resfria o corpo</strong>: ao evaporar na pele, ele retira o calor produzido pelo esforço dos músculos, ajudando a manter a temperatura equilibrada.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 1d:</strong> <strong>Menor</strong> volume e cor <strong>mais escura</strong>, porque os rins vão <strong>reabsorver (poupar) o máximo de água possível</strong>, já que ela perdeu muita água pelo suor e não repôs bebendo. A urina sai então mais concentrada. Aceitar formulações como "guardar água", "economizar água" ou "reter água no corpo".
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 2a:</strong> 1. <strong>Rim</strong> · 2. <strong>Ureter</strong> · 3. <strong>Bexiga</strong> · 4. <strong>Uretra</strong>.<br>
+            <strong>Questão 2b:</strong> rins → ureteres → bexiga → uretra.<br>
+            <em>Atenção na correção:</em> confundir <em>ureter</em> com <em>uretra</em> é o erro mais comum. O ureter liga o rim à bexiga; a uretra é o canal de saída.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 3a (quadro):</strong><br>
+            • <em>Hemácia:</em> transporta o oxigênio dos pulmões para as células do corpo.<br>
+            • <em>Leucócito:</em> defende o organismo contra vírus, bactérias e outros invasores.<br>
+            • <em>Plaqueta:</em> atua na coagulação, formando o coágulo que estanca o sangramento.<br>
+            • <em>Plasma:</em> parte líquida do sangue, que transporta as células, os nutrientes e outras substâncias.<br>
+            <strong>Questão 3b:</strong> artérias · veias · capilares.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 4a:</strong> 3 vida adulta · 1 infância · 4 velhice · 2 adolescência.<br>
+            <strong>Questão 4b:</strong> <strong>A</strong> pelos nas axilas e aumento do suor · <strong>F</strong> primeira menstruação · <strong>M</strong> voz mais grave · <strong>A</strong> pele mais oleosa · <strong>F</strong> alargamento dos quadris.<br>
+            <em>Observação:</em> a voz muda nos dois, mas engrossa de forma bem mais marcante nos meninos — por isso é classificada como M, seguindo o material estudado.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 4c:</strong> Hormônios são substâncias produzidas por glândulas do corpo que viajam pelo sangue levando "avisos" para os órgãos. Na puberdade, são eles que disparam e comandam as mudanças físicas dessa fase. Aceitar a ideia de "mensageiros químicos" expressa com palavras do aluno.
+        </div>
+
+        <div class="key-item">
+            <strong>Questão 5a:</strong> ovário · testículo · tubas uterinas · zigoto.<br>
+            <strong>Questão 5b:</strong> O zigoto é a <strong>primeira célula do novo ser</strong>, formada pela união do óvulo com o espermatozoide na fecundação. É dela que, por divisões sucessivas, todo o corpo se desenvolve.
+        </div>
+    </div>
+
+</body>
+</html>
