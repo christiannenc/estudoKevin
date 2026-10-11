@@ -67,6 +67,34 @@ Dois arquivos anteriores a esse padrão (`quiz_ciencias_2026_tri2_prova_parcial_
 
 As regras de **conteúdo pedagógico** (temática, distribuição das questões, tela de introdução, gabarito da versão de impressão, recomendações técnicas de JS) ficam em `DIRETRIZES_QUIZ.md` — é o prompt que o usuário cola na IA que gera o material. Consultar esse arquivo ao criar um quiz do zero.
 
+## Scripts auxiliares (`scripts/`)
+
+Dois utilitários em Python puro, sem dependência nenhuma. **Não são build step** — o site continua sendo HTML solto; eles só ajudam a produzir e conferir os quizzes.
+
+### `gerar_quiz.py` — JSON de conteúdo → HTML do quiz
+
+```bash
+python3 scripts/gerar_quiz.py conteudo/meu_quiz.json
+```
+
+O JSON carrega só o conteúdo (fases, questões, alternativas e explicações); toda a estrutura sai do script. Vale a pena quando o quiz tem muitas alternativas explicadas uma a uma — foi assim que saíram os dois de Ciências, com 180 explicações entre eles, sem divergência estrutural entre os arquivos.
+
+Ele numera as questões em sequência atravessando as fases, prefixa cada explicação com ✅ ou ❌ conforme a alternativa, e **recusa gerar** se o gabarito apontar para letra inexistente, houver letra repetida ou faltar explicação. Aceita estímulo por fase (`texto_apoio` na fase), estímulo só de uma questão (`texto_apoio` na questão) e SVG embutido (`svg` na questão, para tirinha ou diagrama).
+
+O formato está documentado em `scripts/exemplo_quiz.json`, que exercita os três casos. Esse exemplo é referência, **não é exercício do site** — não está no manifest.
+
+Para um quiz pontual, escrever o HTML direto continua sendo mais simples. O custo do gerador é passar a ter duas fontes: se alguém editar o HTML na mão, o JSON fica desatualizado.
+
+### `conferir_quiz.py` — valida um quiz contra o contrato
+
+```bash
+python3 scripts/conferir_quiz.py materias/*/quiz_*.html
+```
+
+Confere sem abrir o navegador: nome na convenção, IDs obrigatórios, `totalQuestions` batendo com a contagem real, `data-q` em sequência, `data-correct` apontando para alternativa existente, cobertura das explicações, `STORAGE_KEY` igual ao caminho do próprio arquivo, ausência de recurso externo e de markdown vazado. Sai com código 1 se houver erro.
+
+Marca com `~` os quizzes anteriores ao padrão atual, em vez de tratá-los como quebrados. Rodar isso depois de criar ou editar um quiz é mais rápido e mais confiável que conferir na mão.
+
 ## Mascote (`assets/mascote.png`)
 
 - Imagem escolhida pelo usuário: menino de óculos escrevendo num caderno. Gerada por IA a pedido dele, recortada com o Vision do macOS e enquadrada do peito para cima.

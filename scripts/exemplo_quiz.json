@@ -1,0 +1,66 @@
+{
+  "_comentario": "Exemplo mínimo do formato aceito por scripts/gerar_quiz.py. Não é um exercício do site: serve de referência. Exercita texto de apoio por fase, texto de apoio por questão e SVG embutido.",
+
+  "arquivo": "materias/matematica/quiz_matematica_2026_tri3_exemplo_parcial_v1.html",
+  "title": "Exemplo — formato aceito pelo gerador",
+  "h1": "📐 QUIZ DE EXEMPLO",
+  "subtitulo": "5º Ano • exemplo de formato, não é exercício do site",
+  "badge": "🧪 Exemplo: as três formas de estímulo",
+  "nota": "⚡ Ao responder, aparece a explicação de <b>cada</b> alternativa — inclusive das que você não escolheu.",
+
+  "topicos": [
+    { "titulo": "📏 Perímetro", "texto": "soma dos lados de uma figura plana." },
+    { "titulo": "🍕 Frações", "texto": "leitura de fração em figura e em reta numérica." }
+  ],
+
+  "fases": [
+    {
+      "titulo": "📏 FASE 1: PERÍMETRO",
+      "desc": "Um texto de apoio vale para as questões da fase inteira.",
+      "texto_apoio": "📖 <strong>A HORTA DA ESCOLA:</strong> a turma do 5º ano vai cercar um canteiro retangular de 6 metros de comprimento por 4 metros de largura. A escola comprou tela suficiente para contornar o canteiro inteiro, uma única vez.",
+      "questoes": [
+        {
+          "tag": "Perímetro do retângulo",
+          "texto": "Quantos metros de tela são necessários para cercar o canteiro descrito no texto?",
+          "correta": "C",
+          "alts": [
+            { "l": "A", "t": "10 metros.", "e": "Esse é só o resultado de 6 + 4, ou seja, dois lados. Faltam os outros dois." },
+            { "l": "B", "t": "24 metros.", "e": "24 é a área (6 × 4), em metros quadrados. O perímetro é soma de lados, não multiplicação." },
+            { "l": "C", "t": "20 metros.", "e": "O perímetro é 6 + 4 + 6 + 4 = 20 metros, ou 2 × (6 + 4)." },
+            { "l": "D", "t": "6 metros.", "e": "Esse é apenas o comprimento de um dos lados." }
+          ]
+        }
+      ]
+    },
+    {
+      "titulo": "🍕 FASE 2: FRAÇÕES",
+      "desc": "Aqui cada questão traz o seu próprio estímulo.",
+      "questoes": [
+        {
+          "tag": "Fração de quantidade",
+          "texto": "De acordo com o bilhete, quantas figurinhas Marina deu ao irmão?",
+          "texto_apoio": "📖 <strong>BILHETE:</strong> “Ganhei 24 figurinhas e dei um terço delas para o meu irmão.” — Marina",
+          "correta": "B",
+          "alts": [
+            { "l": "A", "t": "3 figurinhas.", "e": "3 é o denominador da fração, não o resultado da divisão." },
+            { "l": "B", "t": "8 figurinhas.", "e": "Um terço de 24 é 24 ÷ 3 = 8." },
+            { "l": "C", "t": "12 figurinhas.", "e": "12 seria metade de 24, ou seja, um meio — não um terço." },
+            { "l": "D", "t": "16 figurinhas.", "e": "16 é o que sobrou com Marina: dois terços de 24." }
+          ]
+        },
+        {
+          "tag": "Leitura de figura",
+          "texto": "Observe a figura abaixo. Qual fração representa a parte pintada?",
+          "svg": "<svg viewBox=\"0 0 320 90\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Retângulo dividido em quatro partes iguais, com as duas primeiras pintadas.\"><rect x=\"10\" y=\"15\" width=\"75\" height=\"60\" fill=\"#38bdf8\" stroke=\"#0f172a\" stroke-width=\"3\"/><rect x=\"85\" y=\"15\" width=\"75\" height=\"60\" fill=\"#38bdf8\" stroke=\"#0f172a\" stroke-width=\"3\"/><rect x=\"160\" y=\"15\" width=\"75\" height=\"60\" fill=\"#ffffff\" stroke=\"#0f172a\" stroke-width=\"3\"/><rect x=\"235\" y=\"15\" width=\"75\" height=\"60\" fill=\"#ffffff\" stroke=\"#0f172a\" stroke-width=\"3\"/></svg>",
+          "correta": "A",
+          "alts": [
+            { "l": "A", "t": "2/4", "e": "São 4 partes iguais no total e 2 pintadas: 2/4, que também vale 1/2." },
+            { "l": "B", "t": "2/2", "e": "2/2 seria a figura inteira pintada." },
+            { "l": "C", "t": "4/2", "e": "O numerador não pode ser maior que o total de partes da figura." },
+            { "l": "D", "t": "1/4", "e": "1/4 seria apenas uma parte pintada, e há duas." }
+          ]
+        }
+      ]
+    }
+  ]
+}
