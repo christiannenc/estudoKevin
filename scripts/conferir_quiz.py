@@ -29,11 +29,26 @@ IDS = ['main-title', 'screen-intro', 'screen-quiz',
        'btn-start-quiz', 'btn-finish-quiz', 'score-display']
 
 
-def universais(html):
-    """Checagens que valem para qualquer quiz, novo ou legado."""
-    externos = re.findall(r'<(?:img|script)[^>]+src=|<link[^>]+rel="stylesheet"', html)
-    return ([f'{len(externos)} recurso(s) externo(s) — o quiz deve ser autocontido']
-            if externos else [])
+def universais(html, p):
+    """Checagens que valem para qualquer quiz, novo ou legado.
+
+    "Autocontido" quer dizer sem buscar nada na rede. Imagem versionada ao lado
+    do HTML conta como parte do exercício: o site publica os dois juntos. O que
+    não pode é src remoto (quebra sem internet) nem caminho absoluto (quebra ao
+    mudar a pasta). Arquivo local que não existe também é erro: link quebrado.
+    """
+    erros = []
+    if re.search(r'<link[^>]+rel="stylesheet"', html):
+        erros.append('folha de estilo externa — o CSS do quiz fica no próprio arquivo')
+
+    for src in re.findall(r'<(?:img|script)[^>]+src="([^"]*)"', html):
+        if src.startswith('data:'):
+            continue
+        if re.match(r'(?:[a-z]+:)?//|/', src):
+            erros.append(f'recurso fora do repositório: "{src}" — o quiz deve funcionar sem rede')
+        elif not (p.parent / src).exists():
+            erros.append(f'arquivo referenciado não existe: "{src}"')
+    return erros
 
 
 def blocos(html):
@@ -65,7 +80,7 @@ def conferir(caminho):
         n_blocos = html.count('class="question-block"')
         avisos.append('LEGADO — marcação anterior ao padrão atual. Funciona, mas não serve '
                       'de modelo para quiz novo e não dá para verificar em detalhe.')
-        erros += universais(html)
+        erros += universais(html, p)
         return erros, avisos, n_blocos
 
     faltando = [i for i in IDS if f'id="{i}"' not in html]
@@ -114,7 +129,7 @@ def conferir(caminho):
     elif chave.group(1) != str(p).replace('\\', '/'):
         erros.append(f'STORAGE_KEY aponta para "{chave.group(1)}", mas o arquivo é "{p}"')
 
-    erros += universais(html)
+    erros += universais(html, p)
 
     md = re.findall(r'\*\*[^*\n]+\*\*', html)
     if md:
