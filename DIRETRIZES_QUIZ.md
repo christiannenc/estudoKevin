@@ -36,7 +36,7 @@ Em cada novo chat ou nova solicitação de exercícios, você **NÃO** deve assu
 - **Feedback imediato:** ao clicar em uma alternativa, a resposta é registrada e a questão é bloqueada para novos cliques.
   - **Correta:** alternativa fica verde (`#16a34a`) com ícone check (✅).
   - **Incorreta:** alternativa clicada fica vermelha (`#dc2626`) com ícone ❌ **e** a alternativa correta ganha borda tracejada verde com ícone de lâmpada (💡) como dica visual.
-- **Revelação de justificativas:** abaixo de cada alternativa, uma caixa oculta (`.explanation-box`) se torna visível (`display: block`) apenas após o clique, explicando em detalhe o porquê do erro ou do acerto daquela opção.
+- **Revelação de justificativas:** abaixo de cada alternativa, uma caixa oculta (`.explanation-box`) se torna visível (`display: block`) apenas após o clique, explicando em detalhe o porquê do erro ou do acerto daquela opção. **Uma explicação por alternativa é o padrão** — a da opção errada deve apontar a confusão específica que levaria alguém a escolhê-la, e não repetir a justificativa da correta. Só caia para uma explicação única por questão quando o volume for inviável ou a redação de cada opção ficar complexa demais; nesse caso, ela precisa pelo menos dizer qual é a certa e por quê.
 - **Placar dinâmico:** banner no rodapé (`.score-banner`) atualiza os pontos em tempo real no formato `Pontuação: X / N`, e traz o botão **"Terminar Missão"**, que devolve o usuário para a home do site (`window.location.href = '/'`). Não existe botão de reiniciar — para refazer, o usuário reabre o quiz pela home, e cada passada vira uma tentativa nova no histórico.
 
 ### 3. Esqueleto obrigatório (contrato com o site)
@@ -168,6 +168,8 @@ A unidade básica é sempre a mesma:
 
 O estímulo textual deve ser curto — 40 a 70 palavras bastam. Ele não é o conteúdo da aula: é a **situação concreta** onde o conteúdo aparece. As perguntas então puxam explicação, não recuperação: "explique por que…", "justifique o motivo…", "compare…", "o que aconteceria se…", "qual é a relação entre…".
 
+**Quando a matéria permitir, prefira um estímulo que renda perguntas de mais de um tópico.** Um único texto ou tabela cruzando vários assuntos economiza papel, cobra a relação entre os conteúdos e evita a sensação de lista de perguntas soltas. Em Ciências, por exemplo, uma ficha com batimentos, respirações e estado da pele antes e depois de uma corrida rende perguntas de circulatório, respiratório, regulação de temperatura e urinário de uma vez só. Nem todo conteúdo se presta a isso — quando não der, vários estímulos curtos funcionam bem.
+
 ### Repertório de formatos
 
 Escolha o que couber na matéria e no conteúdo:
@@ -181,13 +183,16 @@ Escolha o que couber na matéria e no conteúdo:
 
 ### Estrutura do documento
 
-**1. Cabeçalho formal**, em tabela com bordas no topo da primeira página: Escola, Avaliação/Atividade, Aluno(a), Turma, Data — e, quando o usuário informar, série, etapa, professores e códigos de habilidade da BNCC (ex: `EF05CN09`).
+**1. Cabeçalho formal**, em tabela com bordas no topo da primeira página: Escola, Avaliação/Atividade, Aluno(a), Turma, Data — e, quando o usuário informar, série, etapa e professores.
+
+**Não invente códigos de habilidade da BNCC.** Use apenas os que aparecerem no roteiro ou no material da escola (ex: `EF05H10`, `EF05GE07`). Sem essa fonte, escreva no lugar uma linha de **"Conteúdos avaliados"** listando os assuntos — um código errado no cabeçalho de uma avaliação é pior que nenhum.
 
 **2. Corpo das questões:**
 
 - Estímulo textual em bloco destacado (fundo cinza-claro + borda lateral), visualmente separado da pergunta.
 - Sub-questões numeradas **A)**, **B)**, **C)** — letras identificam partes de uma mesma questão, nunca alternativas de resposta.
-- **Espaço para escrever é obrigatório:** 3 a 5 linhas tracejadas por sub-questão, dimensionadas pelo tamanho da resposta esperada. Tabela em branco quando a resposta for de preencher. Uma folha sem espaço de escrita não cumpre a função.
+- **Equilíbrio entre escrever e completar.** Uma folha só de parágrafos cansa e vira exercício de redação; uma folha só de lacunas não cobra raciocínio. Misture os dois formatos e calibre a proporção pela matéria e pelo tipo de exercício: conteúdo de nomenclatura e sequência (órgãos, etapas, classificações) pede mais completar, nomear, numerar e classificar; conteúdo de causa e efeito pede mais explicação escrita. Na dúvida, reserve a escrita livre para as duas ou três perguntas que de fato exigem raciocínio e resolva o resto em lacuna, quadro ou classificação.
+- **Espaço para escrever é obrigatório** nas perguntas abertas: 2 a 4 linhas tracejadas por sub-questão, dimensionadas pela resposta esperada. Tabela em branco, lacuna ou caixa para marcar quando a resposta for de preencher. Uma folha sem nenhum espaço de escrita não cumpre a função.
 - Diagramas em **SVG inline** (sem imagem externa, sem CDN), ao lado da pergunta quando ajudar a economizar papel.
 - `page-break-before: always` entre as páginas, para o navegador quebrar onde deve.
 
@@ -252,12 +257,14 @@ Ao desenhar:
 </div>
 ```
 
-**Template de estrutura (padrão 20 questões):** ao gerar uma bateria completa, siga a proporção:
+**Template de estrutura (padrão 20 questões):** ao gerar uma bateria completa, mire nesta proporção:
 
 | Quantidade | Tipo |
 | --- | --- |
 | 15 | Perguntas objetivas/diretas, focadas no conteúdo conceitual ou prático da matéria |
 | 5 | Perguntas de leitura/análise extensa — interpretação de texto, cenários complexos, gráficos ou diálogos longos baseados no tema escolhido |
+
+**O mínimo inegociável é um texto de apoio com pelo menos duas questões de interpretação.** A proporção 15 + 5 é o ideal, mas depende do material de origem: quando ele vier só com questões curtas, não invente cinco textos para fechar a conta — garanta um bom bloco de leitura e deixe o resto direto. Esse bloco vai no fim do quiz, numa fase própria.
 
 **Abordagem equilibrada (contexto vs. memorização):** priorize a aplicação contextualizada do conhecimento em situações reais e cotidianas, para evitar a "decoreba" pura. Contudo, se o conteúdo exigir conceitos técnicos ou regras que demandem memorização e fixação pontual, inclua-os de forma inteligente nas questões objetivas.
 

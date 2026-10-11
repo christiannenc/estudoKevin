@@ -13,7 +13,8 @@ index.html              → página inicial (lista as matérias em acordeão)
 manifest.json            → fonte de dados: lista de exercícios por matéria
 assets/
   style.css              → estilo compartilhado (tema escuro)
-  mascote.svg             → mascote original do site (não usar IP de terceiros aqui)
+  mascote.png             → mascote do site, também usado como favicon
+  mascote.svg             → mascote desenhado da versão anterior, fora de uso
 materias/
   {materia}/
     {arquivo}.html ou .pdf  → os exercícios em si
@@ -58,7 +59,11 @@ A função `ehQuiz(info)` no `index.html` centraliza essa decisão — usar semp
 
 ## Quizzes HTML — padrão de implementação
 
-Os quizzes seguem o estilo do arquivo já existente em `materias/portugues/`: tema escuro, perguntas em `.question-block` com `data-q` e `data-correct`, opções clicáveis com feedback visual (verde = correto, vermelho = incorreto, dica em verde tracejado na opção certa quando o usuário erra), explicação que expande abaixo da opção respondida, e placar no final com botão de reiniciar. Ao criar um quiz novo, reaproveitar essa estrutura/CSS para manter consistência visual entre os exercícios.
+Os quizzes seguem o padrão do `quiz_portugues_2026_tri2_prova_parcial_v1.html`: tema escuro, perguntas em `.question-block` com `data-q` e `data-correct`, alternativas em `.option-clickable` com `data-letter`, feedback visual (verde = correto, vermelho = incorreto, verde tracejado na certa quando o aluno erra) e, no fim, o `.score-banner` com o botão **"Terminar Missão"**, que devolve o aluno para a home (`window.location.href = '/'`). **Não existe botão de reiniciar** — cada passada é uma tentativa nova no histórico.
+
+**Explicação por alternativa é o padrão.** Cada `.option-clickable` tem a sua `.explanation-box` irmã, e a da alternativa errada aponta a confusão específica daquela opção, em vez de repetir a justificativa da correta. Só quando o volume for inviável ou o conteúdo ficar complexo demais é aceitável cair para uma explicação por questão — é o caso dos dois quizzes abrangentes de Português, por decisão do usuário. Não "corrigir" esses dois sem pedido.
+
+Dois arquivos anteriores a esse padrão (`quiz_ciencias_2026_tri2_prova_parcial_v1.html` e `quiz_histgeo_2026_tri2_prova_parcial_v3.html`) usam outros nomes de classe. Funcionam, mas não servem de modelo.
 
 As regras de **conteúdo pedagógico** (temática, distribuição das questões, tela de introdução, gabarito da versão de impressão, recomendações técnicas de JS) ficam em `DIRETRIZES_QUIZ.md` — é o prompt que o usuário cola na IA que gera o material. Consultar esse arquivo ao criar um quiz do zero.
 
@@ -75,7 +80,7 @@ Ao trocar a imagem: recortar o fundo, enquadrar do peito para cima (corpo inteir
 
 O `index.html` deve exibir, em cada card de quiz, o histórico de pontuação de tentativas anteriores e indicar visualmente se o quiz já foi feito ou não. Regras:
 
-- Usar `localStorage` **somente** para armazenar o histórico de pontuação dos quizzes (chave: nome do arquivo, valor: array de `{score, total, date}`). Esta é a única exceção ao "não usar localStorage".
+- Usar `localStorage` **somente** para armazenar o histórico de pontuação dos quizzes. Chave: `estudoKevin:scores:` + o caminho do arquivo a partir da raiz do projeto, igual ao campo `arquivo` do manifest. Valor: array de `{score, total, date, wrong}`, em que `wrong` lista os erros da tentativa como `{q, text, chosen, correct}` — **é esse campo que alimenta o modal de revisão da home**, então não pode ser omitido. Esta é a única exceção ao "não usar localStorage".
 - Card não feito: visual neutro/padrão
 - Card já feito: exibir a última pontuação e badge de "Feito" (ou similar)
 - O histórico detalhado pode ser exibido em tooltip ou expansão no card
@@ -101,4 +106,4 @@ Os cards são agrupados em **dois níveis** pelo `renderMateria`:
 
 - Não usar localStorage/sessionStorage para nada além do histórico de pontuação dos quizzes.
 - Não adicionar build step, framework ou dependências de pacote sem necessidade — o ponto forte deste projeto é a simplicidade de só soltar um arquivo HTML/PDF novo e atualizar o manifest.
-- Não usar imagens ou personagens com direitos autorais de terceiros (ex: Minions) — o mascote do site é um desenho original.
+- Não usar imagens ou personagens com direitos autorais de terceiros (ex: Minions). O site é publicado na internet, o que afasta a hipótese de uso privado — a regra vale mesmo quando o pedido parte do usuário.
