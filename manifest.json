@@ -4,6 +4,14 @@
     "icone": "book-2",
     "exercicios": [
       {
+        "arquivo": "materias/portugues/quiz_portugues_2026_tri3_prova_parcial_v1.html",
+        "assunto": "Prova parcial da 3ª etapa: carta do leitor, advérbios (tempo, modo, dúvida, negação), houve × ouve e acentuação de oxítonas, paroxítonas e proparoxítonas — com carta do leitor inédita, crônica esportiva e tirinha ilustrada"
+      },
+      {
+        "arquivo": "materias/portugues/impressao_portugues_2026_tri3_prova_parcial_v1.html",
+        "assunto": "Avaliação discursiva: carta do leitor sobre a reforma de uma praça, texto de divulgação sobre como se marcava a hora antes do relógio, tirinha com advérbios de lugar e trilha de acentuação para acentuar e classificar"
+      },
+      {
         "arquivo": "materias/portugues/quiz_portugues_2026_tri2_abrangente_completa_v2.html",
         "assunto": "Prova abrangente com tema de games e Minecraft: pronomes demonstrativos, verbos -am/-ão, a x há, sessão x seção, interjeições, obrigado/obrigada, coesão anafórica, fato x opinião e divulgação científica"
       },

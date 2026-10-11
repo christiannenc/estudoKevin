@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quiz de Português — Prova Parcial 3ª etapa</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-bg: #16a34a;
+            --incorrect-bg: #dc2626;
+            --border-color: #334155;
+            --tooltip-bg: #0f172a;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        h1 { color: var(--accent-color); text-align: center; font-size: 26px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; user-select: none; }
+        h1:hover { opacity: 0.9; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        .intro-box { background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .theme-badge { display: inline-block; background-color: rgba(56, 189, 248, 0.15); color: var(--accent-color); border: 1px solid var(--accent-color); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+        .intro-title { font-size: 18px; color: var(--accent-color); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h3 { font-size: 16px; margin: 0 0 5px 0; color: #ffffff; }
+        .topic-group p { font-size: 14px; color: var(--text-muted); margin: 0; }
+        .intro-note { font-size: 13px; color: var(--text-muted); font-style: italic; margin-top: 20px; }
+        .phase-title { background-color: var(--border-color); padding: 10px 15px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid var(--accent-color); }
+        .phase-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+        .question-block { background-color: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .question-tag { display: inline-block; background-color: var(--border-color); color: var(--accent-color); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
+        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.5; }
+        .text-box-analysis { background-color: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
+        .comic-strip { background-color: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; margin-bottom: 15px; }
+        .comic-strip svg { display: block; width: 100%; height: auto; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-clickable { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-color); padding: 14px 16px; border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; box-sizing: border-box; cursor: pointer !important; user-select: none; }
+        .option-clickable * { pointer-events: none !important; }
+        .feedback-badge { display: none; font-size: 16px; flex-shrink: 0; }
+        .explanation-box { display: none; margin-top: 8px; padding: 11px 15px; background-color: var(--tooltip-bg); border-left: 3px solid var(--accent-color); border-radius: 4px; font-size: 13px; line-height: 1.45; }
+        .option-clickable.correct { background-color: var(--correct-bg) !important; border-color: var(--correct-bg) !important; color: #ffffff !important; }
+        .option-clickable.correct .badge-correct { display: inline-block !important; }
+        .option-clickable.incorrect { background-color: var(--incorrect-bg) !important; border-color: var(--incorrect-bg) !important; color: #ffffff !important; }
+        .option-clickable.incorrect .badge-incorrect { display: inline-block !important; }
+        .option-clickable.hint-green { border: 2px dashed #16a34a !important; background-color: rgba(22, 163, 74, 0.1) !important; }
+        .option-clickable.hint-green .badge-hint { display: inline-block !important; }
+        .score-banner { margin-top: 30px; padding: 20px; background-color: rgba(56, 189, 248, 0.1); border: 2px dashed var(--accent-color); border-radius: 12px; text-align: center; }
+        .score-text { font-size: 20px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; }
+        .action-btn { background-color: var(--accent-color); color: var(--bg-color); border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer !important; display: inline-block; text-align: center; user-select: none; }
+        .center-btn-wrapper { display: flex; justify-content: center; width: 100%; }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <h1 id="main-title">✏️ DESAFIO DE PORTUGUÊS</h1>
+    <div class="subtitle">5º Ano • Prova Parcial da 3ª etapa • 19 de outubro</div>
+
+    <div id="screen-intro" class="screen active">
+        <div class="intro-box">
+            <span class="theme-badge">🗂️ 4 cenários • 20 questões</span>
+            <h2 class="intro-title">📋 Conteúdos Mapeados na Missão:</h2>
+            <div class="topic-group">
+                <h3>📰 Carta do leitor</h3>
+                <p><b>Tópicos:</b> finalidade, estrutura, elogio × crítica e identificação da matéria comentada. (EF05LP57)</p>
+            </div>
+            <div class="topic-group">
+                <h3>🧭 Advérbio</h3>
+                <p><b>Tópicos:</b> tempo, modo, intensidade, dúvida e negação — e que circunstância cada um acrescenta. (EF05LP80)</p>
+            </div>
+            <div class="topic-group">
+                <h3>🔤 Houve × ouve</h3>
+                <p><b>Tópicos:</b> verbo <i>haver</i> (aconteceu, existiu) contra verbo <i>ouvir</i> (escutar). (EF05LP80)</p>
+            </div>
+            <div class="topic-group">
+                <h3>🎯 Acentuação</h3>
+                <p><b>Tópicos:</b> oxítonas, paroxítonas e proparoxítonas — classificar e <b>acentuar</b>. (EF05LP65)</p>
+            </div>
+            <div class="intro-note">⚡ Ao responder, aparece a explicação de <b>cada</b> alternativa — inclusive das que você não escolheu. Leia as erradas também: é ali que mora a pegadinha.</div>
+        </div>
+        <div class="center-btn-wrapper">
+            <div class="action-btn" id="btn-start-quiz" onclick="">Iniciar Missão</div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+
+        <div class="phase-title">📰 FASE 1: CORREIO DA PIXEL JOVEM</div>
+        <div class="phase-desc">Um leitor de dez anos escreveu para a revista. Leia com atenção: as seis questões saem desta carta.</div>
+
+        <div class="text-box-analysis">📖 <strong>CARTA DO LEITOR</strong><br><br>Vitória, 3 de outubro de 2026.<br><br>Prezada equipe da revista Pixel Jovem,<br><br>Sou leitor de vocês desde a edição 100 e nunca tinha escrito antes. Resolvi mudar isso depois de ler a reportagem “Jogar faz bem?”, da edição 112. Comecei a leitura desconfiado, porém terminei convencido: a parte que explica como os jogos de construção ajudam no raciocínio ficou excelente.<br><br>Mesmo assim, senti falta de um assunto importante. A reportagem não disse quanto tempo de jogo por dia é saudável para quem tem dez anos. Minha mãe e eu conversamos sobre isso quase diariamente, e uma orientação clara ajudaria muito as duas partes.<br><br>Houve também um problema na página 14: o nome do jogo aparece escrito de duas maneiras diferentes.<br><br>Para a próxima edição, sugiro uma entrevista com um médico que acompanhe jogadores profissionais. Tenho certeza de que outros leitores também gostariam de ler sobre isso.<br><br>Atenciosamente,<br>Rafael Nunes, 10 anos — Vitória (ES)</div>
+
+        <div class="question-block" data-q="1" data-correct="B">
+            <span class="question-tag">Carta do leitor • finalidade</span>
+            <div class="question-text">1. Qual é a principal finalidade da carta que Rafael enviou à revista?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Cancelar a assinatura da revista.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Rafael não fala em cancelar nada. Pelo contrário: ele continua leitor e ainda sugere assunto para a próxima edição.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Comentar uma reportagem, apontar o que faltou nela e sugerir uma pauta nova.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! É exatamente o que ele faz: elogia a parte do raciocínio, diz o que ficou faltando e pede uma entrevista. Opinar, criticar e sugerir são as finalidades típicas da carta do leitor.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Vender um jogo usado para outros leitores.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Carta do leitor não é anúncio. Rafael não oferece nada à venda em nenhum trecho.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Pedir o nome do jogo que apareceu na página 14.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ele já sabe o nome. O que ele aponta é outra coisa: o nome foi escrito de duas maneiras diferentes.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="2" data-correct="B">
+            <span class="question-tag">Carta do leitor • crítica × elogio</span>
+            <div class="question-text">2. Qual trecho da carta traz uma <b>crítica</b>, e não um elogio?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) “a parte que explica como os jogos de construção ajudam no raciocínio ficou excelente”</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. “Excelente” é elogio puro. Rafael está aprovando esse trecho da reportagem.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) “A reportagem não disse quanto tempo de jogo por dia é saudável para quem tem dez anos.”</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Aqui ele aponta uma falha: um assunto que a reportagem deixou de fora. É a crítica construtiva da carta.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) “Sou leitor de vocês desde a edição 100”</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Isso é apresentação: ele diz há quanto tempo acompanha a revista, para mostrar que conhece o trabalho dela.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) “Atenciosamente, Rafael Nunes, 10 anos”</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É a despedida com a assinatura, a parte que fecha a carta.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="3" data-correct="B">
+            <span class="question-tag">Carta do leitor • estrutura</span>
+            <div class="question-text">3. Numa carta do leitor é importante deixar claro <b>o que</b> está sendo comentado. Qual trecho cumpre esse papel?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) “Prezada equipe da revista Pixel Jovem”</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Essa é a saudação: diz <i>a quem</i> a carta é dirigida, e não qual texto está sendo comentado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) “a reportagem ‘Jogar faz bem?’, da edição 112”</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Ele nomeia a reportagem e a edição. Assim a redação sabe exatamente de que texto ele fala — e outros leitores também conseguem localizar.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) “Minha mãe e eu conversamos sobre isso quase diariamente”</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. É um argumento pessoal, que dá força ao pedido dele. Não é a identificação da matéria.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) “Vitória, 3 de outubro de 2026”</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. São o local e a data, que abrem a carta.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="4" data-correct="C">
+            <span class="question-tag">Advérbio • circunstância</span>
+            <div class="question-text">4. Em “Minha mãe e eu conversamos sobre isso quase <b>diariamente</b>”, o advérbio destacado indica circunstância de:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) modo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Modo responde “de que jeito?”, como em “calmamente”. “Diariamente” não diz o jeito da conversa.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) lugar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Lugar responde “onde?”, como em “longe” e “ali”. Nenhum lugar é indicado na frase.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) tempo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! “Diariamente” responde “quando?”: todos os dias. Por isso é advérbio de tempo, como “ontem”, “sempre” e “cedo”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) dúvida.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Dúvida aparece em palavras como “talvez” e “provavelmente”. Aqui não há incerteza nenhuma.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="5" data-correct="B">
+            <span class="question-tag">Houve × ouve</span>
+            <div class="question-text">5. Rafael escreveu “<b>Houve</b> também um problema na página 14”. Por que essa palavra se escreve com <b>h</b>?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Porque vem do verbo ouvir e significa escutar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Esse é o “ouve”, sem h. Ninguém está escutando nada nessa frase: o problema aconteceu, não foi escutado.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Porque vem do verbo haver e indica que algo aconteceu.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Na dúvida, troque por “ocorreu”: “Ocorreu também um problema na página 14”. Deu certo, então é “houve”, do verbo haver.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Porque toda palavra começada por vogal leva h.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Essa regra não existe. “Onda”, “ilha” e “até” começam com vogal e não levam h nenhum.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Porque a palavra está no plural.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. “Houve” não muda por causa de plural. No sentido de existir, o verbo haver fica sempre na 3ª pessoa do singular: houve um problema, houve dois problemas.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="6" data-correct="C">
+            <span class="question-tag">Acentuação • proparoxítona</span>
+            <div class="question-text">6. Na carta, Rafael sugere uma entrevista com um <b>médico</b>. Por que essa palavra recebe acento?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Porque é oxítona terminada em -o.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A sílaba forte não é a última. Ninguém diz “medi-CO”: a força está lá no começo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Porque é paroxítona terminada em -o.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A sílaba forte também não é a penúltima. Em MÉ-di-co a força está três sílabas antes do fim.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Porque é proparoxítona, e todas são acentuadas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! MÉ-di-co tem a antepenúltima sílaba tônica. Essa é a regra mais fácil de todas: proparoxítona não tem exceção, sempre leva acento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Porque termina em ditongo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Não há ditongo em médico. Ditongo é encontro de duas vogais na mesma sílaba, como em “estádio”.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">⚽ FASE 2: FINAL DECIDIDA NO GRITO</div>
+        <div class="phase-desc">Crônica esportiva sobre a decisão do campeonato. Cinco questões saem deste texto.</div>
+
+        <div class="text-box-analysis">📖 <strong>FINAL DECIDIDA NO GRITO</strong><br><br>Houve um susto logo no começo do segundo tempo. A goleira do Vitória escorregou, a bola sobrou limpa na área e o estádio inteiro ficou de pé. Não houve gol: a zagueira apareceu correndo e tirou em cima da linha.<br><br>Daí em diante, o jogo virou. Quem ouve a narração daquele trecho percebe que o locutor quase não respira — são quatro chances em três minutos.<br><br>O gol saiu aos 41. Mariana recebeu na ponta, cortou para dentro e bateu rasteiro. Talvez tenha sido o melhor jogo do campeonato. Depois da partida, ela resumiu assim: “A gente ouve muito que time pequeno não chega à final. Hoje chegou.”</div>
+
+        <div class="question-block" data-q="7" data-correct="B">
+            <span class="question-tag">Houve × ouve</span>
+            <div class="question-text">7. No trecho “<b>Houve</b> um susto logo no começo do segundo tempo”, a palavra destacada indica que o susto:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) foi escutado pela torcida.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Escutar é o verbo <i>ouvir</i>, que daria “ouve”, sem h. Aqui o verbo é outro.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) aconteceu.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! “Houve” vem do verbo haver. Dá para trocar por “ocorreu”: “Ocorreu um susto logo no começo”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) foi combinado antes do jogo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Nada no texto diz que o lance foi combinado. “Houve” informa apenas que o susto aconteceu.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) ainda vai acontecer.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. “Houve” está no passado. Para o futuro, o texto diria “haverá”.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="8" data-correct="A">
+            <span class="question-tag">Houve × ouve</span>
+            <div class="question-text">8. “Quem <b>ouve</b> a narração daquele trecho percebe que o locutor quase não respira.” Por que aqui se escreve <b>ouve</b>, sem h?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Porque é o verbo ouvir: quem escuta a narração.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Troque por “escuta” e a frase continua perfeita: “Quem escuta a narração daquele trecho...”. É o verbo ouvir.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Porque é o verbo haver no presente.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O verbo haver no presente, no sentido de existir, seria “há”. Aqui alguém está escutando algo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Porque a palavra está no começo da frase.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A posição na frase não muda a escrita da palavra. O que decide é o sentido: escutar ou acontecer.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Porque se refere a uma coisa que aconteceu.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Esse seria o caso de “houve”, com h. Aqui ninguém fala de algo que ocorreu: alguém está escutando.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="9" data-correct="B">
+            <span class="question-tag">Houve × ouve</span>
+            <div class="question-text">9. Complete corretamente: “____ três chances na mesma jogada, e quem ____ a narração até hoje se arrepia.”</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Ouve / houve</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Está trocado. Quem ocorreu foram as chances (verbo haver) e quem escuta é a pessoa (verbo ouvir).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Houve / ouve</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! “Houve três chances” = ocorreram três chances. “Quem ouve a narração” = quem escuta a narração. Cada verbo no seu lugar.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Houve / houve</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A primeira está certa, mas a segunda lacuna fala de alguém escutando a narração, então pede “ouve”, sem h.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Ouve / ouve</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A segunda está certa, mas a primeira lacuna fala de chances que ocorreram, então pede “houve”, com h.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="10" data-correct="C">
+            <span class="question-tag">Acentuação • paroxítona</span>
+            <div class="question-text">10. Por que a palavra <b>estádio</b> recebe acento?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Porque é oxítona terminada em -o.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A sílaba forte não é a última. Dizemos es-TÁ-dio, e não “estadi-O”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Porque é proparoxítona.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Em es-TÁ-dio a força está na penúltima sílaba, não na antepenúltima. Proparoxítona seria algo como “médico”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Porque é paroxítona terminada em ditongo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! es-TÁ-dio é paroxítona e termina no ditongo -io. Paroxítona terminada em ditongo leva acento — o mesmo caso de “ginásio”, “colégio” e “memória”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Porque toda palavra de três sílabas leva acento.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Essa regra não existe. “Caneta”, “menino” e “cabelo” têm três sílabas e nenhum acento.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="11" data-correct="B">
+            <span class="question-tag">Advérbio • dúvida</span>
+            <div class="question-text">11. “<b>Talvez</b> tenha sido o melhor jogo do campeonato.” O advérbio destacado mostra que quem escreve:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) tem certeza absoluta do que afirma.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Se tivesse certeza, escreveria direto: “foi o melhor jogo do campeonato”. O “talvez” tira justamente a certeza.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) está em dúvida e não afirma com certeza.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! “Talvez” é advérbio de dúvida: apresenta a ideia como possibilidade, não como fato. Funciona igual a “provavelmente” e “quem sabe”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) está negando a informação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Negar seria escrever “não foi o melhor jogo”. Ele não nega: ele hesita.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) está indicando o lugar do jogo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Lugar responde “onde?”, como “ali”, “longe” e “aqui”. “Talvez” não aponta lugar nenhum.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">🗨️ FASE 3: O QUARTO DO KEVIN</div>
+        <div class="phase-desc">Leia a tirinha com calma — inclusive o desenho do segundo quadrinho. As quatro questões saem dela.</div>
+
+        <div class="question-block" data-q="12" data-correct="A">
+            <span class="question-tag">Leitura de tirinha • humor</span>
+            <div class="question-text">12. O que faz esta tirinha ter graça?</div>
+            <div class="comic-strip">
+                <style>.tirinha-box{overflow-x:auto;-webkit-overflow-scrolling:touch;contain:inline-size;}/* contain:inline-size impede que a largura natural da tirinha infle o .quiz-container, que é item flex do body e por isso herda min-width:auto = tamanho mínimo do conteúdo */.tirinha-box img{display:block;width:100%;height:auto;border-radius:4px;}@media (max-width:620px){.tirinha-box img{width:auto;max-width:none;height:225px;}}</style><div class="tirinha-box"><img src="tirinha_quarto_bagunca_2026.png" alt="Tirinha em três quadrinhos. No primeiro, a mãe aparece na porta do quarto e pergunta ao filho, deitado no chão de frente para a televisão com o controle do videogame nas mãos: “Você arrumou o quarto?”. No segundo, ela entra e encontra tudo bagunçado — roupa espalhada pelo chão, gavetas abertas e uma meia pendurada no abajur — e diz, de braços cruzados: “Não está nada arrumado!”. No terceiro, em close, o menino continua jogando, sorri de canto e responde: “Rapidamente, completamente e perfeitamente. Amanhã.”"></div>
+            </div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) O menino promete capricho para uma tarefa que ainda nem começou.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Ele usa três advérbios de modo para dizer <i>como</i> vai arrumar o quarto — e só no fim, com “amanhã”, revela que não arrumou nada ainda.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) A mãe não consegue achar o quarto do filho.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ela acha o quarto e entra nele sem dificuldade. O que ela encontra lá dentro é que surpreende.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) O menino não escuta a pergunta da mãe.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ele escuta e responde. O problema não é a audição dele: é o conteúdo da resposta.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) O quarto já estava arrumado desde o começo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O segundo quadrinho mostra o contrário: roupa no chão, gavetas abertas e até uma meia pendurada no abajur.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="13" data-correct="B">
+            <span class="question-tag">Advérbio • modo</span>
+            <div class="question-text">13. No último quadrinho, “<b>rapidamente, completamente e perfeitamente</b>” são advérbios de:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) tempo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Tempo responde “quando?”. Essas três respondem outra pergunta: “de que jeito?”. Quem indica tempo na tirinha é “amanhã”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) modo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! As três respondem “como?” e terminam em -mente, a terminação mais comum do advérbio de modo.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) lugar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Lugar responde “onde?”, como “aqui”, “longe” e “ali”. Nenhuma das três aponta lugar.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) negação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Negação é “não”, “nunca”, “jamais”. As três palavras destacadas não negam nada — pelo contrário, prometem.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="14" data-correct="A">
+            <span class="question-tag">Advérbio • negação</span>
+            <div class="question-text">14. No segundo quadrinho, a mãe diz: “<b>Não</b> está nada arrumado!”. A palavra destacada é advérbio de:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) negação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! “Não” nega a ação: ela está afirmando que o quarto não foi arrumado. Junto com “nada”, a negação fica ainda mais forte.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) afirmação.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Afirmação seria “sim”, “certamente”, “realmente” — exatamente o contrário do que ela quer dizer.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) intensidade.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Intensidade responde “quanto?”, como “muito” e “pouco”. Quem intensifica na frase é “nada”, não o “não”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) modo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Modo responde “como?”. “Não” não diz de que jeito a ação foi feita, e sim que ela não foi feita.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="15" data-correct="C">
+            <span class="question-tag">Advérbio • tempo</span>
+            <div class="question-text">15. A palavra <b>amanhã</b>, no fim da fala do menino, é o advérbio que entrega a piada. Ela indica circunstância de:</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) lugar.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Lugar responde “onde?”. “Amanhã” não aponta nenhum lugar — aponta um dia.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) dúvida.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Dúvida seria “talvez eu arrume”. Ele não está em dúvida: ele simplesmente empurra a tarefa para depois.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) tempo.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! “Amanhã” responde “quando?”. É aí que o leitor descobre que todo aquele capricho ainda não aconteceu.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) intensidade.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Intensidade responde “quanto?”, como em “muito arrumado”. “Amanhã” marca o momento, não a quantidade.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-title">🐜 FASE 4: TRILHA DA ACENTUAÇÃO</div>
+        <div class="phase-desc">Cinco armadilhas de acento. Aqui não basta classificar: é preciso decidir se a palavra leva acento ou não.</div>
+
+        <div class="question-block" data-q="16" data-correct="A">
+            <span class="question-tag">Acentuação • paroxítonas</span>
+            <div class="question-text">16. Estas palavras perderam o acento. Em qual alternativa <b>todas</b> precisam de acento?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) tunel — album — facil</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! túnel e fácil são paroxítonas terminadas em -l; álbum é paroxítona terminada em -um. Os três casos estão na regra das paroxítonas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) papel — anel — legal</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. São oxítonas terminadas em -l, e oxítona em -l não leva acento. Repare na diferença: fácil (paroxítona) leva, papel (oxítona) não.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) menino — casaco — parede</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. São paroxítonas terminadas em vogal, o caso mais comum da língua — e justamente por ser comum, não leva acento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) cantar — vender — partir</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. São verbos no infinitivo: oxítonas terminadas em -r, que não recebem acento.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="17" data-correct="B">
+            <span class="question-tag">Acentuação • oxítona em -ens</span>
+            <div class="question-text">17. Qual é a escrita <b>correta</b>?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) parabens</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Falta o acento. A palavra é oxítona terminada em -ens, e esse caso é acentuado obrigatoriamente.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) parabéns</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! pa-ra-BÉNS é oxítona terminada em -ens: acento obrigatório, igual a “armazéns” e “também”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) parabêns</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O acento está na sílaba certa, mas é o tipo errado. O som é aberto, então pede acento agudo (é), não circunflexo (ê).</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) párabens</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. O acento foi parar na sílaba errada. Diga em voz alta: a força está no fim, em pa-ra-BÉNS.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="18" data-correct="A">
+            <span class="question-tag">Acentuação • ditongo aberto</span>
+            <div class="question-text">18. Em qual alternativa faltam acentos nas <b>duas</b> palavras?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) chapeu — heroi</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O certo é chapéu e herói: oxítonas terminadas nos ditongos abertos -éu e -ói, que sempre levam acento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) troféu — anéis</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Essas duas já estão acentuadas corretamente: -éu e -éis são ditongos abertos.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) papéis — céu</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Também já estão certas. Nada falta nelas.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) caju — peru</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. São oxítonas terminadas em -u, e essa terminação não entra na regra de acentuação. Escrevem-se sem acento mesmo.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="19" data-correct="C">
+            <span class="question-tag">Acentuação • achar o erro</span>
+            <div class="question-text">19. Qual palavra está acentuada <b>erradamente</b>?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) sabiá</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Está certa: oxítona terminada em -a leva acento, como “crachá” e “maracujá”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) cafés</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Está certa: oxítona terminada em -e seguida de s leva acento, como “filés” e “vocês”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) papél</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! O certo é <b>papel</b>, sem acento: oxítona terminada em -l não é acentuada. Quem leva acento terminando em -l é a paroxítona, como “fácil” e “túnel”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) avô</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Está certa: oxítona terminada em -o leva acento, como “robô” e “dominó”.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-block" data-q="20" data-correct="C">
+            <span class="question-tag">Acentuação • paroxítona em -r</span>
+            <div class="question-text">20. Por que <b>açúcar</b>, <b>caráter</b> e <b>revólver</b> recebem acento?</div>
+            <div class="options-container">
+                <div>
+                    <div class="option-clickable" data-letter="A" onclick=""><span>(A) Porque são oxítonas terminadas em -r.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A sílaba forte não é a última. Dizemos a-ÇÚ-car, ca-RÁ-ter e re-VÓL-ver. Oxítona em -r, como “cantar”, não leva acento.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="B" onclick=""><span>(B) Porque são proparoxítonas.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. A força está na penúltima sílaba, não na antepenúltima. Proparoxítona seria “lâmpada” ou “pássaro”.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="C" onclick=""><span>(C) Porque são paroxítonas terminadas em -r.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">✅ Correto! Nas três a sílaba tônica é a penúltima e a palavra termina em -r — um dos casos da regra das paroxítonas, junto com -l, -n, -x e -ps.</div>
+                </div>
+                <div>
+                    <div class="option-clickable" data-letter="D" onclick=""><span>(D) Porque terminam em ditongo aberto.</span><span class="feedback-badge badge-correct">✅</span><span class="feedback-badge badge-incorrect">❌</span><span class="feedback-badge badge-hint">💡</span></div>
+                    <div class="explanation-box">❌ Incorreto. Ditongo aberto é -éi, -éu e -ói, como em “papéis” e “herói”. Nenhuma das três termina assim.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-banner">
+            <div class="score-text" id="score-display">Pontuação: 0 / 20</div>
+            <div class="action-btn" id="btn-finish-quiz" onclick="">Terminar Missão</div>
+        </div>
+    </div>
+</div>
+<script>
+    (function() {
+        let score = 0;
+        let answeredQuestions = {};
+        let wrongAnswers = [];
+        const totalQuestions = 20;
+        const STORAGE_KEY = 'estudoKevin:scores:materias/portugues/quiz_portugues_2026_tri3_prova_parcial_v1.html';
+        const screenIntro = document.getElementById('screen-intro');
+        const screenQuiz = document.getElementById('screen-quiz');
+        const btnStart = document.getElementById('btn-start-quiz');
+        const btnFinish = document.getElementById('btn-finish-quiz');
+        const mainTitle = document.getElementById('main-title');
+
+        function showScreen(screenToShow) {
+            screenIntro.classList.remove('active');
+            screenQuiz.classList.remove('active');
+            screenToShow.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        if (btnStart) {
+            btnStart.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenQuiz);
+            });
+        }
+
+        if (mainTitle) {
+            mainTitle.addEventListener('click', function(e) {
+                e.preventDefault();
+                showScreen(screenIntro);
+            });
+        }
+
+        function handleResponse(element) {
+            const block = element.closest('.question-block');
+            if (!block) return;
+            const qNum = block.getAttribute('data-q');
+            const correctAnswer = block.getAttribute('data-correct');
+            const selectedLetter = element.getAttribute('data-letter');
+            if (answeredQuestions[qNum]) return;
+            answeredQuestions[qNum] = selectedLetter;
+            const parentContainer = block.querySelector('.options-container');
+            const wrappers = parentContainer.children;
+            for (let i = 0; i < wrappers.length; i++) {
+                const opt = wrappers[i].querySelector('.option-clickable');
+                const expBox = wrappers[i].querySelector('.explanation-box');
+                const optLetter = opt.getAttribute('data-letter');
+                if (selectedLetter === correctAnswer) {
+                    if (optLetter === correctAnswer) opt.classList.add('correct');
+                } else {
+                    if (opt === element) opt.classList.add('incorrect');
+                    else if (optLetter === correctAnswer) opt.classList.add('hint-green');
+                }
+                if (expBox) expBox.style.display = 'block';
+            }
+            if (selectedLetter === correctAnswer) {
+                score++;
+            } else {
+                const correctEl = block.querySelector(`.option-clickable[data-letter="${correctAnswer}"]`);
+                wrongAnswers.push({
+                    q: qNum,
+                    text: block.querySelector('.question-text').textContent.trim(),
+                    chosen: element.querySelector('span').textContent.trim(),
+                    correct: correctEl ? correctEl.querySelector('span').textContent.trim() : correctAnswer
+                });
+            }
+            document.getElementById('score-display').textContent = `Pontuação: ${score} / ${totalQuestions}`;
+            if (Object.keys(answeredQuestions).length === totalQuestions) {
+                try {
+                    const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    history.push({ score, total: totalQuestions, date: new Date().toISOString(), wrong: wrongAnswers });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                } catch(e) {}
+            }
+        }
+
+        document.querySelectorAll('.option-clickable').forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleResponse(this);
+            });
+        });
+
+        if (btnFinish) {
+            btnFinish.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = '/';
+            });
+        }
+    })();
+</script>
+</body>
+</html>
