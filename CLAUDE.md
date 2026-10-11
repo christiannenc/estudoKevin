@@ -83,7 +83,9 @@ Ele numera as questões em sequência atravessando as fases, prefixa cada explic
 
 O formato está documentado em `scripts/exemplo_quiz.json`, que exercita os três casos. Esse exemplo é referência, **não é exercício do site** — não está no manifest.
 
-Para um quiz pontual, escrever o HTML direto continua sendo mais simples. O custo do gerador é passar a ter duas fontes: se alguém editar o HTML na mão, o JSON fica desatualizado.
+Para um quiz pontual, escrever o HTML direto continua sendo mais simples.
+
+**O JSON é andaime, o HTML é o entregável.** O JSON de conteúdo serve para gerar o arquivo e depois é descartado — escrever no diretório temporário da sessão, não no repositório. Não existe pasta `conteudo/` e não vale a pena criar uma: como o JSON não sobrevive à sessão, não há duas fontes para divergir. Correção posterior se faz direto no HTML.
 
 ### `conferir_quiz.py` — valida um quiz contra o contrato
 

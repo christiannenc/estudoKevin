@@ -32,7 +32,7 @@ Exemplo: `quiz_portugues_2026_tri2_prova_parcial_v1.html`
 
 | Parte | O que é |
 | --- | --- |
-| `tipo` | Livre (`quiz`, `prova`, `redacao`, …) — só organizacional, não entra no parsing |
+| `tipo` | **Entra no parsing.** `quiz` = quiz interativo com pontuação; qualquer outro valor (`impressao`, `exercicio`, `redacao`, …) = material de impressão |
 | `materia` | Bate com a chave da matéria no `manifest.json` |
 | `ano` | Ano letivo |
 | `tri{N}` | Trimestre (`tri1`, `tri2`, `tri3`) |
@@ -40,16 +40,23 @@ Exemplo: `quiz_portugues_2026_tri2_prova_parcial_v1.html`
 | `parcial` / `completa` | Se é uma versão reduzida ou completa do conteúdo |
 | `v{N}` | Número da versão |
 
-A extensão decide o badge e o comportamento do link:
+O `tipo` decide o badge; a **extensão** decide só como o link abre. São duas regras separadas, porque uma folha de impressão também pode ser `.html`:
 
-- `.html` → badge **Quiz**, abre em nova aba
-- `.pdf` → badge **Imprimir**, abre na mesma aba
+- `tipo` = `quiz` (em `.html`) → badge **Quiz**, grava pontuação e mostra o histórico
+- qualquer outro `tipo` → badge **Imprimir**, sem placar
+- extensão `.html` → abre em nova aba; `.pdf` → abre na mesma aba
+
+No `index.html`, a função `ehQuiz(info)` centraliza essa decisão — é ela que deve ser usada, nunca um teste direto da extensão.
 
 **Cada versão é um exercício separado, não substitui a anterior.** A v1 e a v2 do mesmo trimestre aparecem como dois cards distintos, e o título gerado sempre inclui o tipo e a versão para diferenciá-los (ex: "Quiz · 2º trimestre 2026 · Parcial · v1").
 
 ## Histórico de pontuação
 
-Cada card de quiz mostra o histórico das tentativas anteriores e um badge indicando se já foi feito. O histórico fica no `localStorage` do navegador (chave: nome do arquivo; valor: array de `{score, total, date}`) — este é o **único** uso de armazenamento local no projeto.
+Cada card de quiz mostra o histórico das tentativas anteriores e um badge indicando se já foi feito. O histórico fica no `localStorage` do navegador — este é o **único** uso de armazenamento local no projeto.
+
+- **Chave:** `estudoKevin:scores:` + o caminho do arquivo a partir da raiz, igual ao campo `arquivo` do `manifest.json`.
+- **Valor:** array de `{score, total, date, wrong}`, uma entrada por tentativa.
+- O `wrong` lista os erros como `{q, text, chosen, correct}` e **alimenta o modal de revisão da home** — por isso não pode ser omitido.
 
 ## Ordem dos cards
 
@@ -78,7 +85,25 @@ O histórico de pontuação **não** influencia a ordem: fazer um quiz não muda
    O `assunto` é o único texto digitado à mão — normalmente sai da primeira página do material.
 3. Commit e push. O deploy no Vercel é automático.
 
-Quizzes novos devem reaproveitar a estrutura e o CSS dos quizzes já existentes (perguntas em `.question-block` com `data-q` e `data-correct`, feedback visual nas opções, explicação expansível e placar no final) para manter a consistência visual.
+Quizzes novos devem reaproveitar a estrutura e o CSS dos quizzes já existentes (perguntas em `.question-block` com `data-q` e `data-correct`, alternativas em `.option-clickable` com `data-letter`, feedback visual e placar no final) para manter a consistência visual.
+
+**Explicação por alternativa é o padrão** — cada opção tem a sua, e a da errada aponta a confusão específica daquela opção, em vez de repetir a justificativa da correta. Uma explicação por questão só quando o volume inviabilizar.
+
+## Scripts auxiliares
+
+Dois utilitários em Python puro, sem dependência nenhuma — não são build step:
+
+```bash
+python3 scripts/gerar_quiz.py conteudo.json materias/{materia}/{arquivo}.html
+```
+
+```bash
+python3 scripts/conferir_quiz.py materias/*/quiz_*.html
+```
+
+O **gerador** transforma um JSON só de conteúdo no HTML completo, e recusa gerar com gabarito inválido ou explicação faltando. Vale a pena quando o quiz tem muitas alternativas explicadas uma a uma. O JSON é descartável: o entregável é o HTML.
+
+O **conferidor** valida um quiz sem abrir o navegador — nome na convenção, IDs obrigatórios, contagem de questões, gabarito, cobertura das explicações, `STORAGE_KEY` e ausência de recurso remoto. Sai com código 1 se houver erro. Rodar depois de criar ou editar um quiz é mais rápido e mais confiável que conferir na mão.
 
 Ver `CLAUDE.md` para as regras completas do projeto.
 
